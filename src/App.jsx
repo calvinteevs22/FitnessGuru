@@ -1005,7 +1005,104 @@ function Footer() {
 
 /* ─── App ───────────────────────────────────────────────────── */
 function SplitHero({ onSelect }) {
-  return <div style={{ minHeight: '100dvh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0d1a0e' }}><button onClick={() => onSelect('client')} style={{ color: '#4ade80', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: 24 }}>STUB — click to go client</button><button onClick={() => onSelect('trainer')} style={{ color: '#4ade80', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: 24, marginLeft: 40 }}>STUB — click to go trainer</button></div>
+  const [hovered, setHovered] = useState(null)
+
+  return (
+    <div style={{ display: 'flex', minHeight: '100dvh', background: '#0d1a0e', position: 'relative' }} className="split-hero-root">
+      <style>{`
+        .split-hero-root { flex-direction: row; }
+        @media (max-width: 768px) { .split-hero-root { flex-direction: column; } }
+        .split-hero-root .split-divider { display: block; }
+        @media (max-width: 768px) { .split-hero-root .split-divider { display: none; } }
+      `}</style>
+
+      {/* Centre divider */}
+      <div className="split-divider" style={{ position: 'absolute', top: '12%', bottom: '12%', left: '50%', width: 1, background: 'rgba(255,255,255,0.07)', transform: 'translateX(-50%)', pointerEvents: 'none' }} />
+
+      {/* Client panel */}
+      <div
+        role="button"
+        tabIndex={0}
+        aria-label="I'm looking for a trainer"
+        onClick={() => onSelect('client')}
+        onKeyDown={e => e.key === 'Enter' && onSelect('client')}
+        onMouseEnter={() => setHovered('client')}
+        onMouseLeave={() => setHovered(null)}
+        style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '100px 48px',
+          cursor: 'pointer',
+          outline: 'none',
+          opacity: hovered === 'trainer' ? 0.3 : 1,
+          background: hovered === 'client' ? 'rgba(45,106,46,0.06)' : 'transparent',
+          transition: 'opacity 0.3s ease, background 0.3s ease',
+        }}
+      >
+        <div style={{ maxWidth: 380, textAlign: 'center' }}>
+          <p style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 11, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#4ade80', margin: '0 0 24px' }}>
+            Find a Trainer
+          </p>
+          <h2 style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, textTransform: 'uppercase', fontSize: 'clamp(32px, 5vw, 60px)', lineHeight: 0.95, letterSpacing: '-0.02em', color: '#EEF2EE', margin: '0 0 20px' }}>
+            Find your trainer.<br /><span style={{ color: '#4ade80' }}>Change your life.</span>
+          </h2>
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: 16, color: 'rgba(238,242,238,0.5)', lineHeight: 1.65, margin: '0 0 36px' }}>
+            Browse certified PTs across Singapore.<br />Book instantly, no contracts.
+          </p>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 13, letterSpacing: '0.1em', textTransform: 'uppercase', color: hovered === 'client' ? '#4ade80' : 'rgba(74,222,128,0.45)', transition: 'color 0.3s ease' }}>
+            Get started <ArrowRight size={15} />
+          </div>
+        </div>
+      </div>
+
+      {/* Trainer panel */}
+      <div
+        role="button"
+        tabIndex={0}
+        aria-label="I'm a personal trainer"
+        onClick={() => onSelect('trainer')}
+        onKeyDown={e => e.key === 'Enter' && onSelect('trainer')}
+        onMouseEnter={() => setHovered('trainer')}
+        onMouseLeave={() => setHovered(null)}
+        style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '100px 48px',
+          cursor: 'pointer',
+          outline: 'none',
+          opacity: hovered === 'client' ? 0.3 : 1,
+          background: hovered === 'trainer' ? 'rgba(45,106,46,0.06)' : 'transparent',
+          transition: 'opacity 0.3s ease, background 0.3s ease',
+        }}
+      >
+        <div style={{ maxWidth: 380, textAlign: 'center' }}>
+          <p style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 11, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#4ade80', margin: '0 0 24px' }}>
+            I'm a Trainer
+          </p>
+          <h2 style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, textTransform: 'uppercase', fontSize: 'clamp(32px, 5vw, 60px)', lineHeight: 0.95, letterSpacing: '-0.02em', color: '#EEF2EE', margin: '0 0 20px' }}>
+            Your rates.<br />Your schedule.<br /><span style={{ color: '#4ade80' }}>Your clients.</span>
+          </h2>
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: 16, color: 'rgba(238,242,238,0.5)', lineHeight: 1.65, margin: '0 0 36px' }}>
+            List for free. Keep 80%.<br />Build your practice on your terms.
+          </p>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 13, letterSpacing: '0.1em', textTransform: 'uppercase', color: hovered === 'trainer' ? '#4ade80' : 'rgba(74,222,128,0.45)', transition: 'color 0.3s ease' }}>
+            Apply now <ArrowRight size={15} />
+          </div>
+        </div>
+      </div>
+
+      {/* Wordmark */}
+      <div style={{ position: 'absolute', bottom: 28, left: '50%', transform: 'translateX(-50%)', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 12, letterSpacing: '0.14em', color: 'rgba(238,242,238,0.18)', textTransform: 'uppercase', pointerEvents: 'none', whiteSpace: 'nowrap' }}>
+        FitnessGuru · Singapore
+      </div>
+    </div>
+  )
 }
 
 function ClientPage() {
