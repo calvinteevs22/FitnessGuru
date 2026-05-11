@@ -207,8 +207,8 @@ function Hero() {
           color: 'rgba(238,242,238,0.65)', lineHeight: 1.55, maxWidth: 540,
           margin: '0 0 40px',
         }}>
-          Singapore's personal training marketplace. Certified trainers from{' '}
-          <strong style={{ color: '#EEF2EE', fontWeight: 600 }}>SGD $65/session</strong>.
+          Singapore's personal training marketplace. Certified trainers who{' '}
+          <strong style={{ color: '#EEF2EE', fontWeight: 600 }}>set their own rates</strong>.
           No gym middleman. No lock-in packages. Train anywhere.
         </p>
 
@@ -326,23 +326,23 @@ function Problem() {
             <div style={{ position: 'relative' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
                 <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 11, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#4ade80' }}>On FitnessGuru</span>
-                <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 11, letterSpacing: '0.08em', textTransform: 'uppercase', background: 'rgba(74,222,128,0.12)', color: '#4ade80', padding: '5px 10px', borderRadius: 20 }}>Better for everyone</span>
+                <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 11, letterSpacing: '0.08em', textTransform: 'uppercase', background: 'rgba(74,222,128,0.12)', color: '#4ade80', padding: '5px 10px', borderRadius: 20 }}>Trainer sets the rate</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 20 }}>
-                <span style={{ fontFamily: 'var(--font-body)', fontSize: 15, color: 'rgba(238,242,238,0.6)' }}>Client pays</span>
-                <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 42, color: '#4ade80', letterSpacing: '-0.02em' }}>$100</span>
+                <span style={{ fontFamily: 'var(--font-body)', fontSize: 15, color: 'rgba(238,242,238,0.6)' }}>Trainer sets price</span>
+                <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 42, color: '#4ade80', letterSpacing: '-0.02em' }}>$120</span>
               </div>
               <div style={{ height: 1, background: 'rgba(255,255,255,0.07)', margin: '0 0 20px' }} />
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
                 <span style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: 'rgba(238,242,238,0.5)' }}>Platform fee (20%)</span>
-                <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 22, color: 'rgba(238,242,238,0.5)' }}>−$20</span>
+                <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 22, color: 'rgba(238,242,238,0.5)' }}>−$24</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 28 }}>
                 <span style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: 'rgba(238,242,238,0.6)' }}>Trainer earns</span>
-                <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 22, color: '#4ade80' }}>$80</span>
+                <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 22, color: '#4ade80' }}>$96</span>
               </div>
               <div style={{ background: 'rgba(74,222,128,0.08)', border: '1px solid rgba(74,222,128,0.15)', borderRadius: 8, padding: '12px 16px' }}>
-                <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(238,242,238,0.8)', fontWeight: 500 }}>Client saves $50. Trainer earns $5 more. Everyone wins.</span>
+                <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(238,242,238,0.8)', fontWeight: 500 }}>Client saves $30. Trainer earns $21 more. Both win.</span>
               </div>
             </div>
           </div>
@@ -634,93 +634,122 @@ function Trainers() {
 
 /* ─── Pricing ───────────────────────────────────────────────── */
 function Pricing() {
-  const tiers = [
-    {
-      label: 'Foundation',
-      price: '$65',
-      sub: 'Newer certified trainers building their practice',
-      features: ['Certified NASM / ACE / ACSM', 'Insured', 'Real verified reviews', 'Single session booking', 'All venue types'],
-      dark: false, highlight: false,
-    },
-    {
-      label: 'Standard',
-      price: '$85',
-      sub: 'Experienced trainers with specialist skills',
-      features: ['Everything in Foundation', '3–7 years experience', 'Specialist skills (prenatal, seniors...)', 'Programme design included', 'Progress tracking'],
-      dark: true, highlight: true,
-    },
-    {
-      label: 'Elite',
-      price: '$100+',
-      sub: 'Competition coaches and rehab specialists',
-      features: ['Everything in Standard', '7+ years experience', 'Advanced certs (CSCS, CHEK...)', 'Fully customised programming', 'Still 30–50% less than gyms'],
-      dark: false, highlight: false,
-    },
+  const examples = [
+    { rate: 80, keep: 64, label: 'Entry rate' },
+    { rate: 120, keep: 96, label: 'Mid-market', highlight: true },
+    { rate: 160, keep: 128, label: 'Premium' },
+  ]
+
+  const guarantees = [
+    'You set your own rate — no caps, no floors',
+    'Zero platform commission for your first 90 days',
+    'FitnessGuru only takes 20% — never more',
+    'Clients pay you directly. Funds clear weekly.',
   ]
 
   return (
     <section id="pricing" style={{ background: '#0d1a0e', padding: '96px 24px' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-        <div style={{ textAlign: 'center', marginBottom: 56 }}>
-          <div style={{ marginBottom: 12 }}>
-            <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 12, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#4ade80' }}>Transparent Pricing</span>
+
+        {/* Header */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64, alignItems: 'center', marginBottom: 72 }} className="pricing-header-grid">
+          <div>
+            <div style={{ marginBottom: 12 }}>
+              <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 12, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#4ade80' }}>Trainer Economics</span>
+            </div>
+            <h2 style={{
+              fontFamily: 'var(--font-heading)', fontWeight: 900, textTransform: 'uppercase',
+              fontSize: 'clamp(36px, 5vw, 64px)', lineHeight: 0.95, letterSpacing: '-0.01em',
+              color: '#EEF2EE', margin: '0 0 24px',
+            }}>
+              You set<br />the price.<br />
+              <span style={{ color: '#4ade80' }}>You keep 80%.</span>
+            </h2>
+            <p style={{ fontFamily: 'var(--font-body)', fontSize: 16, color: 'rgba(238,242,238,0.55)', lineHeight: 1.65, margin: 0, maxWidth: 380 }}>
+              There are no platform-dictated rate tiers. Your experience, your specialisation, your market — your rate. FitnessGuru takes a flat 20% and nothing else.
+            </p>
           </div>
-          <h2 style={{
-            fontFamily: 'var(--font-heading)', fontWeight: 900, textTransform: 'uppercase',
-            fontSize: 'clamp(36px, 5vw, 64px)', lineHeight: 0.95, letterSpacing: '-0.01em',
-            color: '#EEF2EE', margin: '0 auto 16px',
-          }}>
-            What you see<br />is what you pay.
-          </h2>
-          <p style={{ fontFamily: 'var(--font-body)', fontSize: 16, color: 'rgba(238,242,238,0.5)', maxWidth: 420, margin: '0 auto' }}>
-            No hidden fees. No lock-in packages. No hard-sell. FitnessGuru takes 20% — that's it.
-          </p>
+
+          {/* Guarantees */}
+          <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, padding: '36px' }}>
+            <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 11, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#4ade80', marginBottom: 24 }}>The deal</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+              {guarantees.map(g => (
+                <div key={g} style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
+                  <div style={{ width: 22, height: 22, borderRadius: '50%', background: 'rgba(74,222,128,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#4ade80', flexShrink: 0, marginTop: 2 }}>
+                    <CheckIcon size={13} />
+                  </div>
+                  <span style={{ fontFamily: 'var(--font-body)', fontSize: 15, color: 'rgba(238,242,238,0.75)', lineHeight: 1.5 }}>{g}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
-          {tiers.map((t) => (
-            <div key={t.label} style={{
-              background: t.dark ? '#2d6a2e' : 'rgba(255,255,255,0.04)',
-              borderRadius: 16, padding: '40px 32px',
-              border: t.highlight ? 'none' : '1px solid rgba(255,255,255,0.07)',
+        {/* Example earnings */}
+        <div style={{ marginBottom: 16 }}>
+          <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 11, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(238,242,238,0.35)' }}>What you keep — example sessions</span>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }} className="pricing-examples-grid">
+          {examples.map(ex => (
+            <div key={ex.rate} style={{
+              background: ex.highlight ? '#2d6a2e' : 'rgba(255,255,255,0.04)',
+              borderRadius: 16, padding: '32px 28px',
+              border: ex.highlight ? 'none' : '1px solid rgba(255,255,255,0.07)',
+              boxShadow: ex.highlight ? '0 0 48px rgba(45,106,46,0.3)' : 'none',
               position: 'relative',
-              boxShadow: t.dark ? '0 0 60px rgba(45,106,46,0.3)' : 'none',
             }}>
-              {t.highlight && (
-                <div style={{ position: 'absolute', top: -1, left: '50%', transform: 'translateX(-50%)', background: '#4ade80', color: '#0d1a0e', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', padding: '5px 14px', borderRadius: '0 0 8px 8px' }}>
-                  Most Popular
+              {ex.highlight && (
+                <div style={{ position: 'absolute', top: -1, left: '50%', transform: 'translateX(-50%)', background: '#4ade80', color: '#0d1a0e', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 10, letterSpacing: '0.1em', textTransform: 'uppercase', padding: '4px 12px', borderRadius: '0 0 8px 8px' }}>
+                  Example
                 </div>
               )}
-              <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 11, letterSpacing: '0.15em', textTransform: 'uppercase', color: t.dark ? 'rgba(255,255,255,0.7)' : '#4ade80', marginBottom: 16 }}>{t.label}</div>
-              <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: 56, color: '#EEF2EE', letterSpacing: '-0.03em', lineHeight: 1, marginBottom: 8 }}>{t.price}</div>
-              <div style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: t.dark ? 'rgba(255,255,255,0.65)' : 'rgba(238,242,238,0.45)', marginBottom: 28, lineHeight: 1.5 }}>{t.sub}</div>
-              <div style={{ height: 1, background: t.dark ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.07)', marginBottom: 24 }} />
-              <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 32px', display: 'flex', flexDirection: 'column', gap: 12 }}>
-                {t.features.map(f => (
-                  <li key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, fontFamily: 'var(--font-body)', fontSize: 14, color: t.dark ? 'rgba(255,255,255,0.85)' : 'rgba(238,242,238,0.6)', lineHeight: 1.4 }}>
-                    <span style={{ color: t.dark ? '#fff' : '#4ade80', flexShrink: 0, marginTop: 2 }}><CheckIcon size={16} /></span>
-                    {f}
-                  </li>
-                ))}
-              </ul>
-              <a href="#waitlist" style={{
-                display: 'block', textAlign: 'center',
-                fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 14,
-                letterSpacing: '0.06em', textTransform: 'uppercase',
-                color: t.dark ? '#2d6a2e' : '#EEF2EE', textDecoration: 'none',
-                background: t.dark ? '#EEF2EE' : 'rgba(255,255,255,0.08)',
-                padding: '13px 24px', borderRadius: 8,
-                transition: 'background 0.2s, color 0.2s',
-                border: t.dark ? 'none' : '1px solid rgba(255,255,255,0.12)',
-              }}
-                onMouseEnter={e => { e.currentTarget.style.background = t.dark ? '#fff' : 'rgba(255,255,255,0.14)' }}
-                onMouseLeave={e => { e.currentTarget.style.background = t.dark ? '#EEF2EE' : 'rgba(255,255,255,0.08)' }}>
-                Join Waitlist
-              </a>
+              <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 11, letterSpacing: '0.12em', textTransform: 'uppercase', color: ex.highlight ? 'rgba(255,255,255,0.6)' : 'rgba(238,242,238,0.35)', marginBottom: 20 }}>{ex.label}</div>
+
+              <div style={{ marginBottom: 6 }}>
+                <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: ex.highlight ? 'rgba(255,255,255,0.55)' : 'rgba(238,242,238,0.4)' }}>Your rate</span>
+              </div>
+              <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: 48, color: '#EEF2EE', letterSpacing: '-0.03em', lineHeight: 1, marginBottom: 24 }}>${ex.rate}<span style={{ fontSize: 18, fontWeight: 600, color: ex.highlight ? 'rgba(255,255,255,0.5)' : 'rgba(238,242,238,0.35)', letterSpacing: 0 }}>/session</span></div>
+
+              <div style={{ height: 1, background: ex.highlight ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.07)', marginBottom: 20 }} />
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: ex.highlight ? 'rgba(255,255,255,0.55)' : 'rgba(238,242,238,0.4)' }}>FitnessGuru (20%)</span>
+                <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 16, color: ex.highlight ? 'rgba(255,255,255,0.5)' : 'rgba(238,242,238,0.35)' }}>−${ex.rate * 0.2}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                <span style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: ex.highlight ? 'rgba(255,255,255,0.8)' : 'rgba(238,242,238,0.6)', fontWeight: 600 }}>You keep</span>
+                <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: 28, color: ex.highlight ? '#fff' : '#4ade80', letterSpacing: '-0.02em' }}>${ex.keep}</span>
+              </div>
             </div>
           ))}
         </div>
+
+        {/* Bottom note */}
+        <div style={{ marginTop: 32, textAlign: 'center' }}>
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: 'rgba(238,242,238,0.35)', margin: '0 0 28px', lineHeight: 1.6 }}>
+            Rates shown are illustrative. You decide what to charge based on your experience and specialisation.
+          </p>
+          <a href="#waitlist" style={{
+            fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 15,
+            letterSpacing: '0.06em', textTransform: 'uppercase',
+            color: '#0d1a0e', textDecoration: 'none',
+            background: '#4ade80', padding: '15px 36px', borderRadius: 8,
+            display: 'inline-flex', alignItems: 'center', gap: 10,
+            transition: 'background 0.2s, transform 0.15s',
+          }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#22c55e'; e.currentTarget.style.transform = 'translateY(-1px)' }}
+            onMouseLeave={e => { e.currentTarget.style.background = '#4ade80'; e.currentTarget.style.transform = 'translateY(0)' }}>
+            Apply as a Trainer <ArrowRight />
+          </a>
+        </div>
       </div>
+      <style>{`
+        @media (max-width: 768px) {
+          .pricing-header-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
+          .pricing-examples-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
     </section>
   )
 }
