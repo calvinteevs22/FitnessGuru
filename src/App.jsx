@@ -1105,8 +1105,184 @@ function SplitHero({ onSelect }) {
   )
 }
 
+function ClientHero() {
+  return (
+    <section style={{ minHeight: '100dvh', display: 'flex', alignItems: 'center', background: '#0d1a0e', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', backgroundImage: 'radial-gradient(ellipse 80% 60% at 50% -10%, rgba(45,106,46,0.28) 0%, transparent 70%)' }} aria-hidden="true" />
+      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '140px 24px 100px', position: 'relative', zIndex: 1 }}>
+        <p style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 12, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#4ade80', margin: '0 0 28px' }}>
+          Singapore's Personal Training Marketplace
+        </p>
+        <h1 style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, textTransform: 'uppercase', fontSize: 'clamp(52px, 10vw, 104px)', lineHeight: 0.92, letterSpacing: '-0.02em', color: '#EEF2EE', margin: '0 0 32px' }}>
+          Find your trainer.<br /><span style={{ color: '#4ade80' }}>Change your life.</span>
+        </h1>
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: 'clamp(16px, 2vw, 20px)', color: 'rgba(238,242,238,0.6)', maxWidth: 520, lineHeight: 1.65, margin: '0 0 52px' }}>
+          Browse certified personal trainers across Singapore. Book instantly.
+        </p>
+        <a href="#waitlist"
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 10, fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 15, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#fff', textDecoration: 'none', background: '#2d6a2e', padding: '16px 32px', borderRadius: 10, boxShadow: '0 0 40px rgba(45,106,46,0.35)', transition: 'background 0.2s, transform 0.15s' }}
+          onMouseEnter={e => { e.currentTarget.style.background = '#3d8b3e'; e.currentTarget.style.transform = 'translateY(-2px)' }}
+          onMouseLeave={e => { e.currentTarget.style.background = '#2d6a2e'; e.currentTarget.style.transform = 'translateY(0)' }}>
+          Find a Trainer <ArrowRight />
+        </a>
+      </div>
+    </section>
+  )
+}
+
+function ClientProblem() {
+  const problems = [
+    { label: '01', title: "Generic classes don't work.", body: "Group sessions are built for the average person — not for your goals, your body, or your schedule. One-size-fits-all training delivers one-size-fits-all results." },
+    { label: '02', title: "How do you know who's legit?", body: "Anyone can call themselves a personal trainer. Without verified certifications and real reviews, you're guessing — and the wrong trainer wastes time, money, and motivation." },
+    { label: '03', title: "Pricing is opaque. Contracts are scary.", body: "Gym packages lock you in. Studio rates are hidden until you're already there. Long-term commitments before you've even tried a session shouldn't be the norm." },
+  ]
+  return (
+    <section style={{ background: '#0a140b', padding: '100px 24px', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', backgroundImage: 'radial-gradient(ellipse 50% 60% at 80% 50%, rgba(45,106,46,0.07) 0%, transparent 70%)' }} aria-hidden="true" />
+      <div style={{ maxWidth: 1200, margin: '0 auto', position: 'relative' }}>
+        <p style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 12, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#4ade80', margin: '0 0 20px' }}>The Problem</p>
+        <h2 style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, textTransform: 'uppercase', fontSize: 'clamp(36px, 6vw, 72px)', lineHeight: 0.95, letterSpacing: '-0.02em', color: '#EEF2EE', margin: '0 0 64px', maxWidth: 700 }}>
+          Finding the right trainer is harder than it should be.
+        </h2>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 24 }}>
+          {problems.map(({ label, title, body }) => (
+            <div key={label} style={{ background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 16, padding: '36px 32px' }}>
+              <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 11, letterSpacing: '0.16em', color: 'rgba(74,222,128,0.4)', margin: '0 0 20px', textTransform: 'uppercase' }}>{label}</div>
+              <h3 style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 22, color: '#EEF2EE', margin: '0 0 16px', lineHeight: 1.2, textTransform: 'uppercase', letterSpacing: '-0.01em' }}>{title}</h3>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: 15, color: 'rgba(238,242,238,0.5)', lineHeight: 1.7, margin: 0 }}>{body}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function ClientHowItWorks() {
+  const steps = [
+    { num: '01', title: 'Browse verified trainers', body: 'Filter by specialty, location, and availability. Every trainer is certified and reviewed by real clients.' },
+    { num: '02', title: 'Book in minutes', body: 'No back-and-forth emails. No long-term contracts. Pick a time that works, pay securely, show up.' },
+    { num: '03', title: 'Train and transform', body: 'Your trainer. Your goals. Your programme. Show up, do the work, see results.' },
+  ]
+  return (
+    <section id="how-it-works" style={{ background: '#0d1a0e', padding: '100px 24px' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        <p style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 12, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#4ade80', margin: '0 0 20px' }}>How It Works</p>
+        <h2 style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, textTransform: 'uppercase', fontSize: 'clamp(36px, 6vw, 72px)', lineHeight: 0.95, letterSpacing: '-0.02em', color: '#EEF2EE', margin: '0 0 72px', maxWidth: 600 }}>
+          Three steps to your first session.
+        </h2>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 2 }}>
+          {steps.map(({ num, title, body }, i) => (
+            <div key={num} style={{ padding: '48px 36px', background: i === 1 ? 'rgba(45,106,46,0.08)' : 'transparent', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 12 }}>
+              <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: 64, lineHeight: 1, color: 'rgba(74,222,128,0.1)', letterSpacing: '-0.04em', marginBottom: 24 }}>{num}</div>
+              <h3 style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 22, textTransform: 'uppercase', letterSpacing: '-0.01em', color: '#EEF2EE', margin: '0 0 16px' }}>{title}</h3>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: 15, color: 'rgba(238,242,238,0.5)', lineHeight: 1.7, margin: 0 }}>{body}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function ClientValueProps() {
+  const items = [
+    { title: 'Every trainer is certified and vetted.', body: "We verify every certification before a trainer goes live. You see their qualifications, their reviews, and their training style — before you book." },
+    { title: 'Transparent pricing. No surprises.', body: "Every trainer lists their session rate upfront. You know exactly what you're paying before you commit to anything." },
+    { title: 'Flexible. No lock-in.', body: "Book sessions one at a time or in blocks. Train at home, in a condo gym, or at a park. No contracts, no minimum commitments." },
+  ]
+  return (
+    <section style={{ background: '#0a140b', padding: '100px 24px' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        <p style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 12, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#4ade80', margin: '0 0 20px' }}>Why FitnessGuru</p>
+        <h2 style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, textTransform: 'uppercase', fontSize: 'clamp(36px, 6vw, 72px)', lineHeight: 0.95, letterSpacing: '-0.02em', color: '#EEF2EE', margin: '0 0 72px', maxWidth: 640 }}>
+          Built for people who are serious about results.
+        </h2>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {items.map(({ title, body }, i) => (
+            <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 32, padding: '40px 36px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 12 }}>
+              <div style={{ flexShrink: 0, width: 36, height: 36, borderRadius: '50%', background: 'rgba(74,222,128,0.12)', border: '1px solid rgba(74,222,128,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#4ade80', marginTop: 2 }}>
+                <CheckIcon size={16} />
+              </div>
+              <div>
+                <h3 style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 20, textTransform: 'uppercase', letterSpacing: '-0.01em', color: '#EEF2EE', margin: '0 0 12px' }}>{title}</h3>
+                <p style={{ fontFamily: 'var(--font-body)', fontSize: 15, color: 'rgba(238,242,238,0.5)', lineHeight: 1.7, margin: 0, maxWidth: 680 }}>{body}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function ClientTestimonials() {
+  const testimonials = [
+    { quote: "I'd tried three different trainers through my gym and never clicked with any of them. FitnessGuru let me read real reviews and see each trainer's actual style. I found Marcus in a week. Six months later I'm down 14kg.", name: 'Natasha L.', detail: 'Client · Tampines', stars: 5 },
+    { quote: "I was nervous to commit without knowing if a trainer would be right for me. The ability to book single sessions first made it so much easier. Priya has been training me through my second pregnancy. I feel stronger than I ever have.", name: 'Divya R.', detail: 'Client · River Valley', stars: 5 },
+    { quote: "I always thought personal training was out of my budget. FitnessGuru showed me trainers at every price point, with no hidden fees. I know what I pay. My trainer knows what I need. Best decision I made this year.", name: 'Wei Ming T.', detail: 'Client · Jurong', stars: 5 },
+  ]
+  return (
+    <section style={{ background: '#0d1a0e', padding: '100px 24px', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', backgroundImage: 'radial-gradient(ellipse 50% 70% at 20% 50%, rgba(45,106,46,0.07) 0%, transparent 70%)' }} aria-hidden="true" />
+      <div style={{ maxWidth: 1200, margin: '0 auto', position: 'relative' }}>
+        <p style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 12, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#4ade80', margin: '0 0 20px' }}>Real Stories</p>
+        <h2 style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, textTransform: 'uppercase', fontSize: 'clamp(36px, 6vw, 72px)', lineHeight: 0.95, letterSpacing: '-0.02em', color: '#EEF2EE', margin: '0 0 64px', maxWidth: 600 }}>
+          Lives changed. In Singapore.
+        </h2>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 20 }}>
+          {testimonials.map(({ quote, name, detail, stars }) => (
+            <div key={name} style={{ background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 16, padding: '36px 32px', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ display: 'flex', gap: 3, marginBottom: 24 }}>
+                {Array.from({ length: stars }).map((_, i) => <span key={i} style={{ color: '#4ade80' }}><StarIcon /></span>)}
+              </div>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: 15, color: 'rgba(238,242,238,0.65)', lineHeight: 1.75, margin: '0 0 28px', flex: 1 }}>"{quote}"</p>
+              <div>
+                <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 15, color: '#EEF2EE', textTransform: 'uppercase', letterSpacing: '0.03em' }}>{name}</div>
+                <div style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(238,242,238,0.35)', marginTop: 4 }}>{detail}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function ClientCTA() {
+  return (
+    <section style={{ background: '#0a140b', padding: '100px 24px', textAlign: 'center' }}>
+      <div style={{ maxWidth: 720, margin: '0 auto' }}>
+        <p style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 12, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#4ade80', margin: '0 0 20px' }}>Get Started</p>
+        <h2 style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, textTransform: 'uppercase', fontSize: 'clamp(36px, 7vw, 80px)', lineHeight: 0.92, letterSpacing: '-0.02em', color: '#EEF2EE', margin: '0 0 28px' }}>
+          Your transformation<br />starts with<br /><span style={{ color: '#4ade80' }}>one decision.</span>
+        </h2>
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: 18, color: 'rgba(238,242,238,0.5)', lineHeight: 1.65, margin: '0 0 48px' }}>
+          Join the waitlist. Get SGD $20 off your first session when we launch.
+        </p>
+        <a href="#waitlist"
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 10, fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 16, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#fff', textDecoration: 'none', background: '#2d6a2e', padding: '18px 40px', borderRadius: 10, boxShadow: '0 0 40px rgba(45,106,46,0.35)', transition: 'background 0.2s, transform 0.15s' }}
+          onMouseEnter={e => { e.currentTarget.style.background = '#3d8b3e'; e.currentTarget.style.transform = 'translateY(-2px)' }}
+          onMouseLeave={e => { e.currentTarget.style.background = '#2d6a2e'; e.currentTarget.style.transform = 'translateY(0)' }}>
+          Start your search <ArrowRight />
+        </a>
+      </div>
+    </section>
+  )
+}
+
 function ClientPage() {
-  return <div style={{ minHeight: '100dvh', paddingTop: 100, background: '#0d1a0e', color: '#4ade80', fontFamily: 'var(--font-heading)', fontSize: 40, textAlign: 'center' }}>CLIENT PAGE — coming soon</div>
+  return (
+    <>
+      <ClientHero />
+      <ClientProblem />
+      <ClientHowItWorks />
+      <ClientValueProps />
+      <ClientTestimonials />
+      <ClientCTA />
+      <Waitlist defaultRole="client" />
+    </>
+  )
 }
 
 function TrainerPage() {
