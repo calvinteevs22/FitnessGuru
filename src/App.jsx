@@ -1000,32 +1000,56 @@ function Footer() {
 }
 
 /* ─── App ───────────────────────────────────────────────────── */
+function SplitHero({ onSelect }) {
+  return <div style={{ minHeight: '100dvh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0d1a0e' }}><button onClick={() => onSelect('client')} style={{ color: '#4ade80', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: 24 }}>STUB — click to go client</button><button onClick={() => onSelect('trainer')} style={{ color: '#4ade80', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: 24, marginLeft: 40 }}>STUB — click to go trainer</button></div>
+}
+
+function ClientPage() {
+  return <div style={{ minHeight: '100dvh', paddingTop: 100, background: '#0d1a0e', color: '#4ade80', fontFamily: 'var(--font-heading)', fontSize: 40, textAlign: 'center' }}>CLIENT PAGE — coming soon</div>
+}
+
+function TrainerPage() {
+  return <div style={{ minHeight: '100dvh', paddingTop: 100, background: '#0d1a0e', color: '#4ade80', fontFamily: 'var(--font-heading)', fontSize: 40, textAlign: 'center' }}>TRAINER PAGE — coming soon</div>
+}
+
 export default function App() {
+  const [role, setRole] = useState(() => localStorage.getItem('fg_role'))
+  const [fading, setFading] = useState(false)
+
+  const selectRole = (newRole) => {
+    setFading(true)
+    setTimeout(() => {
+      localStorage.setItem('fg_role', newRole)
+      setRole(newRole)
+      window.scrollTo(0, 0)
+      setFading(false)
+    }, 280)
+  }
+
+  const switchRole = () => selectRole(role === 'client' ? 'trainer' : 'client')
+
   return (
     <>
       <a href="#main-content"
         style={{
           position: 'absolute', top: -40, left: 0, background: '#2d6a2e', color: '#fff',
           padding: '8px 16px', zIndex: 9999, fontFamily: 'var(--font-body)', fontSize: 14,
-          textDecoration: 'none', borderRadius: '0 0 8px 0',
-          transition: 'top 0.2s',
+          textDecoration: 'none', borderRadius: '0 0 8px 0', transition: 'top 0.2s',
         }}
         onFocus={e => e.target.style.top = '0'}
         onBlur={e => e.target.style.top = '-40px'}>
         Skip to main content
       </a>
-      <Nav />
-      <main id="main-content">
-        <Hero />
-        <Problem />
-        <HowItWorks />
-        <Venues />
-        <Trainers />
-        <Pricing />
-        <ForTrainers />
-        <Waitlist />
+      <Nav role={role} onSwitch={switchRole} />
+      <main
+        id="main-content"
+        style={{ opacity: fading ? 0 : 1, transition: 'opacity 0.28s ease-out' }}
+      >
+        {role === null && <SplitHero onSelect={selectRole} />}
+        {role === 'client' && <ClientPage />}
+        {role === 'trainer' && <TrainerPage />}
       </main>
-      <Footer />
+      {role !== null && <Footer />}
     </>
   )
 }
