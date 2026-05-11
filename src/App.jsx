@@ -863,9 +863,9 @@ function ForTrainers() {
 }
 
 /* ─── Waitlist ──────────────────────────────────────────────── */
-function Waitlist() {
+function Waitlist({ defaultRole = 'client' }) {
   const [email, setEmail] = useState('')
-  const [role, setRole] = useState('client')
+  const [role, setRole] = useState(defaultRole)
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
   const inputRef = useRef(null)
