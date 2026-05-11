@@ -296,17 +296,17 @@ function Problem() {
           }}>
             <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 11, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#9ca3af', marginBottom: 28 }}>At a Gym (Fitness First / Virgin Active)</div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 20 }}>
-              <span style={{ fontFamily: 'var(--font-body)', fontSize: 15, color: '#6b7280' }}>You pay</span>
+              <span style={{ fontFamily: 'var(--font-body)', fontSize: 15, color: '#6b7280' }}>Client pays</span>
               <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 42, color: '#111827', letterSpacing: '-0.02em' }}>$150</span>
             </div>
             <div style={{ height: 1, background: '#f3f4f6', margin: '0 0 20px' }} />
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
-              <span style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: '#6b7280' }}>Gym keeps (40–50%)</span>
-              <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 22, color: '#ef4444' }}>−$65</span>
+              <span style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: '#6b7280' }}>Gym keeps (50%)</span>
+              <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 22, color: '#ef4444' }}>−$75</span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 28 }}>
               <span style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: '#6b7280' }}>Trainer earns</span>
-              <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 22, color: '#374151' }}>$85</span>
+              <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 22, color: '#374151' }}>$75</span>
             </div>
             <div style={{ background: '#fef2f2', borderRadius: 8, padding: '12px 16px' }}>
               <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#dc2626', fontWeight: 500 }}>The gym does the least — and takes the most.</span>
@@ -329,20 +329,20 @@ function Problem() {
                 <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 11, letterSpacing: '0.08em', textTransform: 'uppercase', background: 'rgba(74,222,128,0.12)', color: '#4ade80', padding: '5px 10px', borderRadius: 20 }}>Better for everyone</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 20 }}>
-                <span style={{ fontFamily: 'var(--font-body)', fontSize: 15, color: 'rgba(238,242,238,0.6)' }}>You pay</span>
-                <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 42, color: '#4ade80', letterSpacing: '-0.02em' }}>$85</span>
+                <span style={{ fontFamily: 'var(--font-body)', fontSize: 15, color: 'rgba(238,242,238,0.6)' }}>Client pays</span>
+                <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 42, color: '#4ade80', letterSpacing: '-0.02em' }}>$100</span>
               </div>
               <div style={{ height: 1, background: 'rgba(255,255,255,0.07)', margin: '0 0 20px' }} />
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
                 <span style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: 'rgba(238,242,238,0.5)' }}>Platform fee (20%)</span>
-                <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 22, color: 'rgba(238,242,238,0.5)' }}>−$17</span>
+                <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 22, color: 'rgba(238,242,238,0.5)' }}>−$20</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 28 }}>
                 <span style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: 'rgba(238,242,238,0.6)' }}>Trainer earns</span>
-                <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 22, color: '#4ade80' }}>$68</span>
+                <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 22, color: '#4ade80' }}>$80</span>
               </div>
               <div style={{ background: 'rgba(74,222,128,0.08)', border: '1px solid rgba(74,222,128,0.15)', borderRadius: 8, padding: '12px 16px' }}>
-                <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(238,242,238,0.8)', fontWeight: 500 }}>Same trainer. Same expertise. 43% less for you.</span>
+                <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(238,242,238,0.8)', fontWeight: 500 }}>Client saves $50. Trainer earns $5 more. Everyone wins.</span>
               </div>
             </div>
           </div>
