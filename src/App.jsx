@@ -64,7 +64,7 @@ const avatarColors = [
 ]
 
 /* ─── Nav ───────────────────────────────────────────────────── */
-function Nav() {
+function Nav({ role, onSwitch }) {
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
 
@@ -86,10 +86,7 @@ function Nav() {
       <nav style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', height: 68, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         {/* Logo */}
         <a href="#" aria-label="FitnessGuru home" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
-          <div style={{
-            width: 34, height: 34, borderRadius: 8, background: '#2d6a2e',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>
+          <div style={{ width: 34, height: 34, borderRadius: 8, background: '#2d6a2e', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 14, color: '#fff', letterSpacing: '-0.5px' }}>FG</span>
           </div>
           <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 20, color: '#EEF2EE', letterSpacing: '0.01em' }}>
@@ -97,19 +94,23 @@ function Nav() {
           </span>
         </a>
 
-        {/* Desktop links */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 32 }} className="hidden-mobile">
-          {[['How It Works', '#how-it-works'], ['Trainers', '#trainers'], ['Pricing', '#pricing'], ['For Trainers', '#for-trainers']].map(([label, href]) => (
-            <a key={label} href={href} style={{
-              fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: 14,
-              color: 'rgba(238,242,238,0.7)', textDecoration: 'none',
-              transition: 'color 0.2s', letterSpacing: '0.01em',
-            }}
-              onMouseEnter={e => e.target.style.color = '#EEF2EE'}
-              onMouseLeave={e => e.target.style.color = 'rgba(238,242,238,0.7)'}>
-              {label}
-            </a>
-          ))}
+        {/* Desktop right */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 24 }} className="hidden-mobile">
+          {role && (
+            <>
+              <a href="#how-it-works" style={{ fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: 14, color: 'rgba(238,242,238,0.7)', textDecoration: 'none', transition: 'color 0.2s' }}
+                onMouseEnter={e => e.target.style.color = '#EEF2EE'}
+                onMouseLeave={e => e.target.style.color = 'rgba(238,242,238,0.7)'}>
+                How It Works
+              </a>
+              <button onClick={onSwitch}
+                style={{ fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: 14, color: 'rgba(238,242,238,0.45)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, transition: 'color 0.2s' }}
+                onMouseEnter={e => e.target.style.color = '#4ade80'}
+                onMouseLeave={e => e.target.style.color = 'rgba(238,242,238,0.45)'}>
+                Switch to {role === 'client' ? 'Trainer' : 'Client'} view
+              </button>
+            </>
+          )}
           <a href="#waitlist" style={{
             fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 15,
             color: '#fff', textDecoration: 'none', letterSpacing: '0.04em',
@@ -120,11 +121,11 @@ function Nav() {
           }}
             onMouseEnter={e => { e.currentTarget.style.background = '#3d8b3e'; e.currentTarget.style.transform = 'translateY(-1px)' }}
             onMouseLeave={e => { e.currentTarget.style.background = '#2d6a2e'; e.currentTarget.style.transform = 'translateY(0)' }}>
-            Join Waitlist
+            {role === 'trainer' ? 'Apply as Trainer' : 'Join Waitlist'}
           </a>
         </div>
 
-        {/* Mobile menu toggle */}
+        {/* Mobile toggle */}
         <button onClick={() => setOpen(!open)} className="show-mobile"
           aria-expanded={open} aria-label={open ? 'Close menu' : 'Open menu'}
           style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#EEF2EE', padding: 8, borderRadius: 6 }}>
@@ -134,19 +135,22 @@ function Nav() {
 
       {/* Mobile drawer */}
       {open && (
-        <div style={{
-          background: '#0d1a0e', borderTop: '1px solid rgba(255,255,255,0.07)',
-          padding: '20px 24px 28px',
-        }}>
-          {[['How It Works', '#how-it-works'], ['Trainers', '#trainers'], ['Pricing', '#pricing'], ['For Trainers', '#for-trainers']].map(([label, href]) => (
-            <a key={label} href={href} onClick={() => setOpen(false)}
-              style={{ display: 'block', fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: 16, color: 'rgba(238,242,238,0.8)', textDecoration: 'none', padding: '12px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-              {label}
-            </a>
-          ))}
+        <div style={{ background: '#0d1a0e', borderTop: '1px solid rgba(255,255,255,0.07)', padding: '20px 24px 28px' }}>
+          {role && (
+            <>
+              <a href="#how-it-works" onClick={() => setOpen(false)}
+                style={{ display: 'block', fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: 16, color: 'rgba(238,242,238,0.8)', textDecoration: 'none', padding: '12px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                How It Works
+              </a>
+              <button onClick={() => { onSwitch(); setOpen(false) }}
+                style={{ display: 'block', width: '100%', textAlign: 'left', fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: 16, color: 'rgba(238,242,238,0.45)', background: 'none', border: 'none', borderBottom: '1px solid rgba(255,255,255,0.05)', cursor: 'pointer', padding: '12px 0' }}>
+                Switch to {role === 'client' ? 'Trainer' : 'Client'} view
+              </button>
+            </>
+          )}
           <a href="#waitlist" onClick={() => setOpen(false)}
             style={{ display: 'block', marginTop: 20, textAlign: 'center', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 16, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#fff', textDecoration: 'none', background: '#2d6a2e', padding: '14px', borderRadius: 8 }}>
-            Join Waitlist
+            {role === 'trainer' ? 'Apply as Trainer' : 'Join Waitlist'}
           </a>
         </div>
       )}
