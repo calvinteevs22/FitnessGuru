@@ -1,11 +1,34 @@
 import { useState, useRef } from 'react'
 import { validateFile } from '../utils/validation'
 
-export default function FileUpload({ label, onChange, maxFiles = 5, required = false }) {
-  const [files, setFiles] = useState([])
+export default function FileUpload({ label, onChange, maxFiles = 5, required = false, files: controlledFiles }) {
+  const [internalFiles, setInternalFiles] = useState([])
+  const isControlled = controlledFiles !== undefined
+  // In controlled mode, controlledFiles is a plain File[] array from the parent.
+  // We wrap them with stable ids so the list can be rendered with keys.
+  // We keep a parallel wrappedRef that mirrors what we last synced from controlledFiles.
+  const wrappedRef = useRef([])
+  const counterRef = useRef(0)
+
+  // Derive the displayed file list. In controlled mode, sync wrappedRef to match controlledFiles.
+  let files
+  if (isControlled) {
+    // Rebuild wrappedRef to match controlledFiles (preserve ids for existing files, assign new ones for new entries)
+    const prev = wrappedRef.current
+    const updated = controlledFiles.map(file => {
+      const existing = prev.find(p => p.file === file)
+      if (existing) return existing
+      counterRef.current += 1
+      return { id: Date.now() + counterRef.current, file }
+    })
+    wrappedRef.current = updated
+    files = updated
+  } else {
+    files = internalFiles
+  }
+
   const [errors, setErrors] = useState([])
   const inputRef = useRef(null)
-  const counterRef = useRef(0)
 
   function handleChange(e) {
     setErrors([])
@@ -19,8 +42,8 @@ export default function FileUpload({ label, onChange, maxFiles = 5, required = f
       if (validationError) {
         newErrors.push(validationError)
       } else {
-        validFiles.push({ id: Date.now() + i + counterRef.current, file })
         counterRef.current += 1
+        validFiles.push({ id: Date.now() + i + counterRef.current, file })
       }
     })
 
@@ -34,15 +57,23 @@ export default function FileUpload({ label, onChange, maxFiles = 5, required = f
     }
 
     const updated = [...files, ...validFiles]
-    setFiles(updated)
-    onChange(updated.map(f => f.file))
+    if (isControlled) {
+      onChange(updated.map(f => f.file))
+    } else {
+      setInternalFiles(updated)
+      onChange(updated.map(f => f.file))
+    }
     e.target.value = '' // reset input so same file can be re-added
   }
 
   function removeFile(id) {
     const updated = files.filter(f => f.id !== id)
-    setFiles(updated)
-    onChange(updated.map(f => f.file))
+    if (isControlled) {
+      onChange(updated.map(f => f.file))
+    } else {
+      setInternalFiles(updated)
+      onChange(updated.map(f => f.file))
+    }
   }
 
   return (
