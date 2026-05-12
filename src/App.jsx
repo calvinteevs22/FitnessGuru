@@ -1020,7 +1020,7 @@ function TrainerHero({ onApply = () => {} }) {
               {[
                 { n: '80%', d: 'you keep per session' },
                 { n: 'Free', d: 'to list your profile' },
-                { n: '90 days', d: 'commission-free launch' },
+                
               ].map(({ n, d }) => (
                 <div key={n} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, padding: '10px 16px' }}>
                   <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 16, color: '#fbbf24', letterSpacing: '-0.01em', textTransform: 'uppercase' }}>{n}</div>
@@ -1240,7 +1240,7 @@ function TrainerCTA({ onApply = () => {} }) {
           List your profile.<br />Reach more clients.<br /><span style={{ color: '#fbbf24' }}>Grow your practice.</span>
         </h2>
         <p style={{ fontFamily: 'var(--font-body)', fontSize: 18, color: 'rgba(238,242,238,0.48)', lineHeight: 1.65, margin: '0 0 48px' }}>
-          Join the waitlist. Get 90 days commission-free when we launch.
+          Join the waitlist and be first to list your profile.
         </p>
         <button onClick={onApply}
           style={{ display: 'inline-flex', alignItems: 'center', gap: 10, fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 16, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#0c0a04', background: '#fbbf24', border: 'none', padding: '18px 40px', borderRadius: 10, cursor: 'pointer', boxShadow: '0 0 48px rgba(251,191,36,0.3)', transition: 'all 0.2s' }}
@@ -1294,7 +1294,7 @@ function Waitlist({ defaultRole = 'client' }) {
         </h2>
         <p style={{ fontFamily: 'var(--font-body)', fontSize: 16, color: 'rgba(238,242,238,0.48)', margin: '0 0 44px', lineHeight: 1.6 }}>
           {isTrainer
-            ? 'The first step to more clients starts here. Get 90 days commission-free when we launch.'
+            ? 'The first step to more clients starts here. List your profile free and start building your practice.'
             : 'Be first to book. Get SGD $20 off your first session at launch.'}
         </p>
 
