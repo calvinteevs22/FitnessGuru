@@ -4,6 +4,7 @@ create table public.profiles (
   role text not null check (role in ('trainer', 'client', 'admin')),
   full_name text,
   phone text,
+  email text,
   profile_photo_url text,
   bio text,
   created_at timestamptz default now() not null
@@ -76,6 +77,7 @@ create policy "Admins update trainer profile status"
 create or replace function public.submit_trainer_profile(
   p_full_name text,
   p_phone text,
+  p_email text,
   p_profile_photo_url text,
   p_bio text,
   p_certifications text[],
@@ -91,12 +93,13 @@ language plpgsql
 security definer
 as $$
 begin
-  insert into public.profiles (id, role, full_name, phone, profile_photo_url, bio)
-  values (auth.uid(), 'trainer', p_full_name, p_phone, p_profile_photo_url, p_bio)
+  insert into public.profiles (id, role, full_name, phone, email, profile_photo_url, bio)
+  values (auth.uid(), 'trainer', p_full_name, p_phone, p_email, p_profile_photo_url, p_bio)
   on conflict (id) do update set
     role = 'trainer',
     full_name = excluded.full_name,
     phone = excluded.phone,
+    email = excluded.email,
     profile_photo_url = excluded.profile_photo_url,
     bio = excluded.bio;
 
