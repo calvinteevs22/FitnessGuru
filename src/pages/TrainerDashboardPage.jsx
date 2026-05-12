@@ -31,13 +31,16 @@ export default function TrainerDashboardPage() {
   const [pwMsg, setPwMsg] = useState('')
 
   useEffect(() => {
-    if (!session) return
+    if (!session) { setLoading(false); return }
     supabase
       .from('trainer_profiles')
       .select('*')
       .eq('id', session.user.id)
       .single()
-      .then(({ data }) => { setTrainerProfile(data); setLoading(false) })
+      .then(({ data, error }) => {
+        if (!error) setTrainerProfile(data)
+        setLoading(false)
+      })
   }, [session])
 
   async function handleSignOut() {
