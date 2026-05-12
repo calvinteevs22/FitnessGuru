@@ -15,8 +15,9 @@ const TRAINERS = [
     avatarBg: 'linear-gradient(135deg, #14532d 0%, #166534 100%)',
     specialty: 'Strength & Conditioning',
     tags: ['Powerlifting', 'Muscle Gain', 'Athletic Performance'],
+    goals: ['Build muscle', 'Improve sports performance'],
     areas: 'Tampines · Bedok · Pasir Ris',
-    rate: 90, rating: 4.9, reviews: 47,
+    rate: 120, rating: 4.9, reviews: 47,
     bio: 'Ex-national powerlifter with 8 years coaching functional strength. Builds real results for athletes and everyday people alike.',
     badge: 'Top Rated', badgeColor: '#4ade80', badgeBg: 'rgba(74,222,128,0.12)',
   },
@@ -25,8 +26,9 @@ const TRAINERS = [
     avatarBg: 'linear-gradient(135deg, #4c1d95 0%, #7c3aed 100%)',
     specialty: 'Pre & Postnatal Fitness',
     tags: ['Prenatal', 'Postnatal', "Women's Health"],
+    goals: ['Train through pregnancy'],
     areas: 'Orchard · River Valley · Buona Vista',
-    rate: 85, rating: 5.0, reviews: 31,
+    rate: 110, rating: 5.0, reviews: 31,
     bio: 'Certified pre/postnatal specialist. Helped 200+ mothers stay strong, safe, and confident through every trimester.',
     badge: 'Specialist', badgeColor: '#c084fc', badgeBg: 'rgba(192,132,252,0.12)',
   },
@@ -35,8 +37,9 @@ const TRAINERS = [
     avatarBg: 'linear-gradient(135deg, #0c4a6e 0%, #0369a1 100%)',
     specialty: 'HIIT & Fat Loss',
     tags: ['Weight Loss', 'HIIT', 'Metabolic Training'],
+    goals: ['Lose weight', 'Just start somewhere'],
     areas: 'CBD · Marina Bay · Raffles Place',
-    rate: 75, rating: 4.8, reviews: 62,
+    rate: 100, rating: 4.8, reviews: 62,
     bio: 'Former competitive runner. Science-backed fat loss coaching that produces sustainable results — not quick fixes.',
     badge: null, badgeColor: null, badgeBg: null,
   },
@@ -45,8 +48,9 @@ const TRAINERS = [
     avatarBg: 'linear-gradient(135deg, #78350f 0%, #b45309 100%)',
     specialty: 'Yoga & Mobility',
     tags: ['Yoga', 'Flexibility', 'Stress Relief'],
+    goals: ['Just start somewhere'],
     areas: 'Bishan · Ang Mo Kio · Thomson',
-    rate: 70, rating: 4.9, reviews: 28,
+    rate: 95, rating: 4.9, reviews: 28,
     bio: 'RYT-500 certified. Blends movement science with traditional yoga practice for lasting, functional flexibility.',
     badge: null, badgeColor: null, badgeBg: null,
   },
@@ -55,8 +59,9 @@ const TRAINERS = [
     avatarBg: 'linear-gradient(135deg, #7f1d1d 0%, #b91c1c 100%)',
     specialty: 'Sports Performance',
     tags: ['Speed & Agility', 'Recovery', 'Injury Prevention'],
+    goals: ['Improve sports performance', 'Build muscle'],
     areas: 'Jurong · Clementi · West Coast',
-    rate: 100, rating: 4.9, reviews: 19,
+    rate: 130, rating: 4.9, reviews: 19,
     bio: 'S&C coach for national youth athletes. Delivers measurable performance gains at every competitive level.',
     badge: 'Expert', badgeColor: '#fb923c', badgeBg: 'rgba(251,146,60,0.12)',
   },
@@ -65,8 +70,9 @@ const TRAINERS = [
     avatarBg: 'linear-gradient(135deg, #134e4a 0%, #0f766e 100%)',
     specialty: 'Pilates & Core Strength',
     tags: ['Pilates', 'Core & Posture', 'Back Rehab'],
+    goals: ['Just start somewhere', 'Improve sports performance'],
     areas: 'Novena · Toa Payoh · Central',
-    rate: 80, rating: 5.0, reviews: 22,
+    rate: 115, rating: 5.0, reviews: 22,
     bio: 'STOTT PILATES certified. Transforms posture, resolves chronic back pain, and builds the kind of core strength that lasts.',
     badge: null, badgeColor: null, badgeBg: null,
   },
@@ -307,7 +313,7 @@ function TrainerCard({ trainer, onJoin }) {
             transition: 'all 0.22s ease',
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
           }}>
-          View Profile <ArrowRight size={13} />
+          Reserve this trainer <ArrowRight size={13} />
         </button>
       </div>
     </div>
@@ -617,7 +623,7 @@ function ClientHero() {
             </div>
 
             {TRAINERS.slice(0, 4).map((t, i) => (
-              <div key={t.id} style={{
+              <div key={t.id} className={i >= 2 ? 'chero-cards-extra' : ''} style={{
                 opacity: i === 3 ? 0.38 : 1,
                 transform: i === 3 ? 'scale(0.97)' : 'scale(1)',
                 transformOrigin: 'top',
@@ -635,8 +641,8 @@ function ClientHero() {
 
       <style>{`
         @media(max-width:900px){
-          .chero-grid{grid-template-columns:1fr!important;gap:56px!important;}
-          .chero-cards{display:none!important;}
+          .chero-grid{grid-template-columns:1fr!important;gap:48px!important;}
+          .chero-cards-extra{display:none!important;}
         }
       `}</style>
     </section>
@@ -644,13 +650,25 @@ function ClientHero() {
 }
 
 /* ─── FeaturedTrainers ───────────────────────────────────────── */
-const FILTERS = ['All', 'Strength', 'HIIT', 'Yoga & Pilates', 'Prenatal', 'Sports']
+const GOALS = [
+  { label: 'Lose weight', key: 'Lose weight', context: "Singapore's top trainers for fat loss" },
+  { label: 'Build muscle', key: 'Build muscle', context: "Singapore's top trainers for strength & muscle" },
+  { label: 'Train through pregnancy', key: 'Train through pregnancy', context: "Singapore's specialist prenatal & postnatal trainers" },
+  { label: 'Improve sports performance', key: 'Improve sports performance', context: "Singapore's top trainers for sports performance" },
+  { label: 'Just start somewhere', key: 'Just start somewhere', context: "Great trainers for anyone starting their fitness journey" },
+]
 
 function FeaturedTrainers() {
-  const [activeFilter, setActiveFilter] = useState('All')
+  const [activeGoal, setActiveGoal] = useState(null)
   const [ref, visible] = useScrollReveal(0.08)
 
   const scrollToWaitlist = () => document.getElementById('waitlist')?.scrollIntoView({ behavior: 'smooth' })
+
+  const spotlightTrainers = activeGoal
+    ? TRAINERS.filter(t => t.goals.includes(activeGoal))
+    : []
+
+  const goalContext = GOALS.find(g => g.key === activeGoal)?.context
 
   return (
     <section id="trainers" ref={ref} style={{ background: '#091210', padding: '104px 24px', position: 'relative', overflow: 'hidden' }}>
@@ -675,24 +693,45 @@ function FeaturedTrainers() {
             </div>
           </div>
 
-          {/* Filter tabs */}
+          {/* Goal chips */}
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(238,242,238,0.35)', margin: '0 0 12px', letterSpacing: '0.04em' }}>What's your goal?</p>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-            {FILTERS.map(f => (
-              <button key={f} onClick={() => setActiveFilter(f)} style={{
+            {GOALS.map(g => (
+              <button key={g.key} onClick={() => setActiveGoal(activeGoal === g.key ? null : g.key)} style={{
                 fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: 13,
-                padding: '8px 18px', borderRadius: 100,
-                border: `1px solid ${activeFilter === f ? 'rgba(74,222,128,0.45)' : 'rgba(255,255,255,0.08)'}`,
-                background: activeFilter === f ? 'rgba(74,222,128,0.1)' : 'rgba(255,255,255,0.03)',
-                color: activeFilter === f ? '#4ade80' : 'rgba(238,242,238,0.45)',
+                padding: '9px 20px', borderRadius: 100,
+                border: `1px solid ${activeGoal === g.key ? 'rgba(74,222,128,0.55)' : 'rgba(255,255,255,0.08)'}`,
+                background: activeGoal === g.key ? 'rgba(74,222,128,0.12)' : 'rgba(255,255,255,0.03)',
+                color: activeGoal === g.key ? '#4ade80' : 'rgba(238,242,238,0.5)',
                 cursor: 'pointer', transition: 'all 0.2s',
               }}>
-                {f}
+                {g.label}
               </button>
             ))}
           </div>
         </div>
 
-        {/* Trainer grid */}
+        {/* Goal spotlight */}
+        {activeGoal && spotlightTrainers.length > 0 && (
+          <div style={{
+            marginBottom: 48,
+            padding: '28px 28px 20px',
+            background: 'rgba(74,222,128,0.04)',
+            border: '1px solid rgba(74,222,128,0.14)',
+            borderRadius: 16,
+          }}>
+            <p style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 13, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#4ade80', margin: '0 0 20px' }}>
+              {goalContext}
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16 }}>
+              {spotlightTrainers.map(t => (
+                <TrainerCard key={t.id} trainer={t} onJoin={scrollToWaitlist} />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Full trainer grid */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 20 }}>
           {TRAINERS.map((t, i) => (
             <div key={t.id} style={{ opacity: visible ? 1 : 0, transform: visible ? 'none' : 'translateY(32px)', transition: `opacity 0.6s ease ${0.1 + i * 0.08}s, transform 0.6s ease ${0.1 + i * 0.08}s` }}>
@@ -715,7 +754,7 @@ function FeaturedTrainers() {
           }}
             onMouseEnter={e => { e.currentTarget.style.background = 'rgba(74,222,128,0.12)'; e.currentTarget.style.borderColor = 'rgba(74,222,128,0.45)' }}
             onMouseLeave={e => { e.currentTarget.style.background = 'rgba(74,222,128,0.06)'; e.currentTarget.style.borderColor = 'rgba(74,222,128,0.25)' }}>
-            Join waitlist to unlock all profiles <ArrowRight size={16} />
+            Join the waitlist to book any of these trainers <ArrowRight size={16} />
           </a>
         </div>
       </div>
@@ -726,9 +765,9 @@ function FeaturedTrainers() {
 function ClientHowItWorks() {
   const [ref, visible] = useScrollReveal()
   const steps = [
-    { num: '01', title: 'Browse verified trainers', body: 'Filter by specialty, location, price, and availability. Every trainer is certified and reviewed by real clients — no guessing.' },
-    { num: '02', title: 'Book in minutes', body: 'No back-and-forth emails. No long-term contracts. Pick a time, pay securely, show up.' },
-    { num: '03', title: 'Train and transform', body: 'Your trainer. Your goals. Your programme. One session at a time, or commit to a block — entirely your call.' },
+    { num: '01', title: 'Browse verified trainers', body: 'Filter by goal, location, and price. Every trainer is certified with real client reviews. No guessing.' },
+    { num: '02', title: 'Book in minutes', body: 'Pick a time, pay securely. No emails, no contracts, no commitment beyond the session.' },
+    { num: '03', title: 'Train and transform', body: 'Your trainer, your goals, your pace. One session or a full programme — entirely your call.' },
   ]
   return (
     <section id="how-it-works" ref={ref} style={{ background: '#0d1a0e', padding: '104px 24px' }}>
@@ -761,26 +800,35 @@ function ClientHowItWorks() {
   )
 }
 
-function ClientProblem() {
+function ClientReassurance() {
   const [ref, visible] = useScrollReveal()
-  const problems = [
-    { n: '01', title: 'Generic classes don\'t work.', body: 'Group sessions are built for the average person — not your goals, your body, or your schedule. One-size-fits-all training delivers one-size-fits-all results.' },
-    { n: '02', title: 'How do you know who\'s legit?', body: 'Anyone can call themselves a personal trainer. Without verified certifications and real reviews, you\'re guessing — and the wrong trainer wastes time, money, and motivation.' },
-    { n: '03', title: 'Pricing is opaque. Contracts are scary.', body: 'Gym packages lock you in. Studio rates are hidden until you\'re already there. Long-term commitments before you\'ve tried a session shouldn\'t be the norm.' },
+  const cards = [
+    {
+      concern: 'Not sure who to trust?',
+      resolution: 'Every trainer on FitnessGuru is certified and verified before going live. You see their qualifications, real client reviews, and training style — before you commit to anything.',
+    },
+    {
+      concern: 'Worried about hidden costs?',
+      resolution: "Every trainer lists their exact session rate upfront. You know what you're paying before you book. No hidden platform fees, no surprises at checkout.",
+    },
+    {
+      concern: 'Not ready to commit long-term?',
+      resolution: "Book a single session first. See how it feels. No packages, no contracts, no pressure to sign anything before you're ready.",
+    },
   ]
   return (
     <section ref={ref} style={{ background: '#0a140b', padding: '104px 24px', position: 'relative', overflow: 'hidden' }}>
       <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'radial-gradient(ellipse 50% 60% at 85% 50%, rgba(45,106,46,0.06) 0%, transparent 65%)' }} />
       <div style={{ maxWidth: 1200, margin: '0 auto', position: 'relative' }}>
         <div style={{ opacity: visible ? 1 : 0, transform: visible ? 'none' : 'translateY(20px)', transition: 'opacity 0.6s, transform 0.6s' }}>
-          <p style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 12, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#4ade80', margin: '0 0 18px' }}>The Problem</p>
+          <p style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 12, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#4ade80', margin: '0 0 18px' }}>Why FitnessGuru</p>
           <h2 style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, textTransform: 'uppercase', fontSize: 'clamp(34px, 5.5vw, 66px)', lineHeight: 0.95, letterSpacing: '-0.02em', color: '#EEF2EE', margin: '0 0 64px', maxWidth: 680 }}>
-            Finding the right trainer is harder than it should be.
+            We thought about what holds people back. Then we fixed it.
           </h2>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20 }}>
-          {problems.map(({ n, title, body }, i) => (
-            <div key={n} style={{
+          {cards.map(({ concern, resolution }, i) => (
+            <div key={concern} style={{
               background: 'rgba(255,255,255,0.025)',
               border: '1px solid rgba(255,255,255,0.06)',
               borderLeft: '3px solid rgba(74,222,128,0.35)',
@@ -790,52 +838,8 @@ function ClientProblem() {
               transform: visible ? 'none' : 'translateY(28px)',
               transition: `opacity 0.6s ease ${0.1 + i * 0.1}s, transform 0.6s ease ${0.1 + i * 0.1}s`,
             }}>
-              <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 11, letterSpacing: '0.16em', color: 'rgba(74,222,128,0.45)', margin: '0 0 18px', textTransform: 'uppercase' }}>{n}</div>
-              <h3 style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 21, color: '#EEF2EE', margin: '0 0 14px', lineHeight: 1.2, textTransform: 'uppercase', letterSpacing: '-0.01em' }}>{title}</h3>
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: 15, color: 'rgba(238,242,238,0.48)', lineHeight: 1.7, margin: 0 }}>{body}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  )
-}
-
-function ClientValueProps() {
-  const [ref, visible] = useScrollReveal()
-  const items = [
-    { title: 'Every trainer is certified and vetted.', body: 'We verify every certification before a trainer goes live. You see their qualifications, reviews, and training style — before you commit to anything.' },
-    { title: 'Transparent pricing. No surprises.', body: 'Every trainer lists their session rate upfront. You know exactly what you\'re paying before you book. No hidden platform fees.' },
-    { title: 'Flexible. No lock-in.', body: 'Book sessions one at a time or in blocks. Train at home, in a condo gym, or at a park. No contracts, no minimum commitments.' },
-  ]
-  return (
-    <section ref={ref} style={{ background: '#0a140b', padding: '104px 24px' }}>
-      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-        <div style={{ opacity: visible ? 1 : 0, transform: visible ? 'none' : 'translateY(20px)', transition: 'opacity 0.6s, transform 0.6s' }}>
-          <p style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 12, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#4ade80', margin: '0 0 18px' }}>Why FitnessGuru</p>
-          <h2 style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, textTransform: 'uppercase', fontSize: 'clamp(34px, 5.5vw, 66px)', lineHeight: 0.95, letterSpacing: '-0.02em', color: '#EEF2EE', margin: '0 0 64px', maxWidth: 620 }}>
-            Built for people who are serious about results.
-          </h2>
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-          {items.map(({ title, body }, i) => (
-            <div key={title} style={{
-              display: 'flex', alignItems: 'flex-start', gap: 28,
-              padding: '36px 36px',
-              background: 'rgba(255,255,255,0.02)',
-              border: '1px solid rgba(255,255,255,0.05)',
-              borderRadius: 14,
-              opacity: visible ? 1 : 0,
-              transform: visible ? 'none' : 'translateY(28px)',
-              transition: `opacity 0.6s ease ${0.1 + i * 0.1}s, transform 0.6s ease ${0.1 + i * 0.1}s`,
-            }}>
-              <div style={{ flexShrink: 0, width: 34, height: 34, borderRadius: '50%', background: 'rgba(74,222,128,0.1)', border: '1px solid rgba(74,222,128,0.22)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#4ade80', marginTop: 2 }}>
-                <CheckIcon size={15} color="#4ade80" />
-              </div>
-              <div>
-                <h3 style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 19, textTransform: 'uppercase', letterSpacing: '-0.01em', color: '#EEF2EE', margin: '0 0 10px' }}>{title}</h3>
-                <p style={{ fontFamily: 'var(--font-body)', fontSize: 15, color: 'rgba(238,242,238,0.48)', lineHeight: 1.7, margin: 0, maxWidth: 680 }}>{body}</p>
-              </div>
+              <h3 style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 21, color: '#EEF2EE', margin: '0 0 14px', lineHeight: 1.2, textTransform: 'uppercase', letterSpacing: '-0.01em' }}>{concern}</h3>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: 15, color: 'rgba(238,242,238,0.52)', lineHeight: 1.7, margin: 0 }}>{resolution}</p>
             </div>
           ))}
         </div>
@@ -847,9 +851,9 @@ function ClientValueProps() {
 function ClientTestimonials() {
   const [ref, visible] = useScrollReveal()
   const testimonials = [
-    { quote: 'I\'d tried three different trainers through my gym and never clicked with any of them. FitnessGuru let me read real reviews and see each trainer\'s actual style. I found Marcus in a week. Six months later I\'m down 14kg.', name: 'Natasha L.', detail: 'Client · Tampines', stars: 5, initials: 'NL', bg: 'linear-gradient(135deg,#1a4a2e,#2d6a3e)' },
-    { quote: 'I was nervous to commit without knowing if a trainer would be right for me. The ability to book single sessions first made it so much easier. Priya has been training me through my second pregnancy. I feel stronger than I ever have.', name: 'Divya R.', detail: 'Client · River Valley', stars: 5, initials: 'DR', bg: 'linear-gradient(135deg,#4c1d95,#7c3aed)' },
-    { quote: 'I always thought personal training was out of my budget. FitnessGuru showed me trainers at every price point, with no hidden fees. I know what I pay. My trainer knows what I need. Best decision I made this year.', name: 'Wei Ming T.', detail: 'Client · Jurong', stars: 5, initials: 'WT', bg: 'linear-gradient(135deg,#0c4a6e,#0369a1)' },
+    { quote: 'I found Marcus in a week after reading his real reviews and seeing his actual training style. Six months later I\'m down 14kg — something three different gym trainers couldn\'t do.', name: 'Natasha L.', detail: 'Client · Tampines', stars: 5, initials: 'NL', bg: 'linear-gradient(135deg,#1a4a2e,#2d6a3e)' },
+    { quote: 'Being able to book a single session first made all the difference — no long-term commitment before I knew it was right. Priya has been training me through my second pregnancy and I feel stronger than ever.', name: 'Divya R.', detail: 'Client · River Valley', stars: 5, initials: 'DR', bg: 'linear-gradient(135deg,#4c1d95,#7c3aed)' },
+    { quote: 'FitnessGuru showed me certified trainers at every price point, with rates listed upfront. I know what I pay, my trainer knows what I need.', name: 'Wei Ming T.', detail: 'Client · Jurong', stars: 5, initials: 'WT', bg: 'linear-gradient(135deg,#0c4a6e,#0369a1)' },
   ]
   return (
     <section ref={ref} style={{ background: '#0d1a0e', padding: '104px 24px', position: 'relative', overflow: 'hidden' }}>
@@ -899,9 +903,6 @@ function ClientCTA() {
         <h2 style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, textTransform: 'uppercase', fontSize: 'clamp(36px, 7vw, 80px)', lineHeight: 0.92, letterSpacing: '-0.02em', color: '#EEF2EE', margin: '0 0 28px' }}>
           Your transformation<br />starts with<br /><span style={{ color: '#4ade80' }}>one decision.</span>
         </h2>
-        <p style={{ fontFamily: 'var(--font-body)', fontSize: 18, color: 'rgba(238,242,238,0.48)', lineHeight: 1.65, margin: '0 0 48px' }}>
-          Join the waitlist. Get SGD $20 off your first session when we launch.
-        </p>
         <a href="#waitlist"
           style={{ display: 'inline-flex', alignItems: 'center', gap: 10, fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 16, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#071a0b', textDecoration: 'none', background: '#4ade80', padding: '18px 40px', borderRadius: 10, boxShadow: '0 0 48px rgba(74,222,128,0.35)', transition: 'all 0.2s' }}
           onMouseEnter={e => { e.currentTarget.style.background = '#86efac'; e.currentTarget.style.transform = 'translateY(-2px)' }}
@@ -918,9 +919,8 @@ function ClientPage() {
     <>
       <ClientHero />
       <FeaturedTrainers />
+      <ClientReassurance />
       <ClientHowItWorks />
-      <ClientProblem />
-      <ClientValueProps />
       <ClientTestimonials />
       <ClientCTA />
       <Waitlist defaultRole="client" />
@@ -1295,7 +1295,7 @@ function Waitlist({ defaultRole = 'client' }) {
         <p style={{ fontFamily: 'var(--font-body)', fontSize: 16, color: 'rgba(238,242,238,0.48)', margin: '0 0 44px', lineHeight: 1.6 }}>
           {isTrainer
             ? 'The first step to more clients starts here. List your profile free and start building your practice.'
-            : 'Be first to book. Get SGD $20 off your first session at launch.'}
+            : 'Be first to access Singapore\'s top verified trainers when we launch.'}
         </p>
 
         {submitted ? (
