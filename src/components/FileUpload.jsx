@@ -99,8 +99,8 @@ export default function FileUpload({ label, onChange, maxFiles = 5, required = f
       <input
         ref={inputRef}
         type="file"
+        {...(maxFiles !== 1 && { multiple: true })}
         accept=".pdf,.jpg,.jpeg,.png"
-        multiple
         style={{ display: 'none' }}
         onChange={handleChange}
       />

@@ -103,7 +103,7 @@ export default function ProfileSetupPage() {
     if (step === 3) errs = validateStep3()
     if (step === 4) errs = validateStep4()
     setErrors(errs)
-    if (Object.keys(errs).length === 0) setStep(s => s + 1)
+    if (Object.keys(errs).length === 0) { setStep(s => s + 1); setErrors({}) }
   }
 
   async function uploadFiles(bucket, userId, type, files) {
@@ -120,6 +120,7 @@ export default function ProfileSetupPage() {
   }
 
   async function handleSubmit() {
+    if (submitting) return
     const errs = validateStep5()
     setErrors(errs)
     if (Object.keys(errs).length > 0) return
@@ -151,7 +152,7 @@ export default function ProfileSetupPage() {
         p_certifications: certNames,
         p_specialties: specialties,
         p_years_experience: parseInt(yearsExp, 10),
-        p_hourly_rate: parseInt(hourlyRate, 10),
+        p_hourly_rate: Number(hourlyRate),
         p_session_types: sessionTypes,
         p_locations_served: locations,
         p_documents: documents,
@@ -281,7 +282,7 @@ export default function ProfileSetupPage() {
         {/* Navigation */}
         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 28, gap: 12 }}>
           {step > 2 && (
-            <button type="button" onClick={() => setStep(s => s - 1)} style={BTN_GHOST}>Back</button>
+            <button type="button" onClick={() => { setStep(s => s - 1); setErrors({}) }} style={BTN_GHOST}>Back</button>
           )}
           <div style={{ flex: 1 }} />
           {step < 5 ? (
