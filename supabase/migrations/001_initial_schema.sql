@@ -1,3 +1,14 @@
+-- Profiles table (shared base for all user types)
+create table public.profiles (
+  id uuid references auth.users(id) on delete cascade primary key,
+  role text not null check (role in ('trainer', 'client', 'admin')),
+  full_name text,
+  phone text,
+  profile_photo_url text,
+  bio text,
+  created_at timestamptz default now() not null
+);
+
 -- Helper function to check admin role (security definer avoids RLS recursion)
 create or replace function public.is_admin()
 returns boolean
@@ -10,17 +21,6 @@ as $$
     where id = auth.uid() and role = 'admin'
   );
 $$;
-
--- Profiles table (shared base for all user types)
-create table public.profiles (
-  id uuid references auth.users(id) on delete cascade primary key,
-  role text not null check (role in ('trainer', 'client', 'admin')),
-  full_name text,
-  phone text,
-  profile_photo_url text,
-  bio text,
-  created_at timestamptz default now() not null
-);
 
 -- Trainer profiles table
 create table public.trainer_profiles (
@@ -68,7 +68,8 @@ create policy "Trainers insert own trainer profile"
 -- Admins can update status fields
 create policy "Admins update trainer profile status"
   on public.trainer_profiles for update
-  using (public.is_admin());
+  using (public.is_admin())
+  with check (public.is_admin());
 
 -- RPC: create trainer profile (called after profile setup form submit)
 -- Always sets status = 'pending'. Trainer cannot self-set status.
@@ -93,6 +94,7 @@ begin
   insert into public.profiles (id, role, full_name, phone, profile_photo_url, bio)
   values (auth.uid(), 'trainer', p_full_name, p_phone, p_profile_photo_url, p_bio)
   on conflict (id) do update set
+    role = 'trainer',
     full_name = excluded.full_name,
     phone = excluded.phone,
     profile_photo_url = excluded.profile_photo_url,
