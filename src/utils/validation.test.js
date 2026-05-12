@@ -31,10 +31,10 @@ describe('validateEmail', () => {
     expect(validateEmail('test@example.com')).toBeNull()
   })
   it('rejects empty email', () => {
-    expect(validateEmail('')).toBeTruthy()
+    expect(validateEmail('')).toMatch(/required|valid/i)
   })
   it('rejects email without @', () => {
-    expect(validateEmail('notanemail')).toBeTruthy()
+    expect(validateEmail('notanemail')).toMatch(/valid email/i)
   })
 })
 
@@ -43,10 +43,10 @@ describe('validatePassword', () => {
     expect(validatePassword('securepass')).toBeNull()
   })
   it('rejects password shorter than 8 characters', () => {
-    expect(validatePassword('short')).toBeTruthy()
+    expect(validatePassword('short')).toMatch(/8 characters/i)
   })
   it('rejects empty password', () => {
-    expect(validatePassword('')).toBeTruthy()
+    expect(validatePassword('')).toMatch(/required|password/i)
   })
 })
 
