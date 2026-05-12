@@ -1285,8 +1285,184 @@ function ClientPage() {
   )
 }
 
+function TrainerHero() {
+  return (
+    <section style={{ minHeight: '100dvh', display: 'flex', alignItems: 'center', background: '#0d1a0e', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', backgroundImage: 'radial-gradient(ellipse 80% 60% at 50% -10%, rgba(45,106,46,0.28) 0%, transparent 70%)' }} aria-hidden="true" />
+      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '140px 24px 100px', position: 'relative', zIndex: 1 }}>
+        <p style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 12, letterSpacing: '0.18em', textTransform: 'uppercase', color: '#4ade80', margin: '0 0 28px' }}>
+          For Personal Trainers in Singapore
+        </p>
+        <h1 style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, textTransform: 'uppercase', fontSize: 'clamp(52px, 10vw, 104px)', lineHeight: 0.92, letterSpacing: '-0.02em', color: '#EEF2EE', margin: '0 0 32px' }}>
+          Your rates.<br />Your schedule.<br /><span style={{ color: '#4ade80' }}>Your clients.</span>
+        </h1>
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: 'clamp(16px, 2vw, 20px)', color: 'rgba(238,242,238,0.6)', maxWidth: 520, lineHeight: 1.65, margin: '0 0 52px' }}>
+          Join Singapore's trainer marketplace. List for free. Keep 80%.
+        </p>
+        <a href="#waitlist"
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 10, fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 15, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#fff', textDecoration: 'none', background: '#2d6a2e', padding: '16px 32px', borderRadius: 10, boxShadow: '0 0 40px rgba(45,106,46,0.35)', transition: 'background 0.2s, transform 0.15s' }}
+          onMouseEnter={e => { e.currentTarget.style.background = '#3d8b3e'; e.currentTarget.style.transform = 'translateY(-2px)' }}
+          onMouseLeave={e => { e.currentTarget.style.background = '#2d6a2e'; e.currentTarget.style.transform = 'translateY(0)' }}>
+          Apply as a Trainer <ArrowRight />
+        </a>
+      </div>
+    </section>
+  )
+}
+
+function TrainerProblem() {
+  const problems = [
+    { label: '01', title: 'Gyms take half. You do all the work.', body: "The industry standard gym split is 50%. You bring the expertise, the energy, and the results — and hand over half of every session to a facility you don't own." },
+    { label: '02', title: "You're building their brand, not yours.", body: "Your clients know the gym's name. They don't follow you when you leave. You have no portable client base, no reputation that's truly yours." },
+    { label: '03', title: 'No control. No freedom.', body: "The gym sets your schedule, approves your clients, and caps your rates. You're an employee in everything but name — without the benefits." },
+  ]
+  return (
+    <section style={{ background: '#0a140b', padding: '100px 24px', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', backgroundImage: 'radial-gradient(ellipse 50% 60% at 80% 50%, rgba(45,106,46,0.07) 0%, transparent 70%)' }} aria-hidden="true" />
+      <div style={{ maxWidth: 1200, margin: '0 auto', position: 'relative' }}>
+        <p style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 12, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#4ade80', margin: '0 0 20px' }}>The Problem</p>
+        <h2 style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, textTransform: 'uppercase', fontSize: 'clamp(36px, 6vw, 72px)', lineHeight: 0.95, letterSpacing: '-0.02em', color: '#EEF2EE', margin: '0 0 64px', maxWidth: 700 }}>
+          The gym model is broken for trainers.
+        </h2>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 24 }}>
+          {problems.map(({ label, title, body }) => (
+            <div key={label} style={{ background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 16, padding: '36px 32px' }}>
+              <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 11, letterSpacing: '0.16em', color: 'rgba(74,222,128,0.4)', margin: '0 0 20px', textTransform: 'uppercase' }}>{label}</div>
+              <h3 style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 22, color: '#EEF2EE', margin: '0 0 16px', lineHeight: 1.2, textTransform: 'uppercase', letterSpacing: '-0.01em' }}>{title}</h3>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: 15, color: 'rgba(238,242,238,0.5)', lineHeight: 1.7, margin: 0 }}>{body}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function TrainerHowItWorks() {
+  const steps = [
+    { num: '01', title: 'Create your profile', body: 'Showcase your certifications, your specialty, your training style, and where you train. Your profile is your brand.' },
+    { num: '02', title: 'Set your rates and availability', body: 'Full control. You set the price per session. No platform-imposed tiers, no caps, no minimums. You decide your schedule.' },
+    { num: '03', title: 'Get booked, get paid', body: 'Clients book and pay through FitnessGuru. We take 20%. You keep 80%. Paid out automatically after each session.' },
+  ]
+  return (
+    <section id="how-it-works" style={{ background: '#0d1a0e', padding: '100px 24px' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        <p style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 12, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#4ade80', margin: '0 0 20px' }}>How It Works</p>
+        <h2 style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, textTransform: 'uppercase', fontSize: 'clamp(36px, 6vw, 72px)', lineHeight: 0.95, letterSpacing: '-0.02em', color: '#EEF2EE', margin: '0 0 72px', maxWidth: 600 }}>
+          List once. Train on your terms.
+        </h2>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 2 }}>
+          {steps.map(({ num, title, body }, i) => (
+            <div key={num} style={{ padding: '48px 36px', background: i === 1 ? 'rgba(45,106,46,0.08)' : 'transparent', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 12 }}>
+              <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: 64, lineHeight: 1, color: 'rgba(74,222,128,0.1)', letterSpacing: '-0.04em', marginBottom: 24 }}>{num}</div>
+              <h3 style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 22, textTransform: 'uppercase', letterSpacing: '-0.01em', color: '#EEF2EE', margin: '0 0 16px' }}>{title}</h3>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: 15, color: 'rgba(238,242,238,0.5)', lineHeight: 1.7, margin: 0 }}>{body}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function TrainerValueProps() {
+  const items = [
+    { title: 'Keep 80% of every session.', body: "The best split in Singapore's fitness industry. Set a rate of $120 per session? You keep $96. Every time. No exceptions, no sliding scale." },
+    { title: 'Your rates. No platform interference.', body: "Set any price. Charge what you're worth. FitnessGuru has no imposed tiers, no caps, and no minimums. Increase your rates as your reputation grows." },
+    { title: 'Your clients. Your relationships.', body: "We don't own your client relationships. You build your reputation on your profile. When clients follow you, they follow you — not the platform." },
+  ]
+  return (
+    <section style={{ background: '#0a140b', padding: '100px 24px' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        <p style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 12, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#4ade80', margin: '0 0 20px' }}>Why FitnessGuru</p>
+        <h2 style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, textTransform: 'uppercase', fontSize: 'clamp(36px, 6vw, 72px)', lineHeight: 0.95, letterSpacing: '-0.02em', color: '#EEF2EE', margin: '0 0 72px', maxWidth: 640 }}>
+          Built for trainers who are done compromising.
+        </h2>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {items.map(({ title, body }) => (
+            <div key={title} style={{ display: 'flex', alignItems: 'flex-start', gap: 32, padding: '40px 36px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 12 }}>
+              <div style={{ flexShrink: 0, width: 36, height: 36, borderRadius: '50%', background: 'rgba(74,222,128,0.12)', border: '1px solid rgba(74,222,128,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#4ade80', marginTop: 2 }}>
+                <CheckIcon size={16} />
+              </div>
+              <div>
+                <h3 style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 20, textTransform: 'uppercase', letterSpacing: '-0.01em', color: '#EEF2EE', margin: '0 0 12px' }}>{title}</h3>
+                <p style={{ fontFamily: 'var(--font-body)', fontSize: 15, color: 'rgba(238,242,238,0.5)', lineHeight: 1.7, margin: 0, maxWidth: 680 }}>{body}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function TrainerTestimonials() {
+  const testimonials = [
+    { quote: "I was splitting 50/50 at my gym and working six days a week just to hit my income target. On FitnessGuru I kept 80%, dropped to four days, and made more. That's not marketing — that's my actual numbers.", name: 'Marcus T.', detail: 'Trainer · Tampines', stars: 5 },
+    { quote: "The freedom to set my own rates changed everything. I've built a reputation for prenatal training, and my client base followed me when I left my studio. FitnessGuru is my practice now.", name: 'Priya S.', detail: 'Trainer · Orchard', stars: 5 },
+    { quote: "I used to lose clients every time a gym changed my schedule or raised their fees. Now my clients book directly through my profile. Three years of relationships, portable and protected.", name: 'Daniel W.', detail: 'Trainer · CBD', stars: 5 },
+  ]
+  return (
+    <section style={{ background: '#0d1a0e', padding: '100px 24px', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', backgroundImage: 'radial-gradient(ellipse 50% 70% at 20% 50%, rgba(45,106,46,0.07) 0%, transparent 70%)' }} aria-hidden="true" />
+      <div style={{ maxWidth: 1200, margin: '0 auto', position: 'relative' }}>
+        <p style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 12, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#4ade80', margin: '0 0 20px' }}>Trainer Stories</p>
+        <h2 style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, textTransform: 'uppercase', fontSize: 'clamp(36px, 6vw, 72px)', lineHeight: 0.95, letterSpacing: '-0.02em', color: '#EEF2EE', margin: '0 0 64px', maxWidth: 600 }}>
+          Real trainers. Real earnings.
+        </h2>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 20 }}>
+          {testimonials.map(({ quote, name, detail, stars }) => (
+            <div key={name} style={{ background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 16, padding: '36px 32px', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ display: 'flex', gap: 3, marginBottom: 24 }}>
+                {Array.from({ length: stars }).map((_, i) => <span key={i} style={{ color: '#4ade80' }}><StarIcon /></span>)}
+              </div>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: 15, color: 'rgba(238,242,238,0.65)', lineHeight: 1.75, margin: '0 0 28px', flex: 1 }}>"{quote}"</p>
+              <div>
+                <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 15, color: '#EEF2EE', textTransform: 'uppercase', letterSpacing: '0.03em' }}>{name}</div>
+                <div style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(238,242,238,0.35)', marginTop: 4 }}>{detail}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function TrainerCTA() {
+  return (
+    <section style={{ background: '#0a140b', padding: '100px 24px', textAlign: 'center' }}>
+      <div style={{ maxWidth: 720, margin: '0 auto' }}>
+        <p style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 12, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#4ade80', margin: '0 0 20px' }}>Apply Now</p>
+        <h2 style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, textTransform: 'uppercase', fontSize: 'clamp(36px, 7vw, 80px)', lineHeight: 0.92, letterSpacing: '-0.02em', color: '#EEF2EE', margin: '0 0 28px' }}>
+          Stop splitting your income<br />with a gym<br /><span style={{ color: '#4ade80' }}>you don't own.</span>
+        </h2>
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: 18, color: 'rgba(238,242,238,0.5)', lineHeight: 1.65, margin: '0 0 48px' }}>
+          Join the waitlist. Get 90 days commission-free when we launch.
+        </p>
+        <a href="#waitlist"
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 10, fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 16, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#fff', textDecoration: 'none', background: '#2d6a2e', padding: '18px 40px', borderRadius: 10, boxShadow: '0 0 40px rgba(45,106,46,0.35)', transition: 'background 0.2s, transform 0.15s' }}
+          onMouseEnter={e => { e.currentTarget.style.background = '#3d8b3e'; e.currentTarget.style.transform = 'translateY(-2px)' }}
+          onMouseLeave={e => { e.currentTarget.style.background = '#2d6a2e'; e.currentTarget.style.transform = 'translateY(0)' }}>
+          Join as a Trainer <ArrowRight />
+        </a>
+      </div>
+    </section>
+  )
+}
+
 function TrainerPage() {
-  return <div style={{ minHeight: '100dvh', paddingTop: 100, background: '#0d1a0e', color: '#4ade80', fontFamily: 'var(--font-heading)', fontSize: 40, textAlign: 'center' }}>TRAINER PAGE — coming soon</div>
+  return (
+    <>
+      <TrainerHero />
+      <TrainerProblem />
+      <TrainerHowItWorks />
+      <TrainerValueProps />
+      <TrainerTestimonials />
+      <TrainerCTA />
+      <Waitlist defaultRole="trainer" />
+    </>
+  )
 }
 
 export default function App() {
