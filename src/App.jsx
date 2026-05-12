@@ -301,20 +301,25 @@ function Footer() {
 function SplitHero({ onSelect }) {
   const [hovered, setHovered] = useState(null)
 
+  const clientBenefits = ['Certified & vetted trainers', 'Transparent pricing, no lock-in', 'Book in minutes, train tomorrow']
+  const trainerBenefits = ['Keep 80% of every session', 'Set your own rates & schedule', 'Your clients, your brand']
+
   return (
-    <div style={{ display: 'flex', minHeight: '100dvh', background: '#0d1a0e', position: 'relative' }} className="split-hero-root">
+    <div style={{ display: 'flex', minHeight: '100dvh', position: 'relative', overflow: 'hidden' }} className="split-hero-root">
       <style>{`
         .split-hero-root { flex-direction: row; }
         @media (max-width: 768px) { .split-hero-root { flex-direction: column; } }
-        .split-hero-root .split-divider { display: block; }
-        @media (max-width: 768px) { .split-hero-root .split-divider { display: none; } }
+        .split-panel { outline: none; }
+        .split-panel:focus-visible { box-shadow: inset 0 0 0 3px rgba(255,255,255,0.3); }
+        @keyframes splitPulse {
+          0%, 100% { opacity: 0.5; }
+          50% { opacity: 1; }
+        }
       `}</style>
 
-      {/* Centre divider */}
-      <div className="split-divider" style={{ position: 'absolute', top: '12%', bottom: '12%', left: '50%', width: 1, background: 'rgba(255,255,255,0.07)', transform: 'translateX(-50%)', pointerEvents: 'none' }} />
-
-      {/* Client panel */}
+      {/* ── Client panel ── */}
       <div
+        className="split-panel"
         role="button"
         tabIndex={0}
         aria-label="I'm looking for a trainer"
@@ -330,30 +335,102 @@ function SplitHero({ onSelect }) {
           justifyContent: 'center',
           padding: '100px 48px',
           cursor: 'pointer',
-          outline: 'none',
-          opacity: hovered === 'trainer' ? 0.3 : 1,
-          background: hovered === 'client' ? 'rgba(45,106,46,0.06)' : 'transparent',
-          transition: 'opacity 0.3s ease, background 0.3s ease',
+          position: 'relative',
+          background: 'linear-gradient(160deg, #071a0b 0%, #0d2418 50%, #071a0b 100%)',
+          transition: 'opacity 0.45s ease, filter 0.45s ease',
+          opacity: hovered === 'trainer' ? 0.18 : 1,
+          filter: hovered === 'trainer' ? 'brightness(0.5) saturate(0.4)' : 'brightness(1) saturate(1)',
         }}
       >
-        <div style={{ maxWidth: 380, textAlign: 'center' }}>
-          <p style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 11, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#4ade80', margin: '0 0 24px' }}>
-            Find a Trainer
-          </p>
-          <h2 style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, textTransform: 'uppercase', fontSize: 'clamp(32px, 5vw, 60px)', lineHeight: 0.95, letterSpacing: '-0.02em', color: '#EEF2EE', margin: '0 0 20px' }}>
-            Find your trainer.<br /><span style={{ color: '#4ade80' }}>Change your life.</span>
+        {/* Radial glow */}
+        <div style={{
+          position: 'absolute', inset: 0, pointerEvents: 'none',
+          background: 'radial-gradient(ellipse 65% 55% at 50% 25%, rgba(74,222,128,0.14) 0%, transparent 70%)',
+          opacity: hovered === 'client' ? 1 : 0.55,
+          transition: 'opacity 0.45s ease',
+        }} />
+        {/* Subtle grain texture */}
+        <div style={{
+          position: 'absolute', inset: 0, pointerEvents: 'none', opacity: 0.025,
+          backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 256 256\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noise\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noise)\' opacity=\'1\'/%3E%3C/svg%3E")',
+          backgroundSize: '180px',
+        }} />
+        {/* Hover border */}
+        <div style={{
+          position: 'absolute', inset: 0, pointerEvents: 'none',
+          boxShadow: hovered === 'client' ? 'inset 0 0 0 1.5px rgba(74,222,128,0.25)' : 'inset 0 0 0 1px rgba(74,222,128,0)',
+          transition: 'box-shadow 0.4s ease',
+        }} />
+
+        <div style={{ maxWidth: 380, textAlign: 'center', position: 'relative', zIndex: 1 }}>
+          {/* Pill badge */}
+          <div style={{
+            display: 'inline-flex', alignItems: 'center', gap: 8,
+            background: 'rgba(74,222,128,0.1)', border: '1px solid rgba(74,222,128,0.28)',
+            borderRadius: 100, padding: '7px 18px', marginBottom: 36,
+          }}>
+            <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#4ade80', display: 'block', flexShrink: 0, boxShadow: '0 0 8px #4ade80' }} />
+            <span style={{ fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#4ade80' }}>Find a Trainer</span>
+          </div>
+
+          <h2 style={{
+            fontFamily: 'var(--font-heading)', fontWeight: 900, textTransform: 'uppercase',
+            fontSize: 'clamp(36px, 5vw, 64px)', lineHeight: 0.92, letterSpacing: '-0.025em',
+            color: '#EEF2EE', margin: '0 0 24px',
+          }}>
+            Find your<br />trainer.<br /><span style={{ color: '#4ade80' }}>Change your<br />life.</span>
           </h2>
-          <p style={{ fontFamily: 'var(--font-body)', fontSize: 16, color: 'rgba(238,242,238,0.5)', lineHeight: 1.65, margin: '0 0 36px' }}>
+
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: 15, color: 'rgba(238,242,238,0.48)', lineHeight: 1.7, margin: '0 0 32px' }}>
             Browse certified PTs across Singapore.<br />Book instantly, no contracts.
           </p>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 13, letterSpacing: '0.1em', textTransform: 'uppercase', color: hovered === 'client' ? '#4ade80' : 'rgba(74,222,128,0.45)', transition: 'color 0.3s ease' }}>
-            Get started <ArrowRight size={15} />
+
+          {/* Benefits */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 40, textAlign: 'left' }}>
+            {clientBenefits.map(b => (
+              <div key={b} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{ width: 18, height: 18, borderRadius: '50%', background: 'rgba(74,222,128,0.15)', border: '1px solid rgba(74,222,128,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <CheckIcon size={10} />
+                </div>
+                <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(238,242,238,0.55)' }}>{b}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* CTA */}
+          <div style={{
+            display: 'inline-flex', alignItems: 'center', gap: 10,
+            background: '#4ade80', color: '#071a0b', borderRadius: 8,
+            padding: '14px 28px', fontFamily: 'var(--font-heading)', fontWeight: 800,
+            fontSize: 13, letterSpacing: '0.08em', textTransform: 'uppercase',
+            boxShadow: hovered === 'client' ? '0 0 32px rgba(74,222,128,0.4)' : '0 0 0px rgba(74,222,128,0)',
+            transform: hovered === 'client' ? 'translateY(-3px)' : 'translateY(0)',
+            transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+          }}>
+            Get Started <ArrowRight size={15} />
           </div>
         </div>
       </div>
 
-      {/* Trainer panel */}
+      {/* ── Divider ── */}
+      <div style={{
+        position: 'absolute', top: 0, bottom: 0, left: '50%',
+        width: 1, transform: 'translateX(-50%)', zIndex: 10, pointerEvents: 'none',
+        background: 'linear-gradient(to bottom, transparent 5%, rgba(255,255,255,0.1) 30%, rgba(255,255,255,0.1) 70%, transparent 95%)',
+      }} className="split-divider-line">
+        <div style={{
+          position: 'absolute', top: '50%', left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: 8, height: 8, borderRadius: '50%',
+          background: 'rgba(255,255,255,0.25)',
+          boxShadow: '0 0 12px rgba(255,255,255,0.15)',
+          animation: 'splitPulse 3s ease-in-out infinite',
+        }} />
+      </div>
+
+      {/* ── Trainer panel ── */}
       <div
+        className="split-panel"
         role="button"
         tabIndex={0}
         aria-label="I'm a personal trainer"
@@ -369,30 +446,90 @@ function SplitHero({ onSelect }) {
           justifyContent: 'center',
           padding: '100px 48px',
           cursor: 'pointer',
-          outline: 'none',
-          opacity: hovered === 'client' ? 0.3 : 1,
-          background: hovered === 'trainer' ? 'rgba(45,106,46,0.06)' : 'transparent',
-          transition: 'opacity 0.3s ease, background 0.3s ease',
+          position: 'relative',
+          background: 'linear-gradient(160deg, #0c0b0a 0%, #181410 50%, #0c0b0a 100%)',
+          transition: 'opacity 0.45s ease, filter 0.45s ease',
+          opacity: hovered === 'client' ? 0.18 : 1,
+          filter: hovered === 'client' ? 'brightness(0.5) saturate(0.4)' : 'brightness(1) saturate(1)',
         }}
       >
-        <div style={{ maxWidth: 380, textAlign: 'center' }}>
-          <p style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 11, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#4ade80', margin: '0 0 24px' }}>
-            I'm a Trainer
-          </p>
-          <h2 style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, textTransform: 'uppercase', fontSize: 'clamp(32px, 5vw, 60px)', lineHeight: 0.95, letterSpacing: '-0.02em', color: '#EEF2EE', margin: '0 0 20px' }}>
-            Your rates.<br />Your schedule.<br /><span style={{ color: '#4ade80' }}>Your clients.</span>
+        {/* Radial glow — amber */}
+        <div style={{
+          position: 'absolute', inset: 0, pointerEvents: 'none',
+          background: 'radial-gradient(ellipse 65% 55% at 50% 25%, rgba(251,191,36,0.11) 0%, transparent 70%)',
+          opacity: hovered === 'trainer' ? 1 : 0.5,
+          transition: 'opacity 0.45s ease',
+        }} />
+        {/* Subtle grain */}
+        <div style={{
+          position: 'absolute', inset: 0, pointerEvents: 'none', opacity: 0.025,
+          backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 256 256\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noise\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noise)\' opacity=\'1\'/%3E%3C/svg%3E")',
+          backgroundSize: '180px',
+        }} />
+        {/* Hover border */}
+        <div style={{
+          position: 'absolute', inset: 0, pointerEvents: 'none',
+          boxShadow: hovered === 'trainer' ? 'inset 0 0 0 1.5px rgba(251,191,36,0.3)' : 'inset 0 0 0 1px rgba(251,191,36,0)',
+          transition: 'box-shadow 0.4s ease',
+        }} />
+
+        <div style={{ maxWidth: 380, textAlign: 'center', position: 'relative', zIndex: 1 }}>
+          {/* Pill badge */}
+          <div style={{
+            display: 'inline-flex', alignItems: 'center', gap: 8,
+            background: 'rgba(251,191,36,0.1)', border: '1px solid rgba(251,191,36,0.28)',
+            borderRadius: 100, padding: '7px 18px', marginBottom: 36,
+          }}>
+            <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#fbbf24', display: 'block', flexShrink: 0, boxShadow: '0 0 8px #fbbf24' }} />
+            <span style={{ fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase', color: '#fbbf24' }}>I'm a Trainer</span>
+          </div>
+
+          <h2 style={{
+            fontFamily: 'var(--font-heading)', fontWeight: 900, textTransform: 'uppercase',
+            fontSize: 'clamp(36px, 5vw, 64px)', lineHeight: 0.92, letterSpacing: '-0.025em',
+            color: '#EEF2EE', margin: '0 0 24px',
+          }}>
+            Your rates.<br />Your schedule.<br /><span style={{ color: '#fbbf24' }}>Your clients.</span>
           </h2>
-          <p style={{ fontFamily: 'var(--font-body)', fontSize: 16, color: 'rgba(238,242,238,0.5)', lineHeight: 1.65, margin: '0 0 36px' }}>
+
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: 15, color: 'rgba(238,242,238,0.48)', lineHeight: 1.7, margin: '0 0 32px' }}>
             List for free. Keep 80%.<br />Build your practice on your terms.
           </p>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 13, letterSpacing: '0.1em', textTransform: 'uppercase', color: hovered === 'trainer' ? '#4ade80' : 'rgba(74,222,128,0.45)', transition: 'color 0.3s ease' }}>
-            Apply now <ArrowRight size={15} />
+
+          {/* Benefits */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 40, textAlign: 'left' }}>
+            {trainerBenefits.map(b => (
+              <div key={b} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{ width: 18, height: 18, borderRadius: '50%', background: 'rgba(251,191,36,0.12)', border: '1px solid rgba(251,191,36,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: '#fbbf24' }}>
+                  <CheckIcon size={10} />
+                </div>
+                <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(238,242,238,0.55)' }}>{b}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* CTA */}
+          <div style={{
+            display: 'inline-flex', alignItems: 'center', gap: 10,
+            background: '#fbbf24', color: '#0c0b0a', borderRadius: 8,
+            padding: '14px 28px', fontFamily: 'var(--font-heading)', fontWeight: 800,
+            fontSize: 13, letterSpacing: '0.08em', textTransform: 'uppercase',
+            boxShadow: hovered === 'trainer' ? '0 0 32px rgba(251,191,36,0.4)' : '0 0 0px rgba(251,191,36,0)',
+            transform: hovered === 'trainer' ? 'translateY(-3px)' : 'translateY(0)',
+            transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+          }}>
+            Apply Now <ArrowRight size={15} />
           </div>
         </div>
       </div>
 
       {/* Wordmark */}
-      <div style={{ position: 'absolute', bottom: 28, left: '50%', transform: 'translateX(-50%)', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 12, letterSpacing: '0.14em', color: 'rgba(238,242,238,0.18)', textTransform: 'uppercase', pointerEvents: 'none', whiteSpace: 'nowrap' }}>
+      <div style={{
+        position: 'absolute', bottom: 28, left: '50%', transform: 'translateX(-50%)',
+        fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 11,
+        letterSpacing: '0.14em', color: 'rgba(238,242,238,0.15)', textTransform: 'uppercase',
+        pointerEvents: 'none', whiteSpace: 'nowrap', zIndex: 10,
+      }}>
         FitnessGuru · Singapore
       </div>
     </div>
