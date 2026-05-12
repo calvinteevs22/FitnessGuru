@@ -1199,8 +1199,8 @@ function ClientValueProps() {
           Built for people who are serious about results.
         </h2>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          {items.map(({ title, body }, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 32, padding: '40px 36px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 12 }}>
+          {items.map(({ title, body }) => (
+            <div key={title} style={{ display: 'flex', alignItems: 'flex-start', gap: 32, padding: '40px 36px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 12 }}>
               <div style={{ flexShrink: 0, width: 36, height: 36, borderRadius: '50%', background: 'rgba(74,222,128,0.12)', border: '1px solid rgba(74,222,128,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#4ade80', marginTop: 2 }}>
                 <CheckIcon size={16} />
               </div>
