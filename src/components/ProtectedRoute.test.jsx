@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Routes, Route } from 'react-router-dom'
-import { vi, describe, it, expect, beforeEach } from 'vitest'
+import { vi, describe, it, expect } from 'vitest'
 import ProtectedRoute from './ProtectedRoute'
 
 vi.mock('../hooks/useAuth', () => ({ useAuth: vi.fn() }))
@@ -61,5 +61,18 @@ describe('ProtectedRoute', () => {
       </MemoryRouter>
     )
     expect(screen.getByText('any authenticated content')).toBeInTheDocument()
+  })
+
+  it('shows loading when session exists but profile not yet loaded', () => {
+    useAuth.mockReturnValue({ loading: false, session: { user: { id: '1' } }, profile: null })
+    render(
+      <MemoryRouter initialEntries={['/dashboard']}>
+        <Routes>
+          <Route path="/dashboard" element={<ProtectedRoute requiredRole="trainer"><div>dashboard</div></ProtectedRoute>} />
+          <Route path="/" element={<div>home</div>} />
+        </Routes>
+      </MemoryRouter>
+    )
+    expect(screen.getByText('Loading...')).toBeInTheDocument()
   })
 })
