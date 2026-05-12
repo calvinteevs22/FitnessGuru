@@ -3,44 +3,46 @@ import { validateFile } from '../utils/validation'
 
 export default function FileUpload({ label, onChange, maxFiles = 5, required = false }) {
   const [files, setFiles] = useState([])
-  const [error, setError] = useState('')
+  const [errors, setErrors] = useState([])
   const inputRef = useRef(null)
+  const counterRef = useRef(0)
 
   function handleChange(e) {
-    setError('')
+    setErrors([])
     const selected = Array.from(e.target.files)
     if (!selected.length) return
 
-    let newError = ''
+    const newErrors = []
     const validFiles = []
-    for (const file of selected) {
+    selected.forEach((file, i) => {
       const validationError = validateFile(file)
       if (validationError) {
-        newError = validationError
+        newErrors.push(validationError)
       } else {
-        validFiles.push(file)
+        validFiles.push({ id: Date.now() + i + counterRef.current, file })
+        counterRef.current += 1
       }
-    }
+    })
 
-    if (newError) setError(newError)
+    if (newErrors.length) setErrors(newErrors)
 
     if (!validFiles.length) return
 
     if (files.length + validFiles.length > maxFiles) {
-      setError(`Maximum ${maxFiles} files allowed.`)
+      setErrors([`Maximum ${maxFiles} files allowed.`])
       return
     }
 
     const updated = [...files, ...validFiles]
     setFiles(updated)
-    onChange(updated)
+    onChange(updated.map(f => f.file))
     e.target.value = '' // reset input so same file can be re-added
   }
 
-  function removeFile(index) {
-    const updated = files.filter((_, i) => i !== index)
+  function removeFile(id) {
+    const updated = files.filter(f => f.id !== id)
     setFiles(updated)
-    onChange(updated)
+    onChange(updated.map(f => f.file))
   }
 
   return (
@@ -72,18 +74,23 @@ export default function FileUpload({ label, onChange, maxFiles = 5, required = f
         onChange={handleChange}
       />
 
-      {error && (
-        <p style={{ color: '#f87171', fontFamily: 'var(--font-body)', fontSize: 13, marginTop: 4 }}>{error}</p>
+      {errors.length > 0 && (
+        <ul style={{ listStyle: 'none', margin: '4px 0 0', padding: 0 }}>
+          {errors.map((err, i) => (
+            <li key={i} style={{ color: '#f87171', fontFamily: 'var(--font-body)', fontSize: 13 }}>{err}</li>
+          ))}
+        </ul>
       )}
 
       {files.length > 0 && (
         <ul style={{ listStyle: 'none', margin: '8px 0 0', padding: 0 }}>
-          {files.map((file, i) => (
-            <li key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 0', borderBottom: '1px solid rgba(238,242,238,0.06)' }}>
+          {files.map((f) => (
+            <li key={f.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 0', borderBottom: '1px solid rgba(238,242,238,0.06)' }}>
               <span style={{ flex: 1, color: 'rgba(238,242,238,0.8)', fontFamily: 'var(--font-body)', fontSize: 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {file.name ?? file}
+                {f.file.name ?? f.file}
               </span>
-              <button type="button" onClick={() => removeFile(i)}
+              <button type="button" onClick={() => removeFile(f.id)}
+                aria-label={`Remove ${f.file.name}`}
                 style={{ background: 'none', border: 'none', color: 'rgba(238,242,238,0.4)', cursor: 'pointer', fontSize: 16, lineHeight: 1, padding: '0 4px' }}>
                 ×
               </button>

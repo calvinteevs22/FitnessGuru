@@ -71,6 +71,7 @@ export default function MultiSelect({ label, options, selected = [], onChange, a
             }}>
               {v}
               <button type="button" onClick={() => onChange(selected.filter(x => x !== v))}
+                aria-label={`Remove ${v}`}
                 style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#0d1a0e', fontSize: 14, lineHeight: 1, padding: 0 }}>
                 ×
               </button>
