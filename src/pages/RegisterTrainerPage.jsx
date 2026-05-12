@@ -64,7 +64,7 @@ export default function RegisterTrainerPage() {
 
     if (error) { setServerError(error.message); return }
 
-    navigate('/verify', { state: { email } })
+    navigate('/profile/setup')
   }
 
   return (
