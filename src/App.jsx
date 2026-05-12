@@ -579,7 +579,7 @@ function ClientPage() {
   )
 }
 
-function TrainerHero() {
+function TrainerHero({ onApply = () => {} }) {
   return (
     <section style={{ minHeight: '100dvh', display: 'flex', alignItems: 'center', background: '#0d1a0e', position: 'relative', overflow: 'hidden' }}>
       <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', backgroundImage: 'radial-gradient(ellipse 80% 60% at 50% -10%, rgba(45,106,46,0.28) 0%, transparent 70%)' }} aria-hidden="true" />
@@ -726,7 +726,7 @@ function TrainerTestimonials() {
   )
 }
 
-function TrainerCTA() {
+function TrainerCTA({ onApply = () => {} }) {
   return (
     <section style={{ background: '#0a140b', padding: '100px 24px', textAlign: 'center' }}>
       <div style={{ maxWidth: 720, margin: '0 auto' }}>
@@ -754,12 +754,12 @@ function TrainerCTA() {
 function TrainerPage({ onApply = () => {} }) {
   return (
     <>
-      <TrainerHero />
+      <TrainerHero onApply={onApply} />
       <TrainerProblem />
       <TrainerHowItWorks />
       <TrainerValueProps />
       <TrainerTestimonials />
-      <TrainerCTA />
+      <TrainerCTA onApply={onApply} />
       <Waitlist defaultRole="trainer" />
     </>
   )
