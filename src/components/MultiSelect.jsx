@@ -1,16 +1,16 @@
 import { useState } from 'react'
 
-export default function MultiSelect({ label, options, value = [], onChange, allowCustom = false }) {
+export default function MultiSelect({ label, options, selected = [], onChange, allowCustom = false, placeholder = 'Add custom...' }) {
   const [customInput, setCustomInput] = useState('')
 
   function toggle(opt) {
-    onChange(value.includes(opt) ? value.filter(v => v !== opt) : [...value, opt])
+    onChange(selected.includes(opt) ? selected.filter(v => v !== opt) : [...selected, opt])
   }
 
   function addCustom() {
     const trimmed = customInput.trim()
-    if (!trimmed || value.includes(trimmed)) return
-    onChange([...value, trimmed])
+    if (!trimmed || selected.includes(trimmed)) return
+    onChange([...selected, trimmed])
     setCustomInput('')
   }
 
@@ -21,15 +21,15 @@ export default function MultiSelect({ label, options, value = [], onChange, allo
       </label>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
         {options.map(opt => {
-          const selected = value.includes(opt)
+          const isSelected = selected.includes(opt)
           return (
             <button key={opt} type="button" onClick={() => toggle(opt)}
               style={{
-                background: selected ? '#4ade80' : 'rgba(255,255,255,0.06)',
-                color: selected ? '#0d1a0e' : 'rgba(238,242,238,0.8)',
-                border: `1px solid ${selected ? '#4ade80' : 'rgba(238,242,238,0.2)'}`,
+                background: isSelected ? '#4ade80' : 'rgba(255,255,255,0.06)',
+                color: isSelected ? '#0d1a0e' : 'rgba(238,242,238,0.8)',
+                border: `1px solid ${isSelected ? '#4ade80' : 'rgba(238,242,238,0.2)'}`,
                 borderRadius: 20, padding: '6px 14px', fontSize: 13,
-                fontFamily: 'var(--font-body)', cursor: 'pointer', fontWeight: selected ? 600 : 400,
+                fontFamily: 'var(--font-body)', cursor: 'pointer', fontWeight: isSelected ? 600 : 400,
               }}>
               {opt}
             </button>
@@ -43,7 +43,7 @@ export default function MultiSelect({ label, options, value = [], onChange, allo
             value={customInput}
             onChange={e => setCustomInput(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addCustom())}
-            placeholder="Add custom…"
+            placeholder={placeholder}
             style={{
               flex: 1, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(238,242,238,0.2)',
               borderRadius: 6, padding: '8px 12px', color: '#EEF2EE', fontFamily: 'var(--font-body)',
@@ -61,16 +61,16 @@ export default function MultiSelect({ label, options, value = [], onChange, allo
         </div>
       )}
 
-      {allowCustom && value.filter(v => !options.includes(v)).length > 0 && (
+      {allowCustom && selected.filter(v => !options.includes(v)).length > 0 && (
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 8 }}>
-          {value.filter(v => !options.includes(v)).map(v => (
+          {selected.filter(v => !options.includes(v)).map(v => (
             <span key={v} style={{
               background: '#4ade80', color: '#0d1a0e', borderRadius: 20,
               padding: '6px 14px', fontSize: 13, fontFamily: 'var(--font-body)', fontWeight: 600,
               display: 'flex', alignItems: 'center', gap: 6,
             }}>
               {v}
-              <button type="button" onClick={() => onChange(value.filter(x => x !== v))}
+              <button type="button" onClick={() => onChange(selected.filter(x => x !== v))}
                 style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#0d1a0e', fontSize: 14, lineHeight: 1, padding: 0 }}>
                 ×
               </button>

@@ -1,7 +1,8 @@
 import { useState, useRef } from 'react'
 import { validateFile } from '../utils/validation'
 
-export default function FileUpload({ label, onChange, files = [], maxFiles = 5, optional = false }) {
+export default function FileUpload({ label, onChange, maxFiles = 5, required = false }) {
+  const [files, setFiles] = useState([])
   const [error, setError] = useState('')
   const inputRef = useRef(null)
 
@@ -10,20 +11,36 @@ export default function FileUpload({ label, onChange, files = [], maxFiles = 5, 
     const selected = Array.from(e.target.files)
     if (!selected.length) return
 
-    const validationError = validateFile(selected[0])
-    if (validationError) { setError(validationError); return }
+    let newError = ''
+    const validFiles = []
+    for (const file of selected) {
+      const validationError = validateFile(file)
+      if (validationError) {
+        newError = validationError
+      } else {
+        validFiles.push(file)
+      }
+    }
 
-    if (files.length + selected.length > maxFiles) {
+    if (newError) setError(newError)
+
+    if (!validFiles.length) return
+
+    if (files.length + validFiles.length > maxFiles) {
       setError(`Maximum ${maxFiles} files allowed.`)
       return
     }
 
-    onChange([...files, ...selected])
+    const updated = [...files, ...validFiles]
+    setFiles(updated)
+    onChange(updated)
     e.target.value = '' // reset input so same file can be re-added
   }
 
   function removeFile(index) {
-    onChange(files.filter((_, i) => i !== index))
+    const updated = files.filter((_, i) => i !== index)
+    setFiles(updated)
+    onChange(updated)
   }
 
   return (
@@ -32,8 +49,8 @@ export default function FileUpload({ label, onChange, files = [], maxFiles = 5, 
         <label style={{ color: '#EEF2EE', fontFamily: 'var(--font-body)', fontSize: 14, fontWeight: 500 }}>
           {label}
         </label>
-        {optional && (
-          <span style={{ color: 'rgba(238,242,238,0.4)', fontFamily: 'var(--font-body)', fontSize: 12 }}>optional</span>
+        {required && (
+          <span style={{ color: 'rgba(238,242,238,0.4)', fontFamily: 'var(--font-body)', fontSize: 12 }}>(required)</span>
         )}
       </div>
 
@@ -50,6 +67,7 @@ export default function FileUpload({ label, onChange, files = [], maxFiles = 5, 
         ref={inputRef}
         type="file"
         accept=".pdf,.jpg,.jpeg,.png"
+        multiple
         style={{ display: 'none' }}
         onChange={handleChange}
       />
