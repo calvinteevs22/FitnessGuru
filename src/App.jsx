@@ -1,4 +1,12 @@
 import { useState, useEffect, useRef } from 'react'
+import { Routes, Route, useNavigate } from 'react-router-dom'
+import ProtectedRoute from './components/ProtectedRoute.jsx'
+import LoginPage from './pages/LoginPage.jsx'
+import RegisterTrainerPage from './pages/RegisterTrainerPage.jsx'
+import VerifyPage from './pages/VerifyPage.jsx'
+import ProfileSetupPage from './pages/ProfileSetupPage.jsx'
+import TrainerDashboardPage from './pages/TrainerDashboardPage.jsx'
+import AdminPage from './pages/AdminPage.jsx'
 
 /* ─── Icon primitives ──────────────────────────────────────── */
 const Icon = ({ d, size = 24, stroke = 2, className = '', viewBox = '0 0 24 24' }) => (
@@ -585,12 +593,15 @@ function TrainerHero() {
         <p style={{ fontFamily: 'var(--font-body)', fontSize: 'clamp(16px, 2vw, 20px)', color: 'rgba(238,242,238,0.6)', maxWidth: 520, lineHeight: 1.65, margin: '0 0 52px' }}>
           Join Singapore's trainer marketplace. List for free. Keep 80%.
         </p>
-        <a href="#waitlist"
-          style={{ display: 'inline-flex', alignItems: 'center', gap: 10, fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 15, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#fff', textDecoration: 'none', background: '#2d6a2e', padding: '16px 32px', borderRadius: 10, boxShadow: '0 0 40px rgba(45,106,46,0.35)', transition: 'background 0.2s, transform 0.15s' }}
-          onMouseEnter={e => { e.currentTarget.style.background = '#3d8b3e'; e.currentTarget.style.transform = 'translateY(-2px)' }}
-          onMouseLeave={e => { e.currentTarget.style.background = '#2d6a2e'; e.currentTarget.style.transform = 'translateY(0)' }}>
-          Apply as a Trainer <ArrowRight />
-        </a>
+        <button
+          onClick={onApply}
+          style={{
+            background: '#4ade80', color: '#0d1a0e', border: 'none', borderRadius: 6,
+            padding: '14px 28px', fontSize: 16, fontWeight: 700, cursor: 'pointer',
+            fontFamily: 'var(--font-body)', display: 'inline-flex', alignItems: 'center', gap: 8,
+          }}>
+          Apply as a Trainer <ArrowRight size={16} />
+        </button>
       </div>
     </section>
   )
@@ -726,18 +737,21 @@ function TrainerCTA() {
         <p style={{ fontFamily: 'var(--font-body)', fontSize: 18, color: 'rgba(238,242,238,0.5)', lineHeight: 1.65, margin: '0 0 48px' }}>
           Join the waitlist. Get 90 days commission-free when we launch.
         </p>
-        <a href="#waitlist"
-          style={{ display: 'inline-flex', alignItems: 'center', gap: 10, fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 16, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#fff', textDecoration: 'none', background: '#2d6a2e', padding: '18px 40px', borderRadius: 10, boxShadow: '0 0 40px rgba(45,106,46,0.35)', transition: 'background 0.2s, transform 0.15s' }}
-          onMouseEnter={e => { e.currentTarget.style.background = '#3d8b3e'; e.currentTarget.style.transform = 'translateY(-2px)' }}
-          onMouseLeave={e => { e.currentTarget.style.background = '#2d6a2e'; e.currentTarget.style.transform = 'translateY(0)' }}>
-          Join as a Trainer <ArrowRight />
-        </a>
+        <button
+          onClick={onApply}
+          style={{
+            background: '#4ade80', color: '#0d1a0e', border: 'none', borderRadius: 6,
+            padding: '14px 28px', fontSize: 16, fontWeight: 700, cursor: 'pointer',
+            fontFamily: 'var(--font-body)', display: 'inline-flex', alignItems: 'center', gap: 8,
+          }}>
+          Apply as a Trainer <ArrowRight size={16} />
+        </button>
       </div>
     </section>
   )
 }
 
-function TrainerPage() {
+function TrainerPage({ onApply = () => {} }) {
   return (
     <>
       <TrainerHero />
@@ -751,9 +765,10 @@ function TrainerPage() {
   )
 }
 
-export default function App() {
+function Landing() {
   const [role, setRole] = useState(() => localStorage.getItem('fg_role'))
   const [fading, setFading] = useState(false)
+  const navigate = useNavigate()
 
   const selectRole = (newRole) => {
     setFading(true)
@@ -764,31 +779,42 @@ export default function App() {
       setFading(false)
     }, 280)
   }
-
   const switchRole = () => selectRole(role === 'client' ? 'trainer' : 'client')
 
   return (
     <>
-      <a href="#main-content"
-        style={{
-          position: 'absolute', top: -40, left: 0, background: '#2d6a2e', color: '#fff',
-          padding: '8px 16px', zIndex: 9999, fontFamily: 'var(--font-body)', fontSize: 14,
-          textDecoration: 'none', borderRadius: '0 0 8px 0', transition: 'top 0.2s',
-        }}
-        onFocus={e => e.target.style.top = '0'}
-        onBlur={e => e.target.style.top = '-40px'}>
+      <a href="#main-content" style={{ position: 'absolute', left: '-9999px', top: 'auto', width: 1, height: 1, overflow: 'hidden' }}
+        onFocus={e => { e.target.style.left = '0'; e.target.style.width = 'auto'; e.target.style.height = 'auto' }}
+        onBlur={e => { e.target.style.left = '-9999px'; e.target.style.width = '1px'; e.target.style.height = '1px' }}>
         Skip to main content
       </a>
       <Nav role={role} onSwitch={switchRole} />
-      <main
-        id="main-content"
-        style={{ opacity: fading ? 0 : 1, transition: 'opacity 0.28s ease-out' }}
-      >
+      <main id="main-content" style={{ opacity: fading ? 0 : 1, transition: 'opacity 0.28s ease-out' }}>
         {role === null && <SplitHero onSelect={selectRole} />}
         {role === 'client' && <ClientPage />}
-        {role === 'trainer' && <TrainerPage />}
+        {role === 'trainer' && <TrainerPage onApply={() => navigate('/register/trainer')} />}
       </main>
       {role !== null && <Footer />}
     </>
+  )
+}
+
+export default function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<Landing />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register/trainer" element={<RegisterTrainerPage />} />
+      <Route path="/verify" element={<VerifyPage />} />
+      <Route path="/profile/setup" element={
+        <ProtectedRoute><ProfileSetupPage /></ProtectedRoute>
+      } />
+      <Route path="/dashboard/trainer" element={
+        <ProtectedRoute requiredRole="trainer"><TrainerDashboardPage /></ProtectedRoute>
+      } />
+      <Route path="/admin" element={
+        <ProtectedRoute requiredRole="admin"><AdminPage /></ProtectedRoute>
+      } />
+    </Routes>
   )
 }
