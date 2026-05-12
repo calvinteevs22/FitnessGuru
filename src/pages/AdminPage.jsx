@@ -24,31 +24,39 @@ export default function AdminPage() {
   const [actionStates, setActionStates] = useState({})
   const [notes, setNotes] = useState({})
   const [expandedDocs, setExpandedDocs] = useState({})
+  const [reloadKey, setReloadKey] = useState(0)
 
-  async function load() {
-    setLoading(true)
-    const { data: tps } = await supabase
-      .from('trainer_profiles')
-      .select('*')
-      .eq('status', tab)
-      .order('created_at', { ascending: false })
+  useEffect(() => {
+    let cancelled = false
+    async function fetchTrainers() {
+      setLoading(true)
+      const { data: tps } = await supabase
+        .from('trainer_profiles')
+        .select('*')
+        .eq('status', tab)
+        .order('created_at', { ascending: false })
 
-    if (!tps?.length) { setTrainers([]); setLoading(false); return }
+      if (cancelled) return
 
-    const { data: profs } = await supabase
-      .from('profiles')
-      .select('id, full_name, phone, profile_photo_url, bio')
-      .in('id', tps.map(t => t.id))
+      if (!tps?.length) { setTrainers([]); setLoading(false); return }
 
-    const profMap = {}
-    profs?.forEach(p => { profMap[p.id] = p })
+      const { data: profs } = await supabase
+        .from('profiles')
+        .select('id, full_name, phone, profile_photo_url, bio')
+        .in('id', tps.map(t => t.id))
 
-    setTrainers(tps)
-    setProfiles(profMap)
-    setLoading(false)
-  }
+      if (cancelled) return
 
-  useEffect(() => { load() }, [tab])
+      const profMap = {}
+      profs?.forEach(p => { profMap[p.id] = p })
+
+      setTrainers(tps)
+      setProfiles(profMap)
+      setLoading(false)
+    }
+    fetchTrainers()
+    return () => { cancelled = true }
+  }, [tab, reloadKey])
 
   async function approve(trainerId) {
     setActionStates(s => ({ ...s, [trainerId]: 'approving' }))
@@ -63,10 +71,10 @@ export default function AdminPage() {
           trainerId,
           trainerName: profiles[trainerId]?.full_name ?? 'Trainer',
           status: 'approved',
-          adminNotes: null,
+          adminNotes: notes[trainerId] ?? null,
         },
       })
-      load()
+      setReloadKey(k => k + 1)
     }
     setActionStates(s => ({ ...s, [trainerId]: null }))
   }
@@ -87,7 +95,7 @@ export default function AdminPage() {
           adminNotes: notes[trainerId] ?? null,
         },
       })
-      load()
+      setReloadKey(k => k + 1)
     }
     setActionStates(s => ({ ...s, [trainerId]: null }))
   }
@@ -121,7 +129,7 @@ export default function AdminPage() {
           </p>
         )}
 
-        {trainers.map(trainer => {
+        {!loading && trainers.map(trainer => {
           const prof = profiles[trainer.id] ?? {}
           const docsExpanded = expandedDocs[trainer.id]
           const acting = actionStates[trainer.id]
