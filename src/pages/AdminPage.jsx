@@ -42,7 +42,7 @@ export default function AdminPage() {
 
       const { data: profs } = await supabase
         .from('profiles')
-        .select('id, full_name, phone, profile_photo_url, bio')
+        .select('id, full_name, phone, email, profile_photo_url, bio')
         .in('id', tps.map(t => t.id))
 
       if (cancelled) return
@@ -70,6 +70,7 @@ export default function AdminPage() {
         body: {
           trainerId,
           trainerName: profiles[trainerId]?.full_name ?? 'Trainer',
+          trainerEmail: profiles[trainerId]?.email ?? null,
           status: 'approved',
           adminNotes: notes[trainerId] ?? null,
         },
@@ -91,6 +92,7 @@ export default function AdminPage() {
         body: {
           trainerId,
           trainerName: profiles[trainerId]?.full_name ?? 'Trainer',
+          trainerEmail: profiles[trainerId]?.email ?? null,
           status: 'rejected',
           adminNotes: notes[trainerId] ?? null,
         },

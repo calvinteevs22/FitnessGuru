@@ -147,6 +147,7 @@ export default function ProfileSetupPage() {
       const { error } = await supabase.rpc('submit_trainer_profile', {
         p_full_name: fullName.trim(),
         p_phone: phone.trim(),
+        p_email: session.user.email,
         p_profile_photo_url: profilePhotoUrl,
         p_bio: bio.trim(),
         p_certifications: certNames,
