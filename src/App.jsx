@@ -17,6 +17,7 @@ const TRAINERS = [
     tags: ['Powerlifting', 'Muscle Gain', 'Athletic Performance'],
     goals: ['Build muscle', 'Improve sports performance'],
     areas: 'Tampines · Bedok · Pasir Ris',
+    regions: ['East'],
     rate: 120, rating: 4.9, reviews: 47,
     bio: 'Ex-national powerlifter with 8 years coaching functional strength. Builds real results for athletes and everyday people alike.',
     badge: 'Top Rated', badgeColor: '#4ade80', badgeBg: 'rgba(74,222,128,0.12)',
@@ -28,6 +29,7 @@ const TRAINERS = [
     tags: ['Prenatal', 'Postnatal', "Women's Health"],
     goals: ['Train through pregnancy'],
     areas: 'Orchard · River Valley · Buona Vista',
+    regions: ['Central', 'West'],
     rate: 110, rating: 5.0, reviews: 31,
     bio: 'Certified pre/postnatal specialist. Helped 200+ mothers stay strong, safe, and confident through every trimester.',
     badge: 'Specialist', badgeColor: '#c084fc', badgeBg: 'rgba(192,132,252,0.12)',
@@ -39,6 +41,7 @@ const TRAINERS = [
     tags: ['Weight Loss', 'HIIT', 'Metabolic Training'],
     goals: ['Lose weight', 'Just start somewhere'],
     areas: 'CBD · Marina Bay · Raffles Place',
+    regions: ['Central'],
     rate: 100, rating: 4.8, reviews: 62,
     bio: 'Former competitive runner. Science-backed fat loss coaching that produces sustainable results — not quick fixes.',
     badge: null, badgeColor: null, badgeBg: null,
@@ -50,6 +53,7 @@ const TRAINERS = [
     tags: ['Yoga', 'Flexibility', 'Stress Relief'],
     goals: ['Just start somewhere'],
     areas: 'Bishan · Ang Mo Kio · Thomson',
+    regions: ['Central', 'North-East'],
     rate: 95, rating: 4.9, reviews: 28,
     bio: 'RYT-500 certified. Blends movement science with traditional yoga practice for lasting, functional flexibility.',
     badge: null, badgeColor: null, badgeBg: null,
@@ -61,6 +65,7 @@ const TRAINERS = [
     tags: ['Speed & Agility', 'Recovery', 'Injury Prevention'],
     goals: ['Improve sports performance', 'Build muscle'],
     areas: 'Jurong · Clementi · West Coast',
+    regions: ['West'],
     rate: 130, rating: 4.9, reviews: 19,
     bio: 'S&C coach for national youth athletes. Delivers measurable performance gains at every competitive level.',
     badge: 'Expert', badgeColor: '#fb923c', badgeBg: 'rgba(251,146,60,0.12)',
@@ -72,6 +77,7 @@ const TRAINERS = [
     tags: ['Pilates', 'Core & Posture', 'Back Rehab'],
     goals: ['Just start somewhere', 'Improve sports performance'],
     areas: 'Novena · Toa Payoh · Central',
+    regions: ['Central'],
     rate: 115, rating: 5.0, reviews: 22,
     bio: 'STOTT PILATES certified. Transforms posture, resolves chronic back pain, and builds the kind of core strength that lasts.',
     badge: null, badgeColor: null, badgeBg: null,
@@ -658,17 +664,28 @@ const GOALS = [
   { label: 'Just start somewhere', key: 'Just start somewhere', context: "Great trainers for anyone starting their fitness journey" },
 ]
 
+const REGIONS = ['Central', 'East', 'West', 'North', 'North-East']
+
 function FeaturedTrainers() {
   const [activeGoal, setActiveGoal] = useState(null)
+  const [activeRegion, setActiveRegion] = useState(null)
   const [ref, visible] = useScrollReveal(0.08)
 
   const scrollToWaitlist = () => document.getElementById('waitlist')?.scrollIntoView({ behavior: 'smooth' })
 
-  const spotlightTrainers = activeGoal
-    ? TRAINERS.filter(t => t.goals.includes(activeGoal))
-    : []
+  const matchesGoal = t => !activeGoal || t.goals.includes(activeGoal)
+  const matchesRegion = t => !activeRegion || t.regions.includes(activeRegion)
+  const spotlightTrainers = TRAINERS.filter(t => matchesGoal(t) && matchesRegion(t))
+  const showSpotlight = (activeGoal || activeRegion) && spotlightTrainers.length > 0
+  const showEmptyState = (activeGoal && activeRegion) && spotlightTrainers.length === 0
 
-  const goalContext = GOALS.find(g => g.key === activeGoal)?.context
+  const goalData = GOALS.find(g => g.key === activeGoal)
+  const spotlightContext = (() => {
+    if (activeGoal && activeRegion) return `${goalData?.context} in the ${activeRegion}`
+    if (activeGoal) return goalData?.context
+    if (activeRegion) return `Trainers available in the ${activeRegion}`
+    return ''
+  })()
 
   return (
     <section id="trainers" ref={ref} style={{ background: '#091210', padding: '104px 24px', position: 'relative', overflow: 'hidden' }}>
@@ -709,10 +726,38 @@ function FeaturedTrainers() {
               </button>
             ))}
           </div>
+
+          {/* Region pills */}
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(238,242,238,0.35)', margin: '20px 0 12px', letterSpacing: '0.04em' }}>Where do you train?</p>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            {REGIONS.map(r => (
+              <button key={r} onClick={() => setActiveRegion(activeRegion === r ? null : r)} style={{
+                fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: 13,
+                padding: '9px 20px', borderRadius: 100,
+                border: `1px solid ${activeRegion === r ? 'rgba(74,222,128,0.55)' : 'rgba(255,255,255,0.08)'}`,
+                background: activeRegion === r ? 'rgba(74,222,128,0.12)' : 'rgba(255,255,255,0.03)',
+                color: activeRegion === r ? '#4ade80' : 'rgba(238,242,238,0.5)',
+                cursor: 'pointer', transition: 'all 0.2s',
+              }}>
+                {r}
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Goal spotlight */}
-        {activeGoal && spotlightTrainers.length > 0 && (
+        {/* Spotlight */}
+        {showEmptyState && (
+          <div style={{ marginBottom: 48, padding: '24px 28px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 16 }}>
+            <p style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: 'rgba(238,242,238,0.45)', margin: 0 }}>
+              No {goalData?.label.toLowerCase()} specialists in the {activeRegion} yet — showing all {goalData?.label.toLowerCase()} trainers instead.{' '}
+              <button onClick={() => setActiveRegion(null)} style={{ background: 'none', border: 'none', color: '#4ade80', cursor: 'pointer', fontFamily: 'var(--font-body)', fontSize: 14, padding: 0, textDecoration: 'underline' }}>
+                Clear location ×
+              </button>
+            </p>
+          </div>
+        )}
+
+        {showSpotlight && (
           <div style={{
             marginBottom: 48,
             padding: '28px 28px 20px',
@@ -721,7 +766,7 @@ function FeaturedTrainers() {
             borderRadius: 16,
           }}>
             <p style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 13, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#4ade80', margin: '0 0 20px' }}>
-              {goalContext}
+              {spotlightContext}
             </p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16 }}>
               {spotlightTrainers.map(t => (
