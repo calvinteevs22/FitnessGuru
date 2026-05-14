@@ -3,6 +3,7 @@ import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase.js'
 import { useAuth } from '../hooks/useAuth.jsx'
 import { generateSlots, formatSlotSGT, formatDateHeader } from '../utils/slotGenerator.js'
+import VenuePicker from '../components/VenuePicker.jsx'
 
 export default function TrainerProfilePage() {
   const { id } = useParams()
@@ -17,6 +18,8 @@ export default function TrainerProfilePage() {
   const [loading, setLoading] = useState(true)
   const [booking, setBooking] = useState(false)
   const [error, setError] = useState(searchParams.get('error') ?? null)
+  const [venue, setVenue] = useState({ type: null, name: '' })
+  const [venueError, setVenueError] = useState(false)
 
   useEffect(() => {
     async function load() {
@@ -54,6 +57,11 @@ export default function TrainerProfilePage() {
       return
     }
     if (!selectedSlot) return
+    if (!venue.type || !venue.name.trim()) {
+      setVenueError(true)
+      return
+    }
+    setVenueError(false)
     setBooking(true)
     setError(null)
     try {
@@ -64,6 +72,8 @@ export default function TrainerProfilePage() {
           duration_mins: selectedDuration,
           client_name: profile?.full_name ?? session.user.email,
           client_email: session.user.email,
+          venue_type: venue.type,
+          venue_name: venue.name.trim(),
         },
       })
       if (fnErr || !data?.session_url) {
@@ -175,7 +185,7 @@ export default function TrainerProfilePage() {
                 return (
                   <button
                     key={slot}
-                    onClick={() => { setSelectedSlot(slot); setSelectedDuration(day.duration_mins) }}
+                    onClick={() => { setSelectedSlot(slot); setSelectedDuration(day.duration_mins); setVenue({ type: null, name: '' }); setVenueError(false) }}
                     style={{
                       fontFamily: 'var(--font-body)', fontSize: 14,
                       padding: '8px 16px', borderRadius: 8, cursor: 'pointer',
@@ -195,6 +205,15 @@ export default function TrainerProfilePage() {
 
         {selectedSlot && (
           <div style={{ marginTop: 32, paddingTop: 24, borderTop: '1px solid rgba(238,242,238,0.08)' }}>
+            <h2 style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 18, color: '#EEF2EE', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 16, marginTop: 0 }}>
+              Where would you like to train?
+            </h2>
+            <VenuePicker value={venue} onChange={setVenue} />
+            {venueError && (
+              <p style={{ color: '#f87171', fontFamily: 'var(--font-body)', fontSize: 13, margin: '8px 0 0' }}>
+                Please select a venue type and enter a location.
+              </p>
+            )}
             <p style={{ fontFamily: 'var(--font-body)', fontSize: 15, color: 'rgba(238,242,238,0.7)', marginBottom: 16 }}>
               <strong style={{ color: '#EEF2EE' }}>Selected:</strong> {formatSlotSGT(selectedSlot)} · {selectedDuration} min · S${Math.round(trainer.hourly_rate * (selectedDuration / 60))}
             </p>
