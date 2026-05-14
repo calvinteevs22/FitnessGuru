@@ -17,7 +17,7 @@ describe('generateSlots', () => {
     tomorrow.setDate(tomorrow.getDate() + 1)
     const dow = new Date(tomorrow.getTime() + 8 * 60 * 60 * 1000).getUTCDay()
 
-    const result = generateSlots([avail(dow, '09:00', '11:00', 60)], [], [])
+    const result = generateSlots([avail(dow, '09:00', '11:00', 60)], [], [], 1)
     expect(result).toHaveLength(1)
     expect(result[0].slots).toHaveLength(2) // 09:00 and 10:00
     expect(result[0].duration_mins).toBe(60)
@@ -33,7 +33,8 @@ describe('generateSlots', () => {
     const result = generateSlots(
       [avail(dow, '09:00', '10:00', 60)],
       [{ blocked_date: dateStr }],
-      []
+      [],
+      1
     )
     expect(result).toHaveLength(0)
   })
@@ -52,7 +53,8 @@ describe('generateSlots', () => {
     const result = generateSlots(
       [avail(dow, '09:00', '11:00', 60)],
       [],
-      [{ scheduled_at: bookedISO }]
+      [{ scheduled_at: bookedISO }],
+      1
     )
     expect(result[0].slots).toHaveLength(1) // only 10:00 slot remains
     expect(result[0].slots[0]).not.toBe(bookedISO)

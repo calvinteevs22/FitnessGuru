@@ -8,7 +8,7 @@
  * @returns {Array<{ date: string, duration_mins: number, slots: string[] }>}
  *   date is YYYY-MM-DD in SGT; slots are UTC ISO strings
  */
-export function generateSlots(availability, blocks, confirmedBookings, daysAhead = 1) {
+export function generateSlots(availability, blocks, confirmedBookings, daysAhead = 30) {
   const blockDates = new Set(blocks.map(b => b.blocked_date))
   const bookedISOs = new Set(confirmedBookings.map(b => b.scheduled_at))
   const result = []
