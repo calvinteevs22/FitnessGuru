@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { Routes, Route, useNavigate, Navigate } from 'react-router-dom'
+import { useAuth } from './hooks/useAuth.jsx'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
 import LoginPage from './pages/LoginPage.jsx'
 import SignupEntryPage from './pages/SignupEntryPage.jsx'
@@ -340,6 +341,9 @@ function TrainerCard({ trainer, onJoin }) {
 function Nav({ role, onSwitch }) {
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const { session, profile, signOut } = useAuth()
+  const isLoggedIn = !!session
+  const authRole = profile?.role ?? null
   const isTrainer = role === 'trainer'
   const accent = isTrainer ? '#fbbf24' : '#4ade80'
   const navBg = scrolled
@@ -395,25 +399,51 @@ function Nav({ role, onSwitch }) {
           )}
 {role && (
             <>
-          <a href={isTrainer ? '/login?role=trainer' : '/login?role=client'} style={{
-            fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: 14,
-            color: 'rgba(238,242,238,0.6)', textDecoration: 'none', transition: 'color 0.2s',
-          }}
-            onMouseEnter={e => e.currentTarget.style.color = '#EEF2EE'}
-            onMouseLeave={e => e.currentTarget.style.color = 'rgba(238,242,238,0.6)'}>
-            Log in
-          </a>
-          <a href={isTrainer ? '/signup/trainer' : '/signup/client'} style={{
-            fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 14,
-            color: isTrainer ? '#141008' : '#0d1a0e', textDecoration: 'none',
-            letterSpacing: '0.05em', textTransform: 'uppercase',
-            background: accent, padding: '10px 22px', borderRadius: 8,
-            transition: 'opacity 0.2s, transform 0.15s', display: 'inline-block',
-          }}
-            onMouseEnter={e => { e.currentTarget.style.opacity = '0.88'; e.currentTarget.style.transform = 'translateY(-1px)' }}
-            onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'translateY(0)' }}>
-            {isTrainer ? 'Apply as Trainer' : 'Create Account'}
-          </a>
+          {isLoggedIn ? (
+            <>
+              <a href={authRole === 'admin' ? '/admin' : authRole === 'trainer' ? '/dashboard/trainer' : '/signup/client/profile'} style={{
+                fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: 14,
+                color: 'rgba(238,242,238,0.6)', textDecoration: 'none', transition: 'color 0.2s',
+              }}
+                onMouseEnter={e => e.currentTarget.style.color = '#EEF2EE'}
+                onMouseLeave={e => e.currentTarget.style.color = 'rgba(238,242,238,0.6)'}>
+                Dashboard
+              </a>
+              <button onClick={() => signOut()} style={{
+                fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 14,
+                color: 'rgba(238,242,238,0.7)', background: 'none',
+                border: '1px solid rgba(238,242,238,0.2)', borderRadius: 8,
+                padding: '10px 22px', cursor: 'pointer', letterSpacing: '0.05em',
+                textTransform: 'uppercase', transition: 'border-color 0.2s, color 0.2s',
+              }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(238,242,238,0.5)'; e.currentTarget.style.color = '#EEF2EE' }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(238,242,238,0.2)'; e.currentTarget.style.color = 'rgba(238,242,238,0.7)' }}>
+                Sign out
+              </button>
+            </>
+          ) : (
+            <>
+              <a href={isTrainer ? '/login?role=trainer' : '/login?role=client'} style={{
+                fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: 14,
+                color: 'rgba(238,242,238,0.6)', textDecoration: 'none', transition: 'color 0.2s',
+              }}
+                onMouseEnter={e => e.currentTarget.style.color = '#EEF2EE'}
+                onMouseLeave={e => e.currentTarget.style.color = 'rgba(238,242,238,0.6)'}>
+                Log in
+              </a>
+              <a href={isTrainer ? '/signup/trainer' : '/signup/client'} style={{
+                fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 14,
+                color: isTrainer ? '#141008' : '#0d1a0e', textDecoration: 'none',
+                letterSpacing: '0.05em', textTransform: 'uppercase',
+                background: accent, padding: '10px 22px', borderRadius: 8,
+                transition: 'opacity 0.2s, transform 0.15s', display: 'inline-block',
+              }}
+                onMouseEnter={e => { e.currentTarget.style.opacity = '0.88'; e.currentTarget.style.transform = 'translateY(-1px)' }}
+                onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'translateY(0)' }}>
+                {isTrainer ? 'Apply as Trainer' : 'Create Account'}
+              </a>
+            </>
+          )}
             </>
           )}
         </div>
@@ -442,14 +472,29 @@ function Nav({ role, onSwitch }) {
           )}
 {role && (
             <>
-          <a href={isTrainer ? '/login?role=trainer' : '/login?role=client'} onClick={() => setOpen(false)}
-            style={{ display: 'block', fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: 16, color: 'rgba(238,242,238,0.75)', textDecoration: 'none', padding: '12px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-            Log in
-          </a>
-          <a href={isTrainer ? '/signup/trainer' : '/signup/client'} onClick={() => setOpen(false)}
-            style={{ display: 'block', marginTop: 20, textAlign: 'center', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 16, letterSpacing: '0.06em', textTransform: 'uppercase', color: isTrainer ? '#141008' : '#0d1a0e', textDecoration: 'none', background: accent, padding: '14px', borderRadius: 8 }}>
-            {isTrainer ? 'Apply as Trainer' : 'Create Account'}
-          </a>
+          {isLoggedIn ? (
+            <>
+              <a href={authRole === 'admin' ? '/admin' : authRole === 'trainer' ? '/dashboard/trainer' : '/signup/client/profile'} onClick={() => setOpen(false)}
+                style={{ display: 'block', fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: 16, color: 'rgba(238,242,238,0.75)', textDecoration: 'none', padding: '12px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                Dashboard
+              </a>
+              <button onClick={() => { signOut(); setOpen(false) }}
+                style={{ display: 'block', width: '100%', textAlign: 'left', fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: 16, color: 'rgba(238,242,238,0.5)', background: 'none', border: 'none', borderBottom: '1px solid rgba(255,255,255,0.05)', cursor: 'pointer', padding: '12px 0' }}>
+                Sign out
+              </button>
+            </>
+          ) : (
+            <>
+              <a href={isTrainer ? '/login?role=trainer' : '/login?role=client'} onClick={() => setOpen(false)}
+                style={{ display: 'block', fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: 16, color: 'rgba(238,242,238,0.75)', textDecoration: 'none', padding: '12px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                Log in
+              </a>
+              <a href={isTrainer ? '/signup/trainer' : '/signup/client'} onClick={() => setOpen(false)}
+                style={{ display: 'block', marginTop: 20, textAlign: 'center', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 16, letterSpacing: '0.06em', textTransform: 'uppercase', color: isTrainer ? '#141008' : '#0d1a0e', textDecoration: 'none', background: accent, padding: '14px', borderRadius: 8 }}>
+                {isTrainer ? 'Apply as Trainer' : 'Create Account'}
+              </a>
+            </>
+          )}
             </>
           )}
         </div>
