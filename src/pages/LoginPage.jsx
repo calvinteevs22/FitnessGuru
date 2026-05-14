@@ -64,8 +64,9 @@ export default function LoginPage() {
       .eq('id', data.user.id)
       .single()
 
-    const redirectTo = searchParams.get('redirect')
-    if (redirectTo) { navigate(redirectTo); return }
+    const rawRedirect = searchParams.get('redirect')
+    const redirectTo = rawRedirect && rawRedirect.startsWith('/') && !rawRedirect.includes('://') ? rawRedirect : null
+    if (redirectTo) { navigate(redirectTo, { replace: true }); return }
     if (profile?.role === 'admin') navigate('/admin')
     else if (profile?.role === 'trainer') navigate('/dashboard/trainer')
     else navigate('/')
