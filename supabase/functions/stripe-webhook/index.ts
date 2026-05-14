@@ -70,7 +70,7 @@ serve(async (req) => {
       // Fire-and-forget: send booking confirmation email to client
       const { data: booking } = await adminClient
         .from('bookings')
-        .select('client_name, client_email, scheduled_at, duration_mins, amount_sgd, trainer_profiles!inner(profiles!inner(full_name))')
+        .select('client_name, client_email, scheduled_at, duration_mins, amount_sgd, venue_name, trainer_profiles!inner(profiles!inner(full_name))')
         .eq('id', bookingId)
         .single()
 
@@ -85,6 +85,7 @@ serve(async (req) => {
             scheduledAt: booking.scheduled_at,
             durationMins: booking.duration_mins,
             amountSgd: booking.amount_sgd,
+            venueName: booking.venue_name ?? undefined,
           },
         }).catch(() => {})
       }

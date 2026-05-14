@@ -40,11 +40,12 @@ serve(async (req) => {
     scheduledAt?: string
     durationMins?: number
     amountSgd?: number
+    venueName?: string
   }
   try { body = await req.json() }
   catch { return new Response(JSON.stringify({ error: 'Invalid JSON' }), { status: 400, headers: jsonHeaders }) }
 
-  const { status, clientEmail, clientName, trainerName, scheduledAt, durationMins, amountSgd } = body
+  const { status, clientEmail, clientName, trainerName, scheduledAt, durationMins, amountSgd, venueName } = body
   if (!status || !clientEmail) {
     return new Response(JSON.stringify({ error: 'status and clientEmail required' }), { status: 400, headers: jsonHeaders })
   }
@@ -54,6 +55,7 @@ serve(async (req) => {
   const safeTime = scheduledAt ? escapeHtml(formatSGT(scheduledAt)) : ''
   const safeDuration = durationMins ? `${durationMins} minutes` : ''
   const safeAmount = amountSgd ? `S$${(amountSgd / 100).toFixed(0)}` : ''
+  const safeVenue = venueName ? escapeHtml(venueName) : ''
 
   let subject: string
   let html: string
@@ -66,6 +68,7 @@ serve(async (req) => {
         <p>Your session with <strong>${safeTrainer}</strong> is confirmed.</p>
         <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
           <tr><td style="padding: 8px 0; color: #555;">When</td><td style="padding: 8px 0; font-weight: bold;">${safeTime}</td></tr>
+          ${safeVenue ? `<tr><td style="padding: 8px 0; color: #555;">Where</td><td style="padding: 8px 0; font-weight: bold;">${safeVenue}</td></tr>` : ''}
           <tr><td style="padding: 8px 0; color: #555;">Duration</td><td style="padding: 8px 0;">${safeDuration}</td></tr>
           ${safeAmount ? `<tr><td style="padding: 8px 0; color: #555;">Paid</td><td style="padding: 8px 0;">${safeAmount}</td></tr>` : ''}
         </table>
