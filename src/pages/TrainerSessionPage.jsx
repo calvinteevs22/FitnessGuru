@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
+import ExerciseLogger from '../components/ExerciseLogger'
 
 const PAGE = { minHeight: '100vh', background: '#0d1a0e', padding: '40px 24px' }
 const WRAP = { maxWidth: 680, margin: '0 auto' }
@@ -12,15 +13,6 @@ const BTN_GREEN = { background: '#4ade80', color: '#0d1a0e', border: 'none', bor
 const BTN_GHOST = { background: 'transparent', border: '1px solid rgba(238,242,238,0.2)', color: 'rgba(238,242,238,0.6)', borderRadius: 6, padding: '10px 20px', fontSize: 14, fontFamily: 'var(--font-body)', cursor: 'pointer' }
 const LABEL = { color: 'rgba(238,242,238,0.5)', fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4, display: 'block' }
 
-// ExerciseLogger will be imported in Task 4; use a placeholder for now
-function ExerciseLogger({ day, logs, onLogSet, onFinish }) {
-  return (
-    <div>
-      <p style={{ color: '#EEF2EE', fontFamily: 'var(--font-body)' }}>Exercise logging coming in Task 4.</p>
-      <button onClick={onFinish} style={BTN_GHOST}>Done Logging → Add Notes</button>
-    </div>
-  )
-}
 
 export default function TrainerSessionPage() {
   const { bookingId } = useParams()
