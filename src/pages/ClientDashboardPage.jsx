@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase.js'
 import { useAuth } from '../hooks/useAuth.jsx'
 import { formatSlotSGT } from '../utils/slotGenerator.js'
+import ClientPlanTab from './ClientPlanTab'
 
 const STATUS_COLOR = {
   confirmed: '#4ade80',
@@ -24,6 +25,12 @@ export default function ClientDashboardPage() {
   const [loading, setLoading] = useState(true)
   const [cancelling, setCancelling] = useState(null)
   const [cancelError, setCancelError] = useState(null)
+  const [activeTab, setActiveTab] = useState('bookings')
+
+  const CLIENT_TABS = [
+    { key: 'bookings', label: 'My Bookings' },
+    { key: 'plan', label: 'My Plan' },
+  ]
 
   const fetchBookings = useCallback(async () => {
     if (!session) return
@@ -79,37 +86,56 @@ export default function ClientDashboardPage() {
         }}>
           My Bookings
         </h1>
-        <p style={{ fontFamily: 'var(--font-body)', color: 'rgba(238,242,238,0.45)', fontSize: 15, marginBottom: 40 }}>
+        <p style={{ fontFamily: 'var(--font-body)', color: 'rgba(238,242,238,0.45)', fontSize: 15, marginBottom: 28 }}>
           {session?.user?.email}
         </p>
 
-        {cancelError && (
-          <div style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 8, padding: '12px 16px', marginBottom: 20 }}>
-            <p style={{ fontFamily: 'var(--font-body)', color: '#f87171', fontSize: 14, margin: 0 }}>{cancelError}</p>
-          </div>
+        <div style={{ display: 'flex', gap: 4, marginBottom: 28, background: 'rgba(255,255,255,0.04)', borderRadius: 10, padding: 4 }}>
+          {CLIENT_TABS.map(t => (
+            <button key={t.key} onClick={() => setActiveTab(t.key)} style={{
+              flex: 1, padding: '10px 16px', borderRadius: 7, border: 'none', cursor: 'pointer',
+              fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 13, letterSpacing: '0.05em', textTransform: 'uppercase',
+              background: activeTab === t.key ? 'rgba(74,222,128,0.12)' : 'transparent',
+              color: activeTab === t.key ? '#4ade80' : 'rgba(238,242,238,0.45)',
+              borderBottom: activeTab === t.key ? '2px solid #4ade80' : '2px solid transparent',
+              transition: 'all 0.2s',
+            }}>{t.label}</button>
+          ))}
+        </div>
+
+        {activeTab === 'bookings' && (
+          <>
+            {cancelError && (
+              <div style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 8, padding: '12px 16px', marginBottom: 20 }}>
+                <p style={{ fontFamily: 'var(--font-body)', color: '#f87171', fontSize: 14, margin: 0 }}>{cancelError}</p>
+              </div>
+            )}
+
+            {/* Upcoming */}
+            <Section title="Upcoming">
+              {active.length === 0
+                ? <Empty text="No upcoming bookings." action="Browse trainers" onAction={() => navigate('/trainers')} />
+                : active.map(b => (
+                    <BookingCard
+                      key={b.id}
+                      booking={b}
+                      onCancel={canCancel(b.scheduled_at) ? handleCancel : null}
+                      cancelling={cancelling === b.id}
+                    />
+                  ))
+              }
+            </Section>
+
+            {/* Past */}
+            {past.length > 0 && (
+              <Section title="Past">
+                {past.map(b => <BookingCard key={b.id} booking={b} />)}
+              </Section>
+            )}
+          </>
         )}
 
-        {/* Upcoming */}
-        <Section title="Upcoming">
-          {active.length === 0
-            ? <Empty text="No upcoming bookings." action="Browse trainers" onAction={() => navigate('/trainers')} />
-            : active.map(b => (
-                <BookingCard
-                  key={b.id}
-                  booking={b}
-                  onCancel={canCancel(b.scheduled_at) ? handleCancel : null}
-                  cancelling={cancelling === b.id}
-                />
-              ))
-          }
-        </Section>
-
-        {/* Past */}
-        {past.length > 0 && (
-          <Section title="Past">
-            {past.map(b => <BookingCard key={b.id} booking={b} />)}
-          </Section>
-        )}
+        {activeTab === 'plan' && <ClientPlanTab clientId={session.user.id} />}
       </div>
     </div>
   )
