@@ -1560,13 +1560,8 @@ function Footer() {
   return (
     <footer style={{ background: '#07090a', borderTop: '1px solid rgba(255,255,255,0.05)', padding: '40px 24px' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', flexWrap: 'wrap', gap: 16, justifyContent: 'space-between', alignItems: 'center' }}>
-        <a href="#" aria-label="FitnessGuru home" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
-          <div style={{ width: 30, height: 30, borderRadius: 7, background: '#2d6a2e', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 12, color: '#fff' }}>FG</span>
-          </div>
-          <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 18, color: '#EEF2EE' }}>
-            Fitness<span style={{ color: '#4ade80' }}>Guru</span>
-          </span>
+        <a href="#" aria-label="ReadyPT home" style={{ textDecoration: 'none' }}>
+          <ReadyPTLogo />
         </a>
         <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(238,242,238,0.28)', margin: 0, textAlign: 'center' }}>
           &copy; 2026 FitnessGuru Pte Ltd &middot; Singapore &middot; Confidential
