@@ -788,7 +788,7 @@ function FeaturedTrainers() {
   })
   const [ref, visible] = useScrollReveal(0.08)
 
-  const scrollToWaitlist = () => document.getElementById('waitlist')?.scrollIntoView({ behavior: 'smooth' })
+  const goToTrainers = () => { window.location.href = '/trainers' }
 
   const matchesGoal = t => !activeGoal || t.goals.includes(activeGoal)
   const matchesRegion = t => !activeRegion || t.regions.includes(activeRegion)
@@ -889,7 +889,7 @@ function FeaturedTrainers() {
             </p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16 }}>
               {spotlightTrainers.map(t => (
-                <TrainerCard key={t.id} trainer={t} onJoin={scrollToWaitlist} />
+                <TrainerCard key={t.id} trainer={t} onJoin={goToTrainers} />
               ))}
             </div>
           </div>
@@ -899,7 +899,7 @@ function FeaturedTrainers() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 20 }}>
           {TRAINERS.map((t, i) => (
             <div key={t.id} style={{ opacity: visible ? 1 : 0, transform: visible ? 'none' : 'translateY(32px)', transition: `opacity 0.6s ease ${0.1 + i * 0.08}s, transform 0.6s ease ${0.1 + i * 0.08}s` }}>
-              <TrainerCard trainer={t} onJoin={scrollToWaitlist} />
+              <TrainerCard trainer={t} onJoin={goToTrainers} />
             </div>
           ))}
         </div>
@@ -909,7 +909,7 @@ function FeaturedTrainers() {
           <p style={{ fontFamily: 'var(--font-body)', fontSize: 15, color: 'rgba(238,242,238,0.38)', margin: '0 0 24px' }}>
             Showing 6 of 40+ trainers across Singapore
           </p>
-          <a href="#waitlist" style={{
+          <a href="/trainers" style={{
             display: 'inline-flex', alignItems: 'center', gap: 8,
             fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 14, letterSpacing: '0.06em', textTransform: 'uppercase',
             color: '#4ade80', textDecoration: 'none',
@@ -918,7 +918,7 @@ function FeaturedTrainers() {
           }}
             onMouseEnter={e => { e.currentTarget.style.background = 'rgba(74,222,128,0.12)'; e.currentTarget.style.borderColor = 'rgba(74,222,128,0.45)' }}
             onMouseLeave={e => { e.currentTarget.style.background = 'rgba(74,222,128,0.06)'; e.currentTarget.style.borderColor = 'rgba(74,222,128,0.25)' }}>
-            Join the waitlist to book any of these trainers <ArrowRight size={16} />
+            Browse all trainers <ArrowRight size={16} />
           </a>
         </div>
       </div>
