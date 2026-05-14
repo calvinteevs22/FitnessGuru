@@ -234,9 +234,253 @@ function TemplatesList({ trainerId, onEdit }) {
   )
 }
 
-/* ─── ClientsSection placeholder (filled in Task 5) ─────────── */
+/* ─── ClientPlanEditor ───────────────────────────────────────── */
+// Reuses DayBuilder. Takes a template, deep-copies into client_plans.
+function ClientPlanEditor({ trainerId, client, templates, existingPlan, onSaved, onCancel }) {
+  const [selectedTemplateId, setSelectedTemplateId] = useState('')
+  const [name, setName] = useState(existingPlan?.name ?? '')
+  const [goal, setGoal] = useState(existingPlan?.goal ?? '')
+  const [totalWeeks, setTotalWeeks] = useState(existingPlan?.total_weeks ?? '')
+  const [days, setDays] = useState(existingPlan?.days ?? [])
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
+  const [loadingTemplate, setLoadingTemplate] = useState(false)
+
+  async function loadTemplate(templateId) {
+    if (!templateId) return
+    setLoadingTemplate(true)
+    const { data } = await supabase
+      .from('plan_templates')
+      .select('*, template_days(id, day_number, label, is_rest, template_exercises(id, exercise_id, position, sets, reps, weight_kg, notes, exercises(id, name, muscle_group, equipment)))')
+      .eq('id', templateId)
+      .single()
+    if (data) {
+      setName(data.name)
+      setGoal(data.goal ?? '')
+      const mappedDays = (data.template_days ?? [])
+        .sort((a, b) => a.day_number - b.day_number)
+        .map(d => ({
+          day_number: d.day_number,
+          label: d.label,
+          is_rest: d.is_rest,
+          exercises: (d.template_exercises ?? [])
+            .sort((a, b) => a.position - b.position)
+            .map(te => ({ exercise: te.exercises, sets: te.sets, reps: te.reps, weight_kg: te.weight_kg ?? '', notes: te.notes ?? '' })),
+        }))
+      setDays(mappedDays)
+    }
+    setLoadingTemplate(false)
+  }
+
+  async function handleSave() {
+    if (!name.trim()) { setError('Plan name is required'); return }
+    if (days.length === 0) { setError('Add at least one day'); return }
+    setSaving(true)
+    setError('')
+
+    const planPayload = {
+      trainer_id: trainerId,
+      client_id: client.id,
+      name: name.trim(),
+      goal: goal.trim() || null,
+      total_weeks: totalWeeks ? parseInt(totalWeeks) : null,
+      status: 'active',
+    }
+
+    let planId = existingPlan?.id
+
+    if (existingPlan?.id) {
+      await supabase.from('client_plans').update(planPayload).eq('id', existingPlan.id)
+      await supabase.from('client_plan_days').delete().eq('plan_id', existingPlan.id)
+    } else {
+      // Archive any existing active plan for this client
+      await supabase.from('client_plans').update({ status: 'archived' }).eq('client_id', client.id).eq('status', 'active')
+      const { data } = await supabase.from('client_plans').insert(planPayload).select().single()
+      planId = data.id
+    }
+
+    for (const day of days) {
+      const { data: dayData } = await supabase
+        .from('client_plan_days')
+        .insert({ plan_id: planId, day_number: day.day_number, label: day.label, is_rest: day.is_rest })
+        .select().single()
+      for (let i = 0; i < (day.exercises ?? []).length; i++) {
+        const row = day.exercises[i]
+        await supabase.from('client_plan_exercises').insert({
+          day_id: dayData.id,
+          exercise_id: row.exercise.id,
+          position: i,
+          sets: row.sets,
+          reps: row.reps,
+          weight_kg: row.weight_kg ? parseFloat(row.weight_kg) : null,
+          notes: row.notes || null,
+        })
+      }
+    }
+
+    setSaving(false)
+    onSaved()
+  }
+
+  return (
+    <div style={CARD}>
+      <h3 style={{ color: '#EEF2EE', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 18, margin: '0 0 4px' }}>
+        {existingPlan ? 'Edit Plan' : 'Assign Plan'} — {client.full_name}
+      </h3>
+      {!existingPlan && (
+        <div style={{ marginBottom: 20 }}>
+          <span style={LABEL}>Start from a template (optional)</span>
+          <select
+            style={{ ...INPUT, cursor: 'pointer' }}
+            value={selectedTemplateId}
+            onChange={e => { setSelectedTemplateId(e.target.value); loadTemplate(e.target.value) }}
+          >
+            <option value="">— Build from scratch —</option>
+            {templates.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+          </select>
+          {loadingTemplate && <p style={{ color: 'rgba(238,242,238,0.4)', fontFamily: 'var(--font-body)', fontSize: 13, marginTop: 6 }}>Loading template...</p>}
+        </div>
+      )}
+      {error && <p style={{ color: '#f87171', fontFamily: 'var(--font-body)', fontSize: 13, marginBottom: 12 }}>{error}</p>}
+      <div style={{ display: 'flex', gap: 12, marginBottom: 20 }}>
+        <div style={{ flex: 2 }}>
+          <span style={LABEL}>Plan Name</span>
+          <input style={INPUT} placeholder="e.g. 8-Week Strength Program" value={name} onChange={e => setName(e.target.value)} />
+        </div>
+        <div style={{ flex: 2 }}>
+          <span style={LABEL}>Goal</span>
+          <input style={INPUT} placeholder="e.g. Build muscle, Lose fat..." value={goal} onChange={e => setGoal(e.target.value)} />
+        </div>
+        <div style={{ flex: 1 }}>
+          <span style={LABEL}>Total Weeks</span>
+          <input style={INPUT} type="number" min="1" placeholder="e.g. 8" value={totalWeeks} onChange={e => setTotalWeeks(e.target.value)} />
+        </div>
+      </div>
+
+      {days.map((day, idx) => (
+        <DayBuilder key={idx} day={day} onUpdate={updated => setDays(prev => prev.map((d, i) => i === idx ? updated : d))} onRemove={() => setDays(prev => prev.filter((_, i) => i !== idx).map((d, i) => ({ ...d, day_number: i + 1 })))} />
+      ))}
+
+      <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
+        <button onClick={() => setDays(prev => [...prev, { day_number: prev.length + 1, label: `Day ${prev.length + 1}`, is_rest: false, exercises: [] }])} style={BTN_SMALL}>+ Add Day</button>
+        <button onClick={handleSave} disabled={saving} style={{ ...BTN_GREEN, opacity: saving ? 0.6 : 1 }}>
+          {saving ? 'Saving...' : 'Save Plan'}
+        </button>
+        <button onClick={onCancel} style={BTN_GHOST}>Cancel</button>
+      </div>
+    </div>
+  )
+}
+
+/* ─── ClientsSection ─────────────────────────────────────────── */
 function ClientsSection({ trainerId }) {
-  return <p style={{ color: 'rgba(238,242,238,0.5)', fontFamily: 'var(--font-body)' }}>Clients section coming soon.</p>
+  const [clients, setClients] = useState([])
+  const [templates, setTemplates] = useState([])
+  const [activePlans, setActivePlans] = useState({}) // client_id → plan
+  const [loading, setLoading] = useState(true)
+  const [editing, setEditing] = useState(null) // { client, plan|null }
+  const [refreshKey, setRefreshKey] = useState(0)
+
+  useEffect(() => {
+    async function load() {
+      const [bookingsRes, templatesRes, plansRes] = await Promise.all([
+        supabase
+          .from('bookings')
+          .select('client_id, client_name, profiles!bookings_client_id_fkey(id, full_name)')
+          .eq('trainer_id', trainerId)
+          .in('status', ['confirmed', 'completed'])
+          .not('client_id', 'is', null),
+        supabase.from('plan_templates').select('id, name').eq('trainer_id', trainerId).order('created_at'),
+        supabase
+          .from('client_plans')
+          .select('*, client_plan_days(id, day_number, label, is_rest, client_plan_exercises(id, exercise_id, position, sets, reps, weight_kg, notes, exercises(id, name, muscle_group, equipment)))')
+          .eq('trainer_id', trainerId)
+          .eq('status', 'active'),
+      ])
+
+      // Deduplicate clients by client_id
+      const seen = new Set()
+      const uniqueClients = []
+      for (const b of (bookingsRes.data ?? [])) {
+        if (b.client_id && !seen.has(b.client_id)) {
+          seen.add(b.client_id)
+          uniqueClients.push({ id: b.client_id, full_name: b.profiles?.full_name ?? b.client_name })
+        }
+      }
+
+      const plansByClient = {}
+      for (const plan of (plansRes.data ?? [])) {
+        plansByClient[plan.client_id] = plan
+      }
+
+      setClients(uniqueClients)
+      setTemplates(templatesRes.data ?? [])
+      setActivePlans(plansByClient)
+      setLoading(false)
+    }
+    load()
+  }, [trainerId, refreshKey])
+
+  function handleSaved() {
+    setEditing(null)
+    setRefreshKey(k => k + 1)
+  }
+
+  function startEdit(client, existingPlan) {
+    if (existingPlan) {
+      const days = (existingPlan.client_plan_days ?? [])
+        .sort((a, b) => a.day_number - b.day_number)
+        .map(d => ({
+          day_number: d.day_number,
+          label: d.label,
+          is_rest: d.is_rest,
+          exercises: (d.client_plan_exercises ?? [])
+            .sort((a, b) => a.position - b.position)
+            .map(ce => ({ exercise: ce.exercises, sets: ce.sets, reps: ce.reps, weight_kg: ce.weight_kg ?? '', notes: ce.notes ?? '' })),
+        }))
+      setEditing({ client, plan: { ...existingPlan, days } })
+    } else {
+      setEditing({ client, plan: null })
+    }
+  }
+
+  if (loading) return <p style={{ color: 'rgba(238,242,238,0.5)', fontFamily: 'var(--font-body)' }}>Loading clients...</p>
+
+  if (editing) {
+    return (
+      <ClientPlanEditor
+        trainerId={trainerId}
+        client={editing.client}
+        templates={templates}
+        existingPlan={editing.plan}
+        onSaved={handleSaved}
+        onCancel={() => setEditing(null)}
+      />
+    )
+  }
+
+  if (clients.length === 0) return <p style={{ color: 'rgba(238,242,238,0.4)', fontFamily: 'var(--font-body)', fontSize: 14 }}>No clients yet. Clients appear here after a confirmed booking.</p>
+
+  return (
+    <div>
+      {clients.map(client => {
+        const plan = activePlans[client.id]
+        return (
+          <div key={client.id} style={{ ...CARD, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <p style={{ color: '#EEF2EE', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 15, margin: '0 0 4px', textTransform: 'uppercase' }}>{client.full_name}</p>
+              <p style={{ color: plan ? '#4ade80' : 'rgba(238,242,238,0.35)', fontFamily: 'var(--font-body)', fontSize: 13, margin: 0 }}>
+                {plan ? plan.name : 'No plan assigned'}
+              </p>
+            </div>
+            <button onClick={() => startEdit(client, plan ?? null)} style={plan ? BTN_GHOST : BTN_GREEN}>
+              {plan ? 'Edit Plan' : 'Assign Plan'}
+            </button>
+          </div>
+        )
+      })}
+    </div>
+  )
 }
 
 /* ─── Main TrainerPlansTab ───────────────────────────────────── */
