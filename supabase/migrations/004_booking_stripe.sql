@@ -35,10 +35,21 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
 END $$;
 
--- 4. Public read for profiles (needed to join full_name, bio, photo on trainer pages)
+-- 4. Public read for profiles (narrowed to approved trainers only)
 DO $$ BEGIN
   CREATE POLICY "Public read profiles"
     ON public.profiles FOR SELECT
-    USING (true);
+    USING (
+      EXISTS (
+        SELECT 1 FROM public.trainer_profiles tp
+        WHERE tp.id = public.profiles.id
+          AND tp.status = 'approved'
+      )
+    );
 EXCEPTION WHEN duplicate_object THEN NULL;
 END $$;
+
+-- 5. Unique index on stripe_session_id to prevent duplicate webhook processing
+CREATE UNIQUE INDEX IF NOT EXISTS bookings_stripe_session_id_key
+  ON public.bookings (stripe_session_id)
+  WHERE stripe_session_id IS NOT NULL;
