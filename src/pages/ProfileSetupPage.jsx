@@ -161,6 +161,15 @@ export default function ProfileSetupPage() {
 
       if (error) throw new Error(error.message)
 
+      // Fire submission notification — non-blocking, don't fail on email error
+      supabase.functions.invoke('notify-trainer', {
+        body: {
+          trainerName: fullName.trim(),
+          trainerEmail: session.user.email,
+          status: 'submitted',
+        },
+      }).catch(() => {})
+
       await refreshProfile()
       navigate('/dashboard/trainer')
     } catch (err) {
