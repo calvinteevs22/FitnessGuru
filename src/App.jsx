@@ -341,6 +341,41 @@ function TrainerCard({ trainer, onJoin }) {
   )
 }
 
+/* ─── ReadyPTLogo ────────────────────────────────────────────────────── */
+function ReadyPTLogo() {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+      <div style={{ position: 'relative', width: 40, height: 40 }}>
+        <div style={{
+          width: 40, height: 40, borderRadius: 8, background: '#1a3320',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <span style={{
+            fontFamily: 'var(--font-heading)', fontWeight: 900,
+            fontSize: 26, color: '#fff', lineHeight: 1, paddingLeft: 2,
+          }}>R</span>
+        </div>
+        <div style={{
+          position: 'absolute', top: -4, right: -6,
+          background: '#2d6a2e', borderRadius: 4,
+          padding: '1px 5px',
+        }}>
+          <span style={{
+            fontFamily: 'var(--font-body)', fontWeight: 700,
+            fontSize: 9, color: '#fff', letterSpacing: '0.05em',
+          }}>PT</span>
+        </div>
+      </div>
+      <span style={{
+        fontFamily: 'var(--font-heading)', fontWeight: 700,
+        fontSize: 20, color: '#EEF2EE', letterSpacing: '-0.01em',
+      }}>
+        Ready<span style={{ color: '#4ade80' }}>PT</span>
+      </span>
+    </div>
+  )
+}
+
 /* ─── Nav ────────────────────────────────────────────────────── */
 function Nav({ role, onSwitch }) {
   const [open, setOpen] = useState(false)
@@ -369,21 +404,8 @@ function Nav({ role, onSwitch }) {
     }}>
       <nav style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', height: 68, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         {/* Logo */}
-        <a href="#" aria-label="FitnessGuru home" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
-          <div style={{
-            width: 36, height: 36, borderRadius: 9,
-            background: 'linear-gradient(135deg, #1a5c1b 0%, #2d8a2e 60%, #3dab3e 100%)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            animation: 'logo-pulse 3s ease-in-out infinite',
-            border: '1px solid rgba(74,222,128,0.35)',
-            position: 'relative', overflow: 'hidden',
-          }}>
-            <div style={{ position: 'absolute', top: 0, left: '-60%', width: '40%', height: '100%', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent)', transform: 'skewX(-15deg)', animation: 'card-shine 4s ease-in-out infinite 1.5s' }} />
-            <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: 15, color: '#fff', letterSpacing: '-0.02em', position: 'relative', zIndex: 1 }}>FG</span>
-          </div>
-          <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 21, color: '#EEF2EE', letterSpacing: '0.01em' }}>
-            Fitness<span style={{ color: accent, transition: 'color 0.3s' }}>Guru</span>
-          </span>
+        <a href="#" aria-label="ReadyPT home" style={{ textDecoration: 'none' }}>
+          <ReadyPTLogo />
         </a>
 
         {/* Desktop */}
