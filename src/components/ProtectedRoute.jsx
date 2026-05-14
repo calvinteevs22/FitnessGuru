@@ -20,7 +20,8 @@ export default function ProtectedRoute({ children, requiredRole }) {
   if (requiredRole) {
     // profile is null = row doesn't exist in profiles table
     if (profile === null) return <Navigate to="/" replace />
-    if (profile.role !== requiredRole) return <Navigate to="/" replace />
+    // Admin can access any role-gated page
+    if (profile.role !== requiredRole && profile.role !== 'admin') return <Navigate to="/" replace />
   }
 
   return children

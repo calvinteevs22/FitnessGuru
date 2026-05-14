@@ -18,7 +18,7 @@ function canCancel(scheduledAt) {
 }
 
 export default function ClientDashboardPage() {
-  const { session } = useAuth()
+  const { session, profile } = useAuth()
   const navigate = useNavigate()
   const [bookings, setBookings] = useState([])
   const [loading, setLoading] = useState(true)
@@ -68,6 +68,11 @@ export default function ClientDashboardPage() {
   return (
     <div style={{ minHeight: '100vh', background: '#0d1a0e', padding: '80px 24px' }}>
       <div style={{ maxWidth: 720, margin: '0 auto' }}>
+        {profile?.role === 'admin' && (
+          <a href="/admin" style={{ display: 'inline-block', marginBottom: 20, color: '#4ade80', fontFamily: 'var(--font-body)', fontSize: 13, textDecoration: 'none' }}>
+            ← Back to Admin
+          </a>
+        )}
         <h1 style={{
           fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 36,
           color: '#EEF2EE', textTransform: 'uppercase', letterSpacing: '-0.02em', marginBottom: 8,

@@ -481,6 +481,11 @@ export default function TrainerDashboardPage() {
   return (
     <div style={PAGE}>
       <div style={WRAP}>
+        {profile?.role === 'admin' && (
+          <a href="/admin" style={{ display: 'inline-block', marginBottom: 20, color: '#4ade80', fontFamily: 'var(--font-body)', fontSize: 13, textDecoration: 'none' }}>
+            ← Back to Admin
+          </a>
+        )}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 28 }}>
           <div>
             <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 36, color: '#EEF2EE', fontWeight: 700, margin: '0 0 4px', letterSpacing: 1 }}>

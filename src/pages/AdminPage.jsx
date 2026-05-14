@@ -109,10 +109,20 @@ export default function AdminPage() {
           <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 36, color: '#EEF2EE', fontWeight: 700, letterSpacing: 1, margin: 0 }}>
             Admin Dashboard
           </h1>
-          <button onClick={signOut}
-            style={{ background: 'transparent', border: '1px solid rgba(238,242,238,0.2)', color: 'rgba(238,242,238,0.6)', borderRadius: 6, padding: '8px 16px', fontSize: 13, fontFamily: 'var(--font-body)', cursor: 'pointer' }}>
-            Sign out
-          </button>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <a href="/dashboard/client"
+              style={{ background: 'transparent', border: '1px solid rgba(74,222,128,0.4)', color: '#4ade80', borderRadius: 6, padding: '8px 16px', fontSize: 13, fontFamily: 'var(--font-body)', textDecoration: 'none', cursor: 'pointer' }}>
+              Client view
+            </a>
+            <a href="/dashboard/trainer"
+              style={{ background: 'transparent', border: '1px solid rgba(251,191,36,0.4)', color: '#fbbf24', borderRadius: 6, padding: '8px 16px', fontSize: 13, fontFamily: 'var(--font-body)', textDecoration: 'none', cursor: 'pointer' }}>
+              Trainer view
+            </a>
+            <button onClick={signOut}
+              style={{ background: 'transparent', border: '1px solid rgba(238,242,238,0.2)', color: 'rgba(238,242,238,0.6)', borderRadius: 6, padding: '8px 16px', fontSize: 13, fontFamily: 'var(--font-body)', cursor: 'pointer' }}>
+              Sign out
+            </button>
+          </div>
         </div>
 
         <div style={{ display: 'flex', gap: 8, marginBottom: 24 }}>
