@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <clipPath id="bounds">
+      <rect width="512" height="512"/>
+    </clipPath>
+  </defs>
+
+  <!-- Background -->
+  <rect width="512" height="512" fill="#0B1A05"/>
+
+  <!-- Concentric arcs — top-right corner decoration, 30% opacity -->
+  <g clip-path="url(#bounds)" opacity="0.30" fill="none" stroke="#2D6A27" stroke-width="1.5">
+    <path d="M512,0 A100,100 0 0,0 412,100"/>
+    <path d="M512,0 A170,170 0 0,0 342,170"/>
+    <path d="M512,0 A240,240 0 0,0 272,240"/>
+    <path d="M512,0 A310,310 0 0,0 202,310"/>
+    <path d="M512,0 A380,380 0 0,0 132,380"/>
+  </g>
+
+  <!-- Left accent bar -->
+  <rect x="0" y="0" width="6" height="512" fill="#2D6A27"/>
+
+  <!-- Large R — centered -->
+  <text
+    x="262"
+    y="474"
+    font-family="Arial Black, Arial, sans-serif"
+    font-weight="900"
+    font-size="470"
+    fill="#FFFFFF"
+    text-anchor="middle"
+  >R</text>
+
+  <!-- Horizontal underline under R leg -->
+  <rect x="130" y="478" width="104" height="7" rx="3.5" fill="#2D6A27"/>
+
+  <!-- PT pill badge — floats above the R bowl with clear separation -->
+  <rect x="290" y="10" width="172" height="72" rx="36" fill="#2D6A27"/>
+  <text
+    x="376"
+    y="68"
+    font-family="Arial Black, Arial, sans-serif"
+    font-weight="900"
+    font-size="42"
+    fill="#FFFFFF"
+    text-anchor="middle"
+    letter-spacing="3"
+  >PT</text>
+</svg>
