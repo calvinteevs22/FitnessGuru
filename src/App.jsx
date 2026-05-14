@@ -15,6 +15,7 @@ import TrainerListingPage from './pages/TrainerListingPage.jsx'
 import TrainerProfilePage from './pages/TrainerProfilePage.jsx'
 import BookingConfirmedPage from './pages/BookingConfirmedPage.jsx'
 import ClientDashboardPage from './pages/ClientDashboardPage.jsx'
+import TrainerSessionPage from './pages/TrainerSessionPage'
 
 /* ─── Mock trainer roster ────────────────────────────────────── */
 const TRAINERS = [
@@ -1619,6 +1620,9 @@ export default function App() {
       } />
       <Route path="/dashboard/client" element={
         <ProtectedRoute><ClientDashboardPage /></ProtectedRoute>
+      } />
+      <Route path="/trainer/session/:bookingId" element={
+        <ProtectedRoute requiredRole="trainer"><TrainerSessionPage /></ProtectedRoute>
       } />
     </Routes>
   )
