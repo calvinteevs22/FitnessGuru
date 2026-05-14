@@ -1,7 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
-import { Routes, Route, useNavigate } from 'react-router-dom'
+import { Routes, Route, useNavigate, Navigate } from 'react-router-dom'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
 import LoginPage from './pages/LoginPage.jsx'
+import SignupEntryPage from './pages/SignupEntryPage.jsx'
+import ClientSignupPage from './pages/ClientSignupPage.jsx'
+import ClientProfileSetupPage from './pages/ClientProfileSetupPage.jsx'
 import RegisterTrainerPage from './pages/RegisterTrainerPage.jsx'
 import VerifyPage from './pages/VerifyPage.jsx'
 import ProfileSetupPage from './pages/ProfileSetupPage.jsx'
@@ -375,17 +378,29 @@ function Nav({ role, onSwitch }) {
               </button>
             </>
           )}
-          <a href="#waitlist" style={{
+{role && (
+            <>
+          <a href={isTrainer ? '/login?role=trainer' : '/login?role=client'} style={{
+            fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: 14,
+            color: 'rgba(238,242,238,0.6)', textDecoration: 'none', transition: 'color 0.2s',
+          }}
+            onMouseEnter={e => e.currentTarget.style.color = '#EEF2EE'}
+            onMouseLeave={e => e.currentTarget.style.color = 'rgba(238,242,238,0.6)'}>
+            Log in
+          </a>
+          <a href={isTrainer ? '/signup/trainer' : '/signup/client'} style={{
             fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 14,
-            color: isTrainer ? '#141008' : '#fff', textDecoration: 'none',
+            color: isTrainer ? '#141008' : '#0d1a0e', textDecoration: 'none',
             letterSpacing: '0.05em', textTransform: 'uppercase',
             background: accent, padding: '10px 22px', borderRadius: 8,
             transition: 'opacity 0.2s, transform 0.15s', display: 'inline-block',
           }}
             onMouseEnter={e => { e.currentTarget.style.opacity = '0.88'; e.currentTarget.style.transform = 'translateY(-1px)' }}
             onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'translateY(0)' }}>
-            {isTrainer ? 'Apply as Trainer' : 'Join Waitlist'}
+            {isTrainer ? 'Apply as Trainer' : 'Create Account'}
           </a>
+            </>
+          )}
         </div>
 
         {/* Mobile toggle */}
@@ -410,10 +425,18 @@ function Nav({ role, onSwitch }) {
               </button>
             </>
           )}
-          <a href="#waitlist" onClick={() => setOpen(false)}
-            style={{ display: 'block', marginTop: 20, textAlign: 'center', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 16, letterSpacing: '0.06em', textTransform: 'uppercase', color: isTrainer ? '#141008' : '#fff', textDecoration: 'none', background: accent, padding: '14px', borderRadius: 8 }}>
-            {isTrainer ? 'Apply as Trainer' : 'Join Waitlist'}
+{role && (
+            <>
+          <a href={isTrainer ? '/login?role=trainer' : '/login?role=client'} onClick={() => setOpen(false)}
+            style={{ display: 'block', fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: 16, color: 'rgba(238,242,238,0.75)', textDecoration: 'none', padding: '12px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+            Log in
           </a>
+          <a href={isTrainer ? '/signup/trainer' : '/signup/client'} onClick={() => setOpen(false)}
+            style={{ display: 'block', marginTop: 20, textAlign: 'center', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 16, letterSpacing: '0.06em', textTransform: 'uppercase', color: isTrainer ? '#141008' : '#0d1a0e', textDecoration: 'none', background: accent, padding: '14px', borderRadius: 8 }}>
+            {isTrainer ? 'Apply as Trainer' : 'Create Account'}
+          </a>
+            </>
+          )}
         </div>
       )}
 
@@ -1454,7 +1477,7 @@ function Landing() {
       <main id="main-content" style={{ opacity: fading ? 0 : 1, transition: 'opacity 0.28s ease-out' }}>
         {role === null && <SplitHero onSelect={selectRole} />}
         {role === 'client' && <ClientPage />}
-        {role === 'trainer' && <TrainerPage onApply={() => navigate('/register/trainer')} />}
+        {role === 'trainer' && <TrainerPage onApply={() => navigate('/signup/trainer')} />}
       </main>
       {role !== null && <Footer />}
     </>
@@ -1467,7 +1490,13 @@ export default function App() {
     <Routes>
       <Route path="/" element={<Landing />} />
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/register/trainer" element={<RegisterTrainerPage />} />
+      <Route path="/register/trainer" element={<Navigate to="/signup/trainer" replace />} />
+      <Route path="/signup" element={<SignupEntryPage />} />
+      <Route path="/signup/client" element={<ClientSignupPage />} />
+      <Route path="/signup/client/profile" element={
+        <ProtectedRoute><ClientProfileSetupPage /></ProtectedRoute>
+      } />
+      <Route path="/signup/trainer" element={<RegisterTrainerPage />} />
       <Route path="/verify" element={<VerifyPage />} />
       <Route path="/profile/setup" element={
         <ProtectedRoute><ProfileSetupPage /></ProtectedRoute>
