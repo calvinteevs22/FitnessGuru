@@ -1,5 +1,6 @@
 // src/pages/TrainerPlansTab.jsx
 import { useState, useEffect, useCallback } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import ExerciseSearch from '../components/ExerciseSearch'
 
@@ -374,16 +375,18 @@ function ClientPlanEditor({ trainerId, client, templates, existingPlan, onSaved,
 
 /* ─── ClientsSection ─────────────────────────────────────────── */
 function ClientsSection({ trainerId }) {
+  const navigate = useNavigate()
   const [clients, setClients] = useState([])
   const [templates, setTemplates] = useState([])
   const [activePlans, setActivePlans] = useState({}) // client_id → plan
+  const [todayBookings, setTodayBookings] = useState({})
   const [loading, setLoading] = useState(true)
   const [editing, setEditing] = useState(null) // { client, plan|null }
   const [refreshKey, setRefreshKey] = useState(0)
 
   useEffect(() => {
     async function load() {
-      const [bookingsRes, templatesRes, plansRes] = await Promise.all([
+      const [bookingsRes, templatesRes, plansRes, todayRes] = await Promise.all([
         supabase
           .from('bookings')
           .select('client_id, client_name, profiles!bookings_client_id_fkey(id, full_name)')
@@ -396,6 +399,13 @@ function ClientsSection({ trainerId }) {
           .select('*, client_plan_days(id, day_number, label, is_rest, client_plan_exercises(id, exercise_id, position, sets, reps, weight_kg, notes, exercises(id, name, muscle_group, equipment)))')
           .eq('trainer_id', trainerId)
           .eq('status', 'active'),
+        supabase
+          .from('bookings')
+          .select('id, client_id, status, scheduled_at')
+          .eq('trainer_id', trainerId)
+          .eq('status', 'confirmed')
+          .gte('scheduled_at', new Date().toISOString().split('T')[0])
+          .lt('scheduled_at', new Date(Date.now() + 86400000).toISOString().split('T')[0]),
       ])
 
       // Deduplicate clients by client_id
@@ -413,9 +423,15 @@ function ClientsSection({ trainerId }) {
         plansByClient[plan.client_id] = plan
       }
 
+      const todayByClient = {}
+      for (const b of (todayRes.data ?? [])) {
+        todayByClient[b.client_id] = b.id
+      }
+
       setClients(uniqueClients)
       setTemplates(templatesRes.data ?? [])
       setActivePlans(plansByClient)
+      setTodayBookings(todayByClient)
       setLoading(false)
     }
     load()
@@ -473,9 +489,19 @@ function ClientsSection({ trainerId }) {
                 {plan ? plan.name : 'No plan assigned'}
               </p>
             </div>
-            <button onClick={() => startEdit(client, plan ?? null)} style={plan ? BTN_GHOST : BTN_GREEN}>
-              {plan ? 'Edit Plan' : 'Assign Plan'}
-            </button>
+            <div style={{ display: 'flex', gap: 8 }}>
+              {plan && todayBookings[client.id] && (
+                <button
+                  onClick={() => navigate(`/trainer/session/${todayBookings[client.id]}`)}
+                  style={BTN_GREEN}
+                >
+                  Start Session
+                </button>
+              )}
+              <button onClick={() => startEdit(client, plan ?? null)} style={plan ? BTN_GHOST : BTN_GREEN}>
+                {plan ? 'Edit Plan' : 'Assign Plan'}
+              </button>
+            </div>
           </div>
         )
       })}
