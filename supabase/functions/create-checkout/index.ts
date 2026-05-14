@@ -34,6 +34,8 @@ serve(async (req) => {
     duration_mins: number
     client_name: string
     client_email: string
+    venue_type?: string
+    venue_name?: string
   }
   try {
     body = await req.json()
@@ -70,6 +72,8 @@ serve(async (req) => {
       duration_mins,
       status: 'pending',
       amount_sgd: amountCents,
+      venue_type: body.venue_type ?? null,
+      venue_name: body.venue_name ?? null,
     })
     .select('id')
     .single()
