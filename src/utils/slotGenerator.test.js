@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { generateSlots, formatSlotSGT } from './slotGenerator.js'
+import { generateSlots, formatSlotSGT, formatDateHeader } from './slotGenerator.js'
 
 // Helper: build an availability row
 function avail(day_of_week, start_time = '09:00', end_time = '12:00', duration_mins = 60) {
@@ -74,5 +74,15 @@ describe('formatSlotSGT', () => {
     const iso = '2026-01-01T01:00:00.000Z'
     const result = formatSlotSGT(iso)
     expect(result).toContain('09:00')
+  })
+})
+
+describe('formatDateHeader', () => {
+  it('formats a YYYY-MM-DD string as a weekday and date', () => {
+    // 2026-01-01 is a Thursday
+    const result = formatDateHeader('2026-01-01')
+    expect(result).toContain('Thursday')
+    expect(result).toContain('1')
+    expect(result).toContain('January')
   })
 })
