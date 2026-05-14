@@ -21,7 +21,7 @@ const STATUS_COLORS = {
 }
 const STATUS_MESSAGES = {
   pending: "Your application is under review. We'll get back to you within 48 hours.",
-  approved: 'Your profile is approved and live. Clients can find you on FitnessGuru.',
+  approved: 'Your profile is approved and live. Clients can find you on ReadyPT.',
   rejected: 'Your application was not approved at this time.',
 }
 
@@ -334,7 +334,7 @@ function AvailabilityTab({ trainerId }) {
       <div style={CARD}>
         <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: 18, color: '#EEF2EE', fontWeight: 700, margin: '0 0 8px' }}>Calendar Sync</h3>
         <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(238,242,238,0.4)', margin: '0 0 16px', lineHeight: 1.6 }}>
-          Subscribe to this URL in Google Calendar or Apple Calendar. Your FitnessGuru sessions will appear automatically.
+          Subscribe to this URL in Google Calendar or Apple Calendar. Your ReadyPT sessions will appear automatically.
         </p>
         <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
           <input readOnly value={icalUrl} style={{ ...INPUT, fontSize: 12, color: 'rgba(238,242,238,0.5)', cursor: 'text' }} />

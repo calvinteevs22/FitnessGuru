@@ -689,7 +689,7 @@ function SplitHero({ onSelect }) {
 
       {/* Wordmark */}
       <div style={{ position: 'absolute', bottom: 28, left: '50%', transform: 'translateX(-50%)', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 11, letterSpacing: '0.14em', color: 'rgba(238,242,238,0.12)', textTransform: 'uppercase', pointerEvents: 'none', whiteSpace: 'nowrap', zIndex: 10 }}>
-        FitnessGuru · Singapore
+        ReadyPT · Singapore
       </div>
     </div>
   )
@@ -996,7 +996,7 @@ function ClientReassurance() {
   const cards = [
     {
       concern: 'Not sure who to trust?',
-      resolution: 'Every trainer on FitnessGuru is certified and verified before going live. You see their qualifications, real client reviews, and training style — before you commit to anything.',
+      resolution: 'Every trainer on ReadyPT is certified and verified before going live. You see their qualifications, real client reviews, and training style — before you commit to anything.',
     },
     {
       concern: 'Worried about hidden costs?',
@@ -1012,7 +1012,7 @@ function ClientReassurance() {
       <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'radial-gradient(ellipse 50% 60% at 85% 50%, rgba(45,106,46,0.06) 0%, transparent 65%)' }} />
       <div style={{ maxWidth: 1200, margin: '0 auto', position: 'relative' }}>
         <div style={{ opacity: visible ? 1 : 0, transform: visible ? 'none' : 'translateY(20px)', transition: 'opacity 0.6s, transform 0.6s' }}>
-          <p style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 12, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#4ade80', margin: '0 0 18px' }}>Why FitnessGuru</p>
+          <p style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 12, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#4ade80', margin: '0 0 18px' }}>Why ReadyPT</p>
           <h2 style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, textTransform: 'uppercase', fontSize: 'clamp(34px, 5.5vw, 66px)', lineHeight: 0.95, letterSpacing: '-0.02em', color: '#EEF2EE', margin: '0 0 64px', maxWidth: 680 }}>
             We thought about what holds people back. Then we fixed it.
           </h2>
@@ -1047,7 +1047,7 @@ function ClientTestimonials() {
   const testimonials = [
     { quote: 'I found Marcus in a week after reading his real reviews and seeing his actual training style. Six months later I\'m down 14kg — something three different gym trainers couldn\'t do.', name: 'Natasha L.', detail: 'Client · Tampines', stars: 5, initials: 'NL', bg: 'linear-gradient(135deg,#1a4a2e,#2d6a3e)' },
     { quote: 'Being able to book a single session first made all the difference — no long-term commitment before I knew it was right. Priya has been training me through my second pregnancy and I feel stronger than ever.', name: 'Divya R.', detail: 'Client · River Valley', stars: 5, initials: 'DR', bg: 'linear-gradient(135deg,#4c1d95,#7c3aed)' },
-    { quote: 'FitnessGuru showed me certified trainers at every price point, with rates listed upfront. I know what I pay, my trainer knows what I need.', name: 'Wei Ming T.', detail: 'Client · Jurong', stars: 5, initials: 'WT', bg: 'linear-gradient(135deg,#0c4a6e,#0369a1)' },
+    { quote: 'ReadyPT showed me certified trainers at every price point, with rates listed upfront. I know what I pay, my trainer knows what I need.', name: 'Wei Ming T.', detail: 'Client · Jurong', stars: 5, initials: 'WT', bg: 'linear-gradient(135deg,#0c4a6e,#0369a1)' },
   ]
   return (
     <section ref={ref} style={{ background: '#0d1a0e', padding: '104px 24px', position: 'relative', overflow: 'hidden' }}>
@@ -1138,7 +1138,7 @@ function EarningsCalculator() {
   return (
     <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 20, padding: '32px', position: 'relative' }}>
       <div style={{ fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'rgba(238,242,238,0.35)', marginBottom: 28 }}>
-        What could you earn on FitnessGuru?
+        What could you earn on ReadyPT?
       </div>
 
       {/* Rate slider */}
@@ -1258,7 +1258,7 @@ function TrainerAspiration() {
     {
       n: '01',
       title: 'Your skills should speak for themselves.',
-      body: 'You\'ve put in the certifications, the hours, the results. Your FitnessGuru profile makes sure the right clients see exactly why you\'re the right fit — before they even reach out.',
+      body: 'You\'ve put in the certifications, the hours, the results. Your ReadyPT profile makes sure the right clients see exactly why you\'re the right fit — before they even reach out.',
     },
     {
       n: '02',
@@ -1307,9 +1307,9 @@ function TrainerAspiration() {
 function TrainerHowItWorks() {
   const [ref, visible] = useScrollReveal()
   const steps = [
-    { num: '01', title: 'Build your profile', body: 'Showcase your certifications, specialty, training style, and locations. Your profile is your professional home on FitnessGuru — and it works for you around the clock.' },
+    { num: '01', title: 'Build your profile', body: 'Showcase your certifications, specialty, training style, and locations. Your profile is your professional home on ReadyPT — and it works for you around the clock.' },
     { num: '02', title: 'Set your rates and availability', body: 'You decide your price per session and when you\'re available. No imposed tiers, no minimums. Entirely on your terms.' },
-    { num: '03', title: 'Get booked, get paid', body: 'Clients discover you, book, and pay through FitnessGuru. You keep 80% of every session, paid out automatically.' },
+    { num: '03', title: 'Get booked, get paid', body: 'Clients discover you, book, and pay through ReadyPT. You keep 80% of every session, paid out automatically.' },
   ]
   return (
     <section id="how-it-works" ref={ref} style={{ background: '#100e06', padding: '104px 24px' }}>
@@ -1346,14 +1346,14 @@ function TrainerValueProps() {
   const [ref, visible] = useScrollReveal()
   const items = [
     { title: 'Keep 80% of every session you run.', body: 'Set a rate of $120 per session and take home $96 — every time. Transparent, consistent, and entirely yours.' },
-    { title: 'Set your rate, on your terms.', body: 'Charge what your experience is worth. FitnessGuru has no imposed tiers, no caps, and no minimums. As your reputation grows, so can your rate.' },
-    { title: 'Every client relationship is yours to keep.', body: 'Your profile builds your reputation. Your reviews travel with you. The practice you build on FitnessGuru belongs to you.' },
+    { title: 'Set your rate, on your terms.', body: 'Charge what your experience is worth. ReadyPT has no imposed tiers, no caps, and no minimums. As your reputation grows, so can your rate.' },
+    { title: 'Every client relationship is yours to keep.', body: 'Your profile builds your reputation. Your reviews travel with you. The practice you build on ReadyPT belongs to you.' },
   ]
   return (
     <section ref={ref} style={{ background: '#0c0a04', padding: '104px 24px' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         <div style={{ opacity: visible ? 1 : 0, transform: visible ? 'none' : 'translateY(20px)', transition: 'opacity 0.6s, transform 0.6s' }}>
-          <p style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 12, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#fbbf24', margin: '0 0 18px' }}>Why FitnessGuru</p>
+          <p style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 12, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#fbbf24', margin: '0 0 18px' }}>Why ReadyPT</p>
           <h2 style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, textTransform: 'uppercase', fontSize: 'clamp(34px, 5.5vw, 66px)', lineHeight: 0.95, letterSpacing: '-0.02em', color: '#EEF2EE', margin: '0 0 64px', maxWidth: 620 }}>
             A platform that works as hard as you do.
           </h2>
@@ -1385,9 +1385,9 @@ function TrainerValueProps() {
 function TrainerTestimonials() {
   const [ref, visible] = useScrollReveal()
   const testimonials = [
-    { quote: 'I listed my profile in under 20 minutes. Within two weeks I had three new clients booking regular sessions. FitnessGuru brought me people I never would have reached through referrals alone.', name: 'Marcus T.', detail: 'Strength & Conditioning · Tampines', stars: 5, initials: 'MT', bg: 'linear-gradient(135deg,#14532d,#166534)' },
+    { quote: 'I listed my profile in under 20 minutes. Within two weeks I had three new clients booking regular sessions. ReadyPT brought me people I never would have reached through referrals alone.', name: 'Marcus T.', detail: 'Strength & Conditioning · Tampines', stars: 5, initials: 'MT', bg: 'linear-gradient(135deg,#14532d,#166534)' },
     { quote: 'My prenatal specialisation finally has an audience. Clients searching for exactly what I offer find my profile, read my reviews, and book — often the same day. It\'s the most efficient part of running my practice.', name: 'Priya S.', detail: 'Pre & Postnatal · Orchard', stars: 5, initials: 'PS', bg: 'linear-gradient(135deg,#4c1d95,#7c3aed)' },
-    { quote: 'The income consistency has been the biggest change. I set my rate, I show up, I get paid. FitnessGuru handles everything in between so I can focus entirely on my clients.', name: 'Daniel W.', detail: 'HIIT & Fat Loss · CBD', stars: 5, initials: 'DW', bg: 'linear-gradient(135deg,#0c4a6e,#0369a1)' },
+    { quote: 'The income consistency has been the biggest change. I set my rate, I show up, I get paid. ReadyPT handles everything in between so I can focus entirely on my clients.', name: 'Daniel W.', detail: 'HIIT & Fat Loss · CBD', stars: 5, initials: 'DW', bg: 'linear-gradient(135deg,#0c4a6e,#0369a1)' },
   ]
   return (
     <section ref={ref} style={{ background: '#100e06', padding: '104px 24px', position: 'relative', overflow: 'hidden' }}>
@@ -1564,7 +1564,7 @@ function Footer() {
           <ReadyPTLogo />
         </a>
         <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(238,242,238,0.28)', margin: 0, textAlign: 'center' }}>
-          &copy; 2026 FitnessGuru Pte Ltd &middot; Singapore &middot; Confidential
+          &copy; 2026 ReadyPT Pte Ltd &middot; Singapore &middot; Confidential
         </p>
         <p style={{ fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 12, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(74,222,128,0.4)', margin: 0 }}>
           Cut out the middleman.

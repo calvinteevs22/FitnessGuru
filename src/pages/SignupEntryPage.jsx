@@ -24,7 +24,7 @@ export default function SignupEntryPage() {
     <div style={PAGE_STYLE}>
       <div style={{ textAlign: 'center', marginBottom: 40 }}>
         <p style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 12, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#4ade80', margin: '0 0 12px' }}>
-          FitnessGuru
+          ReadyPT
         </p>
         <h1 style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, textTransform: 'uppercase', fontSize: 'clamp(28px, 4vw, 48px)', color: '#EEF2EE', margin: 0, lineHeight: 1 }}>
           Get started
