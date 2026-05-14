@@ -345,27 +345,7 @@ function TrainerCard({ trainer, onJoin }) {
 function ReadyPTLogo() {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-      <div style={{ position: 'relative', width: 40, height: 40 }}>
-        <div style={{
-          width: 40, height: 40, borderRadius: 8, background: '#1a3320',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}>
-          <span style={{
-            fontFamily: 'var(--font-heading)', fontWeight: 900,
-            fontSize: 26, color: '#fff', lineHeight: 1, paddingLeft: 2,
-          }}>R</span>
-        </div>
-        <div style={{
-          position: 'absolute', top: -4, right: -6,
-          background: '#2d6a2e', borderRadius: 4,
-          padding: '1px 5px',
-        }}>
-          <span style={{
-            fontFamily: 'var(--font-body)', fontWeight: 700,
-            fontSize: 9, color: '#fff', letterSpacing: '0.05em',
-          }}>PT</span>
-        </div>
-      </div>
+      <img src="/readypt-logo.svg" alt="ReadyPT" width={36} height={36} style={{ borderRadius: 8, display: 'block' }} />
       <span style={{
         fontFamily: 'var(--font-heading)', fontWeight: 700,
         fontSize: 20, color: '#EEF2EE', letterSpacing: '-0.01em',
