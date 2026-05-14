@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { useAuth } from '../hooks/useAuth'
 import { validateEmail, validatePassword } from '../utils/validation'
 
 const LABEL_STYLE = {
@@ -17,6 +18,7 @@ const ERR_STYLE = { color: '#f87171', fontFamily: 'var(--font-body)', fontSize: 
 export default function LoginPage() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
+  const { session, profile, loading: authLoading } = useAuth()
   const initialTab = searchParams.get('role') === 'trainer' ? 'trainer' : 'client'
   const [tab, setTab] = useState(initialTab)
 
@@ -25,6 +27,16 @@ export default function LoginPage() {
   const [errors, setErrors] = useState({})
   const [serverError, setServerError] = useState('')
   const [loading, setLoading] = useState(false)
+
+  // If already logged in, redirect to the right place
+  useEffect(() => {
+    if (authLoading) return
+    if (!session) return
+    if (profile === undefined) return // still fetching profile
+    if (profile?.role === 'admin') navigate('/admin', { replace: true })
+    else if (profile?.role === 'trainer') navigate('/dashboard/trainer', { replace: true })
+    else navigate('/', { replace: true })
+  }, [authLoading, session, profile, navigate])
 
   const isTrainer = tab === 'trainer'
   const accent = isTrainer ? '#fbbf24' : '#4ade80'

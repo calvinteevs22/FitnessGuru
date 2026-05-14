@@ -1,30 +1,27 @@
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 
+const Spinner = () => (
+  <div style={{ minHeight: '100vh', background: '#0d1a0e', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <p style={{ color: 'rgba(238,242,238,0.5)', fontFamily: 'var(--font-body)', fontSize: 15 }}>Loading…</p>
+  </div>
+)
+
 export default function ProtectedRoute({ children, requiredRole }) {
   const { session, profile, loading } = useAuth()
 
-  if (loading) {
-    return (
-      <div style={{ minHeight: '100vh', background: '#0d1a0e', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <p style={{ color: '#EEF2EE', fontFamily: 'var(--font-body)', fontSize: 16 }}>Loading...</p>
-      </div>
-    )
-  }
+  // Still initialising auth or fetching profile — wait
+  if (loading) return <Spinner />
 
+  // No session → send to login
   if (!session) return <Navigate to="/login" replace />
 
-  // If a role is required but profile hasn't loaded yet, show loading
-  // (profile is null while fetchProfile is still in flight after login)
-  if (requiredRole && profile === null) {
-    return (
-      <div style={{ minHeight: '100vh', background: '#0d1a0e', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <p style={{ color: '#EEF2EE', fontFamily: 'var(--font-body)', fontSize: 16 }}>Loading...</p>
-      </div>
-    )
+  // Role check: profile is now definitively loaded (not undefined)
+  if (requiredRole) {
+    // profile is null = row doesn't exist in profiles table
+    if (profile === null) return <Navigate to="/" replace />
+    if (profile.role !== requiredRole) return <Navigate to="/" replace />
   }
-
-  if (requiredRole && profile.role !== requiredRole) return <Navigate to="/" replace />
 
   return children
 }
