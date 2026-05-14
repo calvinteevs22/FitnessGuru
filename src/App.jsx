@@ -160,13 +160,15 @@ function useScrollReveal(threshold = 0.12) {
 function TrainerMiniCard({ trainer, delay = 0 }) {
   return (
     <div style={{
-      background: 'rgba(255,255,255,0.045)',
-      border: '1px solid rgba(255,255,255,0.09)',
+      background: 'rgba(255,255,255,0.055)',
+      border: '1px solid rgba(255,255,255,0.12)',
       borderRadius: 14,
       padding: '14px 18px',
       display: 'flex', alignItems: 'center', gap: 14,
-      backdropFilter: 'blur(12px)',
+      backdropFilter: 'blur(20px)',
+      WebkitBackdropFilter: 'blur(20px)',
       animation: `fadeSlideUp 0.6s ease ${delay}s both`,
+      boxShadow: '0 4px 24px rgba(0,0,0,0.25)',
     }}>
       <div style={{
         width: 42, height: 42, borderRadius: 11, flexShrink: 0,
@@ -201,14 +203,16 @@ function TrainerCard({ trainer, onJoin }) {
       onMouseEnter={() => setHov(true)}
       onMouseLeave={() => setHov(false)}
       style={{
-        background: hov ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.025)',
-        border: `1px solid ${hov ? 'rgba(74,222,128,0.22)' : 'rgba(255,255,255,0.07)'}`,
-        borderRadius: 20,
+        background: hov ? 'rgba(255,255,255,0.065)' : 'rgba(255,255,255,0.035)',
+        border: `1px solid ${hov ? 'rgba(74,222,128,0.3)' : 'rgba(255,255,255,0.09)'}`,
+        borderRadius: 22,
         overflow: 'hidden',
         display: 'flex', flexDirection: 'column',
-        transition: 'all 0.28s ease',
-        transform: hov ? 'translateY(-5px)' : 'translateY(0)',
-        boxShadow: hov ? '0 24px 64px rgba(0,0,0,0.45)' : 'none',
+        transition: 'all 0.3s cubic-bezier(0.16,1,0.3,1)',
+        transform: hov ? 'translateY(-7px) scale(1.01)' : 'translateY(0) scale(1)',
+        boxShadow: hov ? '0 32px 80px rgba(0,0,0,0.55), 0 0 0 1px rgba(74,222,128,0.15), inset 0 1px 0 rgba(255,255,255,0.08)' : '0 4px 24px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.04)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
         cursor: 'default',
       }}
     >
@@ -228,12 +232,14 @@ function TrainerCard({ trainer, onJoin }) {
         }} />
         {/* Avatar */}
         <div style={{
-          width: 52, height: 52, borderRadius: 13, flexShrink: 0,
-          background: 'rgba(255,255,255,0.18)',
-          border: '1.5px solid rgba(255,255,255,0.28)',
+          width: 54, height: 54, borderRadius: 14, flexShrink: 0,
+          background: 'rgba(255,255,255,0.22)',
+          border: hov ? '2px solid rgba(74,222,128,0.6)' : '1.5px solid rgba(255,255,255,0.3)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 19, color: '#fff',
           position: 'relative',
+          boxShadow: hov ? '0 0 0 4px rgba(74,222,128,0.12), 0 0 20px rgba(74,222,128,0.25)' : 'none',
+          transition: 'all 0.3s ease',
         }}>
           {initials}
         </div>
@@ -312,15 +318,16 @@ function TrainerCard({ trainer, onJoin }) {
         <button
           onClick={onJoin}
           style={{
-            width: '100%', padding: '11px 16px', marginTop: 4,
-            background: hov ? '#4ade80' : 'rgba(255,255,255,0.05)',
-            color: hov ? '#071a0b' : 'rgba(238,242,238,0.55)',
-            border: `1px solid ${hov ? 'transparent' : 'rgba(255,255,255,0.09)'}`,
-            borderRadius: 10, cursor: 'pointer',
+            width: '100%', padding: '12px 16px', marginTop: 6,
+            background: hov ? 'linear-gradient(135deg, #4ade80, #22c55e)' : 'rgba(74,222,128,0.07)',
+            color: hov ? '#071a0b' : '#4ade80',
+            border: `1px solid ${hov ? 'transparent' : 'rgba(74,222,128,0.2)'}`,
+            borderRadius: 11, cursor: 'pointer',
             fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 12,
             letterSpacing: '0.07em', textTransform: 'uppercase',
-            transition: 'all 0.22s ease',
+            transition: 'all 0.25s cubic-bezier(0.16,1,0.3,1)',
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+            boxShadow: hov ? '0 0 24px rgba(74,222,128,0.4), 0 4px 12px rgba(0,0,0,0.3)' : 'none',
           }}>
           Reserve this trainer <ArrowRight size={13} />
         </button>
@@ -355,10 +362,18 @@ function Nav({ role, onSwitch }) {
       <nav style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', height: 68, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         {/* Logo */}
         <a href="#" aria-label="FitnessGuru home" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
-          <div style={{ width: 34, height: 34, borderRadius: 8, background: '#2d6a2e', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 14, color: '#fff' }}>FG</span>
+          <div style={{
+            width: 36, height: 36, borderRadius: 9,
+            background: 'linear-gradient(135deg, #1a5c1b 0%, #2d8a2e 60%, #3dab3e 100%)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            animation: 'logo-pulse 3s ease-in-out infinite',
+            border: '1px solid rgba(74,222,128,0.35)',
+            position: 'relative', overflow: 'hidden',
+          }}>
+            <div style={{ position: 'absolute', top: 0, left: '-60%', width: '40%', height: '100%', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent)', transform: 'skewX(-15deg)', animation: 'card-shine 4s ease-in-out infinite 1.5s' }} />
+            <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: 15, color: '#fff', letterSpacing: '-0.02em', position: 'relative', zIndex: 1 }}>FG</span>
           </div>
-          <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 20, color: '#EEF2EE', letterSpacing: '0.01em' }}>
+          <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 21, color: '#EEF2EE', letterSpacing: '0.01em' }}>
             Fitness<span style={{ color: accent, transition: 'color 0.3s' }}>Guru</span>
           </span>
         </a>
@@ -454,6 +469,13 @@ function Nav({ role, onSwitch }) {
         @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes splitPulse { 0%,100%{opacity:.5} 50%{opacity:1} }
         @keyframes floatCard { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+        @keyframes logo-pulse { 0%,100%{box-shadow:0 0 14px rgba(74,222,128,0.45)} 50%{box-shadow:0 0 28px rgba(74,222,128,0.8)} }
+        @keyframes card-shine { 0%{transform:translateX(-100%) skewX(-15deg)} 100%{transform:translateX(300%) skewX(-15deg)} }
+        @keyframes btn-glow-green { 0%,100%{box-shadow:0 0 28px rgba(74,222,128,0.38),0 4px 20px rgba(0,0,0,0.4)} 50%{box-shadow:0 0 60px rgba(74,222,128,0.72),0 4px 20px rgba(0,0,0,0.4)} }
+        @keyframes btn-glow-amber { 0%,100%{box-shadow:0 0 28px rgba(251,191,36,0.38),0 4px 20px rgba(0,0,0,0.4)} 50%{box-shadow:0 0 60px rgba(251,191,36,0.72),0 4px 20px rgba(0,0,0,0.4)} }
+        @keyframes orb-float { 0%,100%{transform:translateY(0px) scale(1)} 50%{transform:translateY(-32px) scale(1.06)} }
+        @keyframes orb-float-2 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(18px,-24px) scale(1.04)} 66%{transform:translate(-12px,14px) scale(0.96)} }
+        @keyframes orb-float-3 { 0%,100%{transform:translate(0,0) scale(1)} 40%{transform:translate(-22px,-18px) scale(1.07)} 75%{transform:translate(16px,8px) scale(0.95)} }
       `}</style>
     </header>
   )
@@ -487,8 +509,12 @@ function SplitHero({ onSelect }) {
           filter: hovered === 'trainer' ? 'brightness(0.45) saturate(0.3)' : 'brightness(1)',
           transition: 'opacity 0.45s ease, filter 0.45s ease',
         }}>
-        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'radial-gradient(ellipse 65% 55% at 50% 25%, rgba(74,222,128,0.16) 0%, transparent 70%)', opacity: hovered === 'client' ? 1 : 0.5, transition: 'opacity 0.4s' }} />
-        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', boxShadow: hovered === 'client' ? 'inset 0 0 0 1.5px rgba(74,222,128,0.28)' : 'none', transition: 'box-shadow 0.4s' }} />
+        {/* Animated orbs */}
+        <div style={{ position: 'absolute', width: 380, height: 380, borderRadius: '50%', background: 'radial-gradient(circle, rgba(74,222,128,0.13) 0%, transparent 70%)', top: '10%', left: '15%', pointerEvents: 'none', animation: 'orb-float 8s ease-in-out infinite', filter: 'blur(2px)' }} />
+        <div style={{ position: 'absolute', width: 240, height: 240, borderRadius: '50%', background: 'radial-gradient(circle, rgba(74,222,128,0.08) 0%, transparent 70%)', bottom: '15%', right: '10%', pointerEvents: 'none', animation: 'orb-float-2 11s ease-in-out infinite 2s', filter: 'blur(1px)' }} />
+        <div style={{ position: 'absolute', width: 160, height: 160, borderRadius: '50%', background: 'radial-gradient(circle, rgba(74,222,128,0.1) 0%, transparent 70%)', top: '55%', left: '5%', pointerEvents: 'none', animation: 'orb-float-3 14s ease-in-out infinite 4s' }} />
+        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'radial-gradient(ellipse 65% 55% at 50% 25%, rgba(74,222,128,0.1) 0%, transparent 70%)', opacity: hovered === 'client' ? 1 : 0.5, transition: 'opacity 0.4s' }} />
+        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', boxShadow: hovered === 'client' ? 'inset 0 0 0 1.5px rgba(74,222,128,0.35)' : 'none', transition: 'box-shadow 0.4s' }} />
 
         <div style={{ maxWidth: 380, textAlign: 'center', position: 'relative', zIndex: 1 }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(74,222,128,0.1)', border: '1px solid rgba(74,222,128,0.28)', borderRadius: 100, padding: '7px 18px', marginBottom: 36 }}>
@@ -513,12 +539,14 @@ function SplitHero({ onSelect }) {
           </div>
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: 10,
-            background: '#4ade80', color: '#071a0b', borderRadius: 9,
-            padding: '14px 28px', fontFamily: 'var(--font-heading)', fontWeight: 800,
+            background: 'linear-gradient(135deg, #4ade80, #22c55e)',
+            color: '#071a0b', borderRadius: 11,
+            padding: '15px 30px', fontFamily: 'var(--font-heading)', fontWeight: 800,
             fontSize: 13, letterSpacing: '0.08em', textTransform: 'uppercase',
-            boxShadow: hovered === 'client' ? '0 0 36px rgba(74,222,128,0.45)' : 'none',
-            transform: hovered === 'client' ? 'translateY(-3px)' : 'translateY(0)',
-            transition: 'transform 0.3s, box-shadow 0.3s',
+            animation: hovered === 'client' ? 'btn-glow-green 2s ease-in-out infinite' : 'none',
+            boxShadow: hovered === 'client' ? '0 0 48px rgba(74,222,128,0.55)' : '0 0 28px rgba(74,222,128,0.25)',
+            transform: hovered === 'client' ? 'translateY(-4px)' : 'translateY(0)',
+            transition: 'transform 0.3s cubic-bezier(0.16,1,0.3,1)',
           }}>
             Get Started <ArrowRight size={15} />
           </div>
@@ -544,8 +572,12 @@ function SplitHero({ onSelect }) {
           filter: hovered === 'client' ? 'brightness(0.45) saturate(0.3)' : 'brightness(1)',
           transition: 'opacity 0.45s ease, filter 0.45s ease',
         }}>
-        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'radial-gradient(ellipse 65% 55% at 50% 25%, rgba(251,191,36,0.13) 0%, transparent 70%)', opacity: hovered === 'trainer' ? 1 : 0.45, transition: 'opacity 0.4s' }} />
-        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', boxShadow: hovered === 'trainer' ? 'inset 0 0 0 1.5px rgba(251,191,36,0.32)' : 'none', transition: 'box-shadow 0.4s' }} />
+        {/* Animated orbs */}
+        <div style={{ position: 'absolute', width: 360, height: 360, borderRadius: '50%', background: 'radial-gradient(circle, rgba(251,191,36,0.11) 0%, transparent 70%)', top: '8%', right: '15%', pointerEvents: 'none', animation: 'orb-float 9s ease-in-out infinite 1s', filter: 'blur(2px)' }} />
+        <div style={{ position: 'absolute', width: 200, height: 200, borderRadius: '50%', background: 'radial-gradient(circle, rgba(251,191,36,0.08) 0%, transparent 70%)', bottom: '20%', left: '12%', pointerEvents: 'none', animation: 'orb-float-2 12s ease-in-out infinite 3s', filter: 'blur(1px)' }} />
+        <div style={{ position: 'absolute', width: 130, height: 130, borderRadius: '50%', background: 'radial-gradient(circle, rgba(251,191,36,0.09) 0%, transparent 70%)', top: '60%', right: '8%', pointerEvents: 'none', animation: 'orb-float-3 15s ease-in-out infinite 5s' }} />
+        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'radial-gradient(ellipse 65% 55% at 50% 25%, rgba(251,191,36,0.09) 0%, transparent 70%)', opacity: hovered === 'trainer' ? 1 : 0.45, transition: 'opacity 0.4s' }} />
+        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', boxShadow: hovered === 'trainer' ? 'inset 0 0 0 1.5px rgba(251,191,36,0.38)' : 'none', transition: 'box-shadow 0.4s' }} />
 
         <div style={{ maxWidth: 380, textAlign: 'center', position: 'relative', zIndex: 1 }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(251,191,36,0.1)', border: '1px solid rgba(251,191,36,0.28)', borderRadius: 100, padding: '7px 18px', marginBottom: 36 }}>
@@ -570,12 +602,14 @@ function SplitHero({ onSelect }) {
           </div>
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: 10,
-            background: '#fbbf24', color: '#100e06', borderRadius: 9,
-            padding: '14px 28px', fontFamily: 'var(--font-heading)', fontWeight: 800,
+            background: 'linear-gradient(135deg, #fbbf24, #f59e0b)',
+            color: '#100e06', borderRadius: 11,
+            padding: '15px 30px', fontFamily: 'var(--font-heading)', fontWeight: 800,
             fontSize: 13, letterSpacing: '0.08em', textTransform: 'uppercase',
-            boxShadow: hovered === 'trainer' ? '0 0 36px rgba(251,191,36,0.45)' : 'none',
-            transform: hovered === 'trainer' ? 'translateY(-3px)' : 'translateY(0)',
-            transition: 'transform 0.3s, box-shadow 0.3s',
+            animation: hovered === 'trainer' ? 'btn-glow-amber 2s ease-in-out infinite' : 'none',
+            boxShadow: hovered === 'trainer' ? '0 0 48px rgba(251,191,36,0.55)' : '0 0 28px rgba(251,191,36,0.2)',
+            transform: hovered === 'trainer' ? 'translateY(-4px)' : 'translateY(0)',
+            transition: 'transform 0.3s cubic-bezier(0.16,1,0.3,1)',
           }}>
             Apply Now <ArrowRight size={15} />
           </div>
@@ -595,9 +629,12 @@ function SplitHero({ onSelect }) {
 function ClientHero() {
   return (
     <section style={{ minHeight: '100dvh', display: 'flex', alignItems: 'center', background: '#0d1a0e', position: 'relative', overflow: 'hidden' }}>
-      {/* BG glows */}
-      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'radial-gradient(ellipse 70% 60% at 25% 45%, rgba(45,106,46,0.22) 0%, transparent 65%)' }} />
-      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'radial-gradient(ellipse 45% 45% at 78% 50%, rgba(74,222,128,0.05) 0%, transparent 60%)' }} />
+      {/* Animated orbs */}
+      <div style={{ position: 'absolute', width: 600, height: 600, borderRadius: '50%', background: 'radial-gradient(circle, rgba(45,106,46,0.2) 0%, transparent 70%)', top: '-10%', left: '-5%', pointerEvents: 'none', animation: 'orb-float 10s ease-in-out infinite', filter: 'blur(4px)' }} />
+      <div style={{ position: 'absolute', width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(circle, rgba(74,222,128,0.07) 0%, transparent 70%)', bottom: '5%', right: '-5%', pointerEvents: 'none', animation: 'orb-float-2 13s ease-in-out infinite 2s', filter: 'blur(3px)' }} />
+      <div style={{ position: 'absolute', width: 250, height: 250, borderRadius: '50%', background: 'radial-gradient(circle, rgba(74,222,128,0.05) 0%, transparent 70%)', top: '60%', left: '40%', pointerEvents: 'none', animation: 'orb-float-3 16s ease-in-out infinite 4s' }} />
+      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'radial-gradient(ellipse 70% 60% at 25% 45%, rgba(45,106,46,0.08) 0%, transparent 65%)' }} />
+      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'radial-gradient(ellipse 45% 45% at 78% 50%, rgba(74,222,128,0.04) 0%, transparent 60%)' }} />
 
       <div style={{ maxWidth: 1200, margin: '0 auto', padding: '140px 24px 100px', width: '100%', position: 'relative', zIndex: 1 }}>
         <div className="chero-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'center' }}>
@@ -628,17 +665,17 @@ function ClientHero() {
                 { n: '$65–$150', d: 'Per session' },
                 { n: 'Zero', d: 'Lock-in contracts' },
               ].map(({ n, d }) => (
-                <div key={n} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, padding: '10px 16px' }}>
-                  <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 16, color: '#EEF2EE', letterSpacing: '-0.01em', textTransform: 'uppercase' }}>{n}</div>
-                  <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(238,242,238,0.38)', marginTop: 1 }}>{d}</div>
+                <div key={n} style={{ background: 'rgba(74,222,128,0.06)', border: '1px solid rgba(74,222,128,0.18)', borderRadius: 12, padding: '12px 18px', boxShadow: '0 0 20px rgba(74,222,128,0.06)' }}>
+                  <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: 18, color: '#4ade80', letterSpacing: '-0.02em', textTransform: 'uppercase' }}>{n}</div>
+                  <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(238,242,238,0.45)', marginTop: 2 }}>{d}</div>
                 </div>
               ))}
             </div>
 
             <a href="#trainers"
-              style={{ display: 'inline-flex', alignItems: 'center', gap: 10, fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 15, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#071a0b', textDecoration: 'none', background: '#4ade80', padding: '16px 32px', borderRadius: 10, boxShadow: '0 0 44px rgba(74,222,128,0.32)', transition: 'all 0.2s' }}
-              onMouseEnter={e => { e.currentTarget.style.background = '#86efac'; e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 0 64px rgba(74,222,128,0.5)' }}
-              onMouseLeave={e => { e.currentTarget.style.background = '#4ade80'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 0 44px rgba(74,222,128,0.32)' }}>
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 10, fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 15, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#071a0b', textDecoration: 'none', background: 'linear-gradient(135deg, #4ade80, #22c55e)', padding: '16px 34px', borderRadius: 12, animation: 'btn-glow-green 2.5s ease-in-out infinite', transition: 'transform 0.2s cubic-bezier(0.16,1,0.3,1)' }}
+              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px) scale(1.03)' }}
+              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0) scale(1)' }}>
               Browse Trainers <ArrowRight />
             </a>
           </div>
@@ -748,10 +785,11 @@ function FeaturedTrainers() {
               <button key={g.key} onClick={() => setActiveGoal(activeGoal === g.key ? null : g.key)} style={{
                 fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: 13,
                 padding: '9px 20px', borderRadius: 100,
-                border: `1px solid ${activeGoal === g.key ? 'rgba(74,222,128,0.55)' : 'rgba(255,255,255,0.08)'}`,
-                background: activeGoal === g.key ? 'rgba(74,222,128,0.12)' : 'rgba(255,255,255,0.03)',
-                color: activeGoal === g.key ? '#4ade80' : 'rgba(238,242,238,0.5)',
-                cursor: 'pointer', transition: 'all 0.2s',
+                border: `1px solid ${activeGoal === g.key ? 'rgba(74,222,128,0.6)' : 'rgba(255,255,255,0.1)'}`,
+                background: activeGoal === g.key ? 'rgba(74,222,128,0.14)' : 'rgba(255,255,255,0.04)',
+                color: activeGoal === g.key ? '#4ade80' : 'rgba(238,242,238,0.55)',
+                cursor: 'pointer', transition: 'all 0.2s cubic-bezier(0.16,1,0.3,1)',
+                boxShadow: activeGoal === g.key ? '0 0 14px rgba(74,222,128,0.2)' : 'none',
               }}>
                 {g.label}
               </button>
@@ -765,10 +803,11 @@ function FeaturedTrainers() {
               <button key={r} onClick={() => setActiveRegion(activeRegion === r ? null : r)} style={{
                 fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: 13,
                 padding: '9px 20px', borderRadius: 100,
-                border: `1px solid ${activeRegion === r ? 'rgba(74,222,128,0.55)' : 'rgba(255,255,255,0.08)'}`,
-                background: activeRegion === r ? 'rgba(74,222,128,0.12)' : 'rgba(255,255,255,0.03)',
-                color: activeRegion === r ? '#4ade80' : 'rgba(238,242,238,0.5)',
-                cursor: 'pointer', transition: 'all 0.2s',
+                border: `1px solid ${activeRegion === r ? 'rgba(74,222,128,0.6)' : 'rgba(255,255,255,0.1)'}`,
+                background: activeRegion === r ? 'rgba(74,222,128,0.14)' : 'rgba(255,255,255,0.04)',
+                color: activeRegion === r ? '#4ade80' : 'rgba(238,242,238,0.55)',
+                cursor: 'pointer', transition: 'all 0.2s cubic-bezier(0.16,1,0.3,1)',
+                boxShadow: activeRegion === r ? '0 0 14px rgba(74,222,128,0.2)' : 'none',
               }}>
                 {r}
               </button>
@@ -865,9 +904,14 @@ function ClientHowItWorks() {
               transform: visible ? 'none' : 'translateY(28px)',
               transition: `opacity 0.6s ease ${0.15 + i * 0.12}s, transform 0.6s ease ${0.15 + i * 0.12}s`,
             }}>
-              <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: 72, lineHeight: 1, color: 'rgba(74,222,128,0.09)', letterSpacing: '-0.04em', marginBottom: 24 }}>{num}</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 24 }}>
+                <div style={{ width: 48, height: 48, borderRadius: 12, background: i === 1 ? 'rgba(74,222,128,0.15)' : 'rgba(74,222,128,0.07)', border: '1px solid rgba(74,222,128,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: 22, color: '#4ade80', letterSpacing: '-0.03em' }}>{num}</span>
+                </div>
+                {i < 2 && <div style={{ flex: 1, height: 1, background: 'linear-gradient(90deg, rgba(74,222,128,0.3), transparent)' }} />}
+              </div>
               <h3 style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 22, textTransform: 'uppercase', letterSpacing: '-0.01em', color: '#EEF2EE', margin: '0 0 14px' }}>{title}</h3>
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: 15, color: 'rgba(238,242,238,0.48)', lineHeight: 1.7, margin: 0 }}>{body}</p>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: 15, color: 'rgba(238,242,238,0.52)', lineHeight: 1.7, margin: 0 }}>{body}</p>
             </div>
           ))}
         </div>
@@ -905,11 +949,14 @@ function ClientReassurance() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20 }}>
           {cards.map(({ concern, resolution }, i) => (
             <div key={concern} style={{
-              background: 'rgba(255,255,255,0.025)',
-              border: '1px solid rgba(255,255,255,0.06)',
-              borderLeft: '3px solid rgba(74,222,128,0.35)',
-              borderRadius: '0 14px 14px 0',
+              background: 'rgba(255,255,255,0.035)',
+              border: '1px solid rgba(255,255,255,0.08)',
+              borderLeft: '3px solid rgba(74,222,128,0.5)',
+              borderRadius: '0 16px 16px 0',
               padding: '36px 32px',
+              backdropFilter: 'blur(16px)',
+              WebkitBackdropFilter: 'blur(16px)',
+              boxShadow: '0 4px 24px rgba(0,0,0,0.2), -1px 0 0 rgba(74,222,128,0.12)',
               opacity: visible ? 1 : 0,
               transform: visible ? 'none' : 'translateY(28px)',
               transition: `opacity 0.6s ease ${0.1 + i * 0.1}s, transform 0.6s ease ${0.1 + i * 0.1}s`,
@@ -944,14 +991,18 @@ function ClientTestimonials() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 20 }}>
           {testimonials.map(({ quote, name, detail, stars, initials, bg }, i) => (
             <div key={name} style={{
-              background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.06)',
+              background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)',
               borderRadius: 18, padding: '32px', display: 'flex', flexDirection: 'column',
               opacity: visible ? 1 : 0,
               transform: visible ? 'none' : 'translateY(28px)',
               transition: `opacity 0.6s ease ${0.1 + i * 0.1}s, transform 0.6s ease ${0.1 + i * 0.1}s`,
+              backdropFilter: 'blur(16px)',
+              WebkitBackdropFilter: 'blur(16px)',
+              boxShadow: '0 4px 32px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.06)',
+              borderTop: '1px solid rgba(74,222,128,0.25)',
             }}>
               <div style={{ display: 'flex', gap: 3, marginBottom: 20 }}>
-                {Array.from({ length: stars }).map((_, j) => <StarIcon key={j} size={13} color="#4ade80" filled />)}
+                {Array.from({ length: stars }).map((_, j) => <StarIcon key={j} size={14} color="#4ade80" filled />)}
               </div>
               <p style={{ fontFamily: 'var(--font-body)', fontSize: 15, color: 'rgba(238,242,238,0.62)', lineHeight: 1.75, margin: '0 0 28px', flex: 1 }}>"{quote}"</p>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -980,9 +1031,9 @@ function ClientCTA() {
           Your transformation<br />starts with<br /><span style={{ color: '#4ade80' }}>one decision.</span>
         </h2>
         <a href="#waitlist"
-          style={{ display: 'inline-flex', alignItems: 'center', gap: 10, fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 16, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#071a0b', textDecoration: 'none', background: '#4ade80', padding: '18px 40px', borderRadius: 10, boxShadow: '0 0 48px rgba(74,222,128,0.35)', transition: 'all 0.2s' }}
-          onMouseEnter={e => { e.currentTarget.style.background = '#86efac'; e.currentTarget.style.transform = 'translateY(-2px)' }}
-          onMouseLeave={e => { e.currentTarget.style.background = '#4ade80'; e.currentTarget.style.transform = 'translateY(0)' }}>
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 12, fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 16, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#071a0b', textDecoration: 'none', background: 'linear-gradient(135deg, #4ade80, #22c55e)', padding: '20px 44px', borderRadius: 14, animation: 'btn-glow-green 2s ease-in-out infinite', transition: 'transform 0.2s cubic-bezier(0.16,1,0.3,1)' }}
+          onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-3px) scale(1.04)' }}
+          onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0) scale(1)' }}>
           Find your trainer <ArrowRight />
         </a>
       </div>
