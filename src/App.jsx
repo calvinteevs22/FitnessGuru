@@ -690,8 +690,16 @@ const GOALS = [
 const REGIONS = ['Central', 'East', 'West', 'North', 'North-East']
 
 function FeaturedTrainers() {
-  const [activeGoal, setActiveGoal] = useState(null)
-  const [activeRegion, setActiveRegion] = useState(null)
+  const [activeGoal, setActiveGoal] = useState(() => {
+    const v = localStorage.getItem('fg_goal')
+    if (v) { localStorage.removeItem('fg_goal'); return v }
+    return null
+  })
+  const [activeRegion, setActiveRegion] = useState(() => {
+    const v = localStorage.getItem('fg_region')
+    if (v) { localStorage.removeItem('fg_region'); return v }
+    return null
+  })
   const [ref, visible] = useScrollReveal(0.08)
 
   const scrollToWaitlist = () => document.getElementById('waitlist')?.scrollIntoView({ behavior: 'smooth' })
