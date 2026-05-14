@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import ExerciseSearch from '../components/ExerciseSearch'
+import ProgressCharts from '../components/ProgressCharts'
 
 /* ─── Styles ─────────────────────────────────────────────────── */
 const CARD = { background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(238,242,238,0.1)', borderRadius: 12, padding: '24px 28px', marginBottom: 16 }
@@ -382,6 +383,7 @@ function ClientsSection({ trainerId }) {
   const [todayBookings, setTodayBookings] = useState({})
   const [loading, setLoading] = useState(true)
   const [editing, setEditing] = useState(null) // { client, plan|null }
+  const [viewingProgress, setViewingProgress] = useState(null) // { id, full_name }
   const [refreshKey, setRefreshKey] = useState(0)
 
   useEffect(() => {
@@ -475,6 +477,20 @@ function ClientsSection({ trainerId }) {
     )
   }
 
+  if (viewingProgress) {
+    return (
+      <div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+          <button onClick={() => setViewingProgress(null)} style={BTN_GHOST}>← Back</button>
+          <h3 style={{ color: '#EEF2EE', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 18, margin: 0 }}>
+            {viewingProgress.full_name} — Progress
+          </h3>
+        </div>
+        <ProgressCharts clientId={viewingProgress.id} />
+      </div>
+    )
+  }
+
   if (clients.length === 0) return <p style={{ color: 'rgba(238,242,238,0.4)', fontFamily: 'var(--font-body)', fontSize: 14 }}>No clients yet. Clients appear here after a confirmed booking.</p>
 
   return (
@@ -498,6 +514,7 @@ function ClientsSection({ trainerId }) {
                   Start Session
                 </button>
               )}
+              <button onClick={() => setViewingProgress(client)} style={BTN_SMALL}>View Progress</button>
               <button onClick={() => startEdit(client, plan ?? null)} style={plan ? BTN_GHOST : BTN_GREEN}>
                 {plan ? 'Edit Plan' : 'Assign Plan'}
               </button>
