@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
+import TrainerPlansTab from './TrainerPlansTab'
 
 /* ─── Styles ─────────────────────────────────────────────────── */
 const PAGE = { minHeight: '100vh', background: '#0d1a0e', padding: '40px 24px' }
@@ -476,6 +477,7 @@ export default function TrainerDashboardPage() {
     { key: 'profile', label: 'Profile' },
     { key: 'appointments', label: 'Appointments' },
     { key: 'availability', label: 'Availability' },
+    { key: 'plans', label: 'Plans' },
   ]
 
   return (
@@ -512,6 +514,7 @@ export default function TrainerDashboardPage() {
         {activeTab === 'profile' && <ProfileTab trainerProfile={trainerProfile} profile={profile} session={session} navigate={navigate} />}
         {activeTab === 'appointments' && <AppointmentsTab trainerId={session.user.id} />}
         {activeTab === 'availability' && <AvailabilityTab trainerId={session.user.id} />}
+        {activeTab === 'plans' && <TrainerPlansTab trainerId={session.user.id} />}
       </div>
     </div>
   )
