@@ -55,10 +55,10 @@ Deno.serve(async (req) => {
   const lines: string[] = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
-    'PRODID:-//FitnessGuru//Trainer Calendar//EN',
+    'PRODID:-//ReadyPT//Trainer Calendar//EN',
     'CALSCALE:GREGORIAN',
     'METHOD:PUBLISH',
-    `X-WR-CALNAME:FitnessGuru — ${escapeIcal(trainerName)}`,
+    `X-WR-CALNAME:ReadyPT — ${escapeIcal(trainerName)}`,
     'X-WR-TIMEZONE:Asia/Singapore',
   ]
 
@@ -67,7 +67,7 @@ Deno.serve(async (req) => {
     const end = new Date(start.getTime() + booking.duration_mins * 60 * 1000)
 
     lines.push('BEGIN:VEVENT')
-    lines.push(`UID:${booking.id}@fitnessguru.sg`)
+    lines.push(`UID:${booking.id}@readyptsg.com`)
     lines.push(`DTSTAMP:${formatICalDate(now)}`)
     lines.push(`DTSTART:${formatICalDate(start)}`)
     lines.push(`DTEND:${formatICalDate(end)}`)
@@ -85,7 +85,7 @@ Deno.serve(async (req) => {
     headers: {
       ...corsHeaders,
       'Content-Type': 'text/calendar; charset=utf-8',
-      'Content-Disposition': 'attachment; filename="fitnessguru-schedule.ics"',
+      'Content-Disposition': 'attachment; filename="readypt-schedule.ics"',
     },
   })
 })
