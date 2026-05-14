@@ -11,6 +11,10 @@ import VerifyPage from './pages/VerifyPage.jsx'
 import ProfileSetupPage from './pages/ProfileSetupPage.jsx'
 import TrainerDashboardPage from './pages/TrainerDashboardPage.jsx'
 import AdminPage from './pages/AdminPage.jsx'
+import TrainerListingPage from './pages/TrainerListingPage.jsx'
+import TrainerProfilePage from './pages/TrainerProfilePage.jsx'
+import BookingConfirmedPage from './pages/BookingConfirmedPage.jsx'
+import ClientDashboardPage from './pages/ClientDashboardPage.jsx'
 
 /* ─── Mock trainer roster ────────────────────────────────────── */
 const TRAINERS = [
@@ -1610,6 +1614,14 @@ export default function App() {
       } />
       <Route path="/admin" element={
         <ProtectedRoute requiredRole="admin"><AdminPage /></ProtectedRoute>
+      } />
+      <Route path="/trainers" element={<TrainerListingPage />} />
+      <Route path="/trainer/:id" element={<TrainerProfilePage />} />
+      <Route path="/booking/confirmed" element={
+        <ProtectedRoute><BookingConfirmedPage /></ProtectedRoute>
+      } />
+      <Route path="/dashboard/client" element={
+        <ProtectedRoute><ClientDashboardPage /></ProtectedRoute>
       } />
     </Routes>
   )
