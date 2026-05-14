@@ -77,7 +77,7 @@ create table client_plans (
   status text not null default 'active', -- 'active' | 'archived'
   assigned_at timestamptz default now(),
   total_weeks int,  -- used for plan completion tracking
-  constraint unique_active_plan unique (client_id, status) -- only one active plan per client
+  -- enforced at app level: only one active plan per client at a time
 );
 ```
 
@@ -254,7 +254,7 @@ Shows the same Progress sub-section (Body + Strength charts) that the client see
 
 ## Plan Auto-Archive
 
-When `total_weeks` is set on a `client_plan` and the number of logged sessions reaches `total_weeks × days_per_week_in_plan`, the plan status auto-updates to `archived`.
+When `total_weeks` is set on a `client_plan` and the number of logged sessions reaches `total_weeks × non_rest_days_per_week` (where `non_rest_days_per_week` = count of non-rest `client_plan_days` that repeat weekly), the plan status auto-updates to `archived`. For simplicity in v1: archive after `total_weeks × count(non-rest days in plan)` total sessions logged.
 
 Implementation: Postgres function triggered after insert on `client_sessions`. Checks session count vs target. If complete → sets `status = 'archived'` on `client_plans` and sends in-app notification prompt to trainer to assign next plan.
 
