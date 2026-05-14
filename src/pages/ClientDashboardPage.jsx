@@ -184,6 +184,11 @@ function BookingCard({ booking, onCancel, cancelling }) {
         <div style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: 'rgba(238,242,238,0.6)' }}>
           {formatSlotSGT(booking.scheduled_at)} · {booking.duration_mins} min
         </div>
+        {booking.venue_name && (
+          <p style={{ color: 'rgba(238,242,238,0.5)', fontFamily: 'var(--font-body)', fontSize: 13, margin: '2px 0 0' }}>
+            {booking.venue_name}
+          </p>
+        )}
         {booking.amount_sgd && (
           <div style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(238,242,238,0.35)', marginTop: 3 }}>
             S${((booking.amount_sgd) / 100).toFixed(0)} paid

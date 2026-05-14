@@ -109,6 +109,11 @@ function AppointmentsTab({ trainerId }) {
         <div>
           <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 16, color: '#EEF2EE', textTransform: 'uppercase' }}>{b.client_name}</div>
           <div style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(238,242,238,0.5)', marginTop: 3 }}>{formatDateTime(b.scheduled_at)} · {b.duration_mins} min</div>
+          {b.venue_name && (
+            <p style={{ color: 'rgba(238,242,238,0.5)', fontFamily: 'var(--font-body)', fontSize: 13, margin: '2px 0 0' }}>
+              {b.venue_name}
+            </p>
+          )}
           {b.client_email && <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(238,242,238,0.35)', marginTop: 2 }}>{b.client_email}</div>}
           {b.notes && <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(238,242,238,0.45)', marginTop: 4, fontStyle: 'italic' }}>"{b.notes}"</div>}
         </div>

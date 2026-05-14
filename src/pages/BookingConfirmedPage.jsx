@@ -67,6 +67,7 @@ export default function BookingConfirmedPage() {
           }}>
             <Row label="Trainer" value={trainerName} />
             <Row label="When" value={formatSlotSGT(booking.scheduled_at)} />
+            {booking.venue_name && <Row label="Where" value={booking.venue_name} />}
             <Row label="Duration" value={`${booking.duration_mins} minutes`} />
             <Row label="Amount paid" value={`S$${((booking.amount_sgd ?? 0) / 100).toFixed(0)}`} />
             <Row label="Confirmation sent to" value={booking.client_email} />
