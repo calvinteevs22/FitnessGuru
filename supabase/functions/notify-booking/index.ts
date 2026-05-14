@@ -59,7 +59,7 @@ serve(async (req) => {
   let html: string
 
   if (status === 'booking_confirmed') {
-    subject = 'Booking confirmed — FitnessGuru'
+    subject = 'Booking confirmed — ReadyPT'
     html = `
       <div style="font-family: sans-serif; max-width: 520px; margin: 0 auto; padding: 40px 24px;">
         <h2 style="color: #0d1a0e;">Hi ${safeName}, you're booked!</h2>
@@ -70,19 +70,19 @@ serve(async (req) => {
           ${safeAmount ? `<tr><td style="padding: 8px 0; color: #555;">Paid</td><td style="padding: 8px 0;">${safeAmount}</td></tr>` : ''}
         </table>
         <p style="color: #666; font-size: 14px;">You can cancel up to 24 hours before your session for a full refund.</p>
-        <a href="https://fitness-guru-seven.vercel.app/dashboard/client"
+        <a href="https://readyptsg.com/dashboard/client"
            style="display: inline-block; background: #4ade80; color: #0d1a0e; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold; margin-top: 16px;">
           View My Bookings
         </a>
       </div>`
   } else if (status === 'booking_cancelled') {
-    subject = 'Booking cancelled — FitnessGuru'
+    subject = 'Booking cancelled — ReadyPT'
     html = `
       <div style="font-family: sans-serif; max-width: 520px; margin: 0 auto; padding: 40px 24px;">
         <h2 style="color: #0d1a0e;">Hi ${safeName}, your booking has been cancelled.</h2>
         <p>Your session with <strong>${safeTrainer}</strong> scheduled for <strong>${safeTime}</strong> has been cancelled.</p>
         ${safeAmount ? `<p>A full refund of <strong>${safeAmount}</strong> has been issued and will appear in 5–10 business days.</p>` : ''}
-        <a href="https://fitness-guru-seven.vercel.app/trainers"
+        <a href="https://readyptsg.com/trainers"
            style="display: inline-block; background: #4ade80; color: #0d1a0e; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold; margin-top: 16px;">
           Book Another Session
         </a>
