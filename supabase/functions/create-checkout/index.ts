@@ -46,11 +46,12 @@ serve(async (req) => {
     return err('Missing required fields')
   }
 
-  // Get trainer's hourly rate and name
+  // Get trainer's hourly rate and name — only allow approved trainers
   const { data: tp, error: tpErr } = await adminClient
     .from('trainer_profiles')
-    .select('hourly_rate, profiles!inner(full_name)')
+    .select('hourly_rate, status, profiles!inner(full_name)')
     .eq('id', trainer_id)
+    .eq('status', 'approved')
     .single()
   if (tpErr || !tp) return err('Trainer not found', 404)
 

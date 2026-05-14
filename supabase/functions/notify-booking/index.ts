@@ -3,6 +3,7 @@ import { serve } from 'https://deno.land/std@0.208.0/http/server.ts'
 
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY') ?? ''
 const FROM_EMAIL = Deno.env.get('FROM_EMAIL') ?? 'onboarding@resend.dev'
+const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
 
 function escapeHtml(str: string): string {
   return str
@@ -18,12 +19,17 @@ function formatSGT(iso: string): string {
   })
 }
 
-const cors = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'authorization, content-type' }
-const jsonHeaders = { ...cors, 'Content-Type': 'application/json' }
+const jsonHeaders = { 'Content-Type': 'application/json' }
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') return new Response(null, { headers: cors })
   if (req.method !== 'POST') return new Response(JSON.stringify({ error: 'Method not allowed' }), { status: 405, headers: jsonHeaders })
+
+  // Internal-only: require service role key from calling edge function
+  const authHeader = req.headers.get('Authorization') ?? ''
+  if (!SUPABASE_SERVICE_ROLE_KEY || authHeader !== `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`) {
+    return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: jsonHeaders })
+  }
+
   if (!RESEND_API_KEY) return new Response(JSON.stringify({ error: 'RESEND_API_KEY not set' }), { status: 500, headers: jsonHeaders })
 
   let body: {

@@ -33,10 +33,13 @@ export default function LoginPage() {
     if (authLoading) return
     if (!session) return
     if (profile === undefined) return // still fetching profile
+    const rawRedirect = searchParams.get('redirect')
+    const redirectTo = rawRedirect && rawRedirect.startsWith('/') && !rawRedirect.includes('://') ? rawRedirect : null
+    if (redirectTo) { navigate(redirectTo, { replace: true }); return }
     if (profile?.role === 'admin') navigate('/admin', { replace: true })
     else if (profile?.role === 'trainer') navigate('/dashboard/trainer', { replace: true })
     else navigate('/', { replace: true })
-  }, [authLoading, session, profile, navigate])
+  }, [authLoading, session, profile, navigate, searchParams])
 
   const isTrainer = tab === 'trainer'
   const accent = isTrainer ? '#fbbf24' : '#4ade80'

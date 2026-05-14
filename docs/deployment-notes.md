@@ -11,7 +11,7 @@
 4. Set the secrets:
 
 ```bash
-SUPABASE_ACCESS_TOKEN=REDACTED_SUPABASE_PAT ~/bin/supabase secrets set \
+SUPABASE_ACCESS_TOKEN=<your-supabase-access-token> ~/bin/supabase secrets set \
   --project-ref wnwmlaqhyztwxyvzuqpe \
   STRIPE_SECRET_KEY=sk_test_YOUR_KEY \
   STRIPE_WEBHOOK_SECRET=whsec_YOUR_SECRET

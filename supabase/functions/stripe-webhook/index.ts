@@ -15,6 +15,11 @@ async function verifyStripeSignature(payload: string, sigHeader: string, secret:
 
   const timestamp = tPart.slice(2)
   const signature = v1Part.slice(3)
+
+  // Replay-attack guard: reject if event is more than 5 minutes old
+  const nowSec = Math.floor(Date.now() / 1000)
+  if (Math.abs(nowSec - parseInt(timestamp, 10)) > 300) return false
+
   const signedPayload = `${timestamp}.${payload}`
 
   const key = await crypto.subtle.importKey(
@@ -60,7 +65,7 @@ serve(async (req) => {
       await adminClient.from('bookings').update({
         status: 'confirmed',
         stripe_payment_intent_id: paymentIntent,
-      }).eq('id', bookingId)
+      }).eq('id', bookingId).eq('status', 'pending')
 
       // Fire-and-forget: send booking confirmation email to client
       const { data: booking } = await adminClient

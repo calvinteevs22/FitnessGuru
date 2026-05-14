@@ -85,6 +85,7 @@ serve(async (req) => {
     trainerName,
     scheduledAt: booking.scheduled_at,
     durationMins: booking.duration_mins,
+    amountSgd: booking.amount_sgd,
   }
   adminClient.functions.invoke('notify-booking', { body: emailPayload }).catch(() => {})
 
