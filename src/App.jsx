@@ -552,12 +552,13 @@ function Nav({ role, onSwitch }) {
 
 /* ─── SplitHero ──────────────────────────────────────────────── */
 function SplitHero({ onSelect }) {
+  const isMobile = useContext(MobileContext)
   const [hovered, setHovered] = useState(null)
   const clientBenefits = ['Certified & vetted trainers', 'Transparent pricing, no lock-in', 'Book in minutes, train tomorrow']
   const trainerBenefits = ['Keep 80% of every session', 'Set your own rates & schedule', 'Your clients, your brand']
 
   return (
-    <div style={{ display: 'flex', minHeight: '100dvh', position: 'relative', overflow: 'hidden' }} className="split-root">
+    <div style={{ display: 'flex', minHeight: isMobile ? 'auto' : '100dvh', position: 'relative', overflow: 'hidden' }} className="split-root">
       <style>{`
         .split-root { flex-direction: row; }
         @media(max-width:768px){.split-root{flex-direction:column;} .split-divider{display:none!important;}}
@@ -572,7 +573,7 @@ function SplitHero({ onSelect }) {
         onMouseEnter={() => setHovered('client')} onMouseLeave={() => setHovered(null)}
         style={{
           flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-          padding: '100px 48px', cursor: 'pointer', position: 'relative',
+          padding: isMobile ? '60px 20px' : '100px 48px', cursor: 'pointer', position: 'relative',
           background: 'linear-gradient(160deg, #071a0b 0%, #0d2418 50%, #071a0b 100%)',
           opacity: hovered === 'trainer' ? 0.15 : 1,
           filter: hovered === 'trainer' ? 'brightness(0.45) saturate(0.3)' : 'brightness(1)',
@@ -635,7 +636,7 @@ function SplitHero({ onSelect }) {
         onMouseEnter={() => setHovered('trainer')} onMouseLeave={() => setHovered(null)}
         style={{
           flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-          padding: '100px 48px', cursor: 'pointer', position: 'relative',
+          padding: isMobile ? '60px 20px' : '100px 48px', cursor: 'pointer', position: 'relative',
           background: 'linear-gradient(160deg, #100e06 0%, #1c1a0c 50%, #100e06 100%)',
           opacity: hovered === 'client' ? 0.15 : 1,
           filter: hovered === 'client' ? 'brightness(0.45) saturate(0.3)' : 'brightness(1)',
@@ -696,8 +697,9 @@ function SplitHero({ onSelect }) {
 /* ─── CLIENT JOURNEY ─────────────────────────────────────────── */
 
 function ClientHero() {
+  const isMobile = useContext(MobileContext)
   return (
-    <section style={{ minHeight: '100dvh', display: 'flex', alignItems: 'center', background: '#0d1a0e', position: 'relative', overflow: 'hidden' }}>
+    <section style={{ minHeight: isMobile ? 'auto' : '100dvh', display: 'flex', alignItems: 'center', background: '#0d1a0e', position: 'relative', overflow: 'hidden' }}>
       {/* Animated orbs */}
       <div style={{ position: 'absolute', width: 600, height: 600, borderRadius: '50%', background: 'radial-gradient(circle, rgba(45,106,46,0.2) 0%, transparent 70%)', top: '-10%', left: '-5%', pointerEvents: 'none', animation: 'orb-float 10s ease-in-out infinite', filter: 'blur(4px)' }} />
       <div style={{ position: 'absolute', width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(circle, rgba(74,222,128,0.07) 0%, transparent 70%)', bottom: '5%', right: '-5%', pointerEvents: 'none', animation: 'orb-float-2 13s ease-in-out infinite 2s', filter: 'blur(3px)' }} />
@@ -705,7 +707,7 @@ function ClientHero() {
       <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'radial-gradient(ellipse 70% 60% at 25% 45%, rgba(45,106,46,0.08) 0%, transparent 65%)' }} />
       <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'radial-gradient(ellipse 45% 45% at 78% 50%, rgba(74,222,128,0.04) 0%, transparent 60%)' }} />
 
-      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '140px 24px 100px', width: '100%', position: 'relative', zIndex: 1 }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto', padding: isMobile ? '80px 20px 60px' : '140px 24px 100px', width: '100%', position: 'relative', zIndex: 1 }}>
         <div className="chero-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'center' }}>
 
           {/* Left: copy */}
@@ -1195,12 +1197,13 @@ function EarningsCalculator() {
 }
 
 function TrainerHero({ onApply = () => {} }) {
+  const isMobile = useContext(MobileContext)
   return (
-    <section style={{ minHeight: '100dvh', display: 'flex', alignItems: 'center', background: '#100e06', position: 'relative', overflow: 'hidden' }}>
+    <section style={{ minHeight: isMobile ? 'auto' : '100dvh', display: 'flex', alignItems: 'center', background: '#100e06', position: 'relative', overflow: 'hidden' }}>
       <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'radial-gradient(ellipse 75% 60% at 30% 40%, rgba(251,191,36,0.14) 0%, transparent 65%)' }} />
       <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'radial-gradient(ellipse 40% 40% at 80% 60%, rgba(251,191,36,0.05) 0%, transparent 60%)' }} />
 
-      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '140px 24px 100px', width: '100%', position: 'relative', zIndex: 1 }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto', padding: isMobile ? '80px 20px 60px' : '140px 24px 100px', width: '100%', position: 'relative', zIndex: 1 }}>
         <div className="thero-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'center' }}>
           {/* Left: copy */}
           <div style={{ animation: 'fadeSlideUp 0.7s ease 0.1s both' }}>
