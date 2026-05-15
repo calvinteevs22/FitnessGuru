@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, createContext } from 'react'
+import { useState, useEffect, useRef, createContext, useContext } from 'react'
 import { Routes, Route, useNavigate, Navigate } from 'react-router-dom'
 import { useAuth } from './hooks/useAuth.jsx'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
