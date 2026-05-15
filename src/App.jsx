@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, createContext } from 'react'
 import { Routes, Route, useNavigate, Navigate } from 'react-router-dom'
 import { useAuth } from './hooks/useAuth.jsx'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
@@ -160,6 +160,23 @@ function useScrollReveal(threshold = 0.12) {
     return () => obs.disconnect()
   }, [threshold])
   return [ref, visible]
+}
+
+/* ─── MobileContext / useMobile ─────────────────────────────── */
+const MobileContext = createContext(false)
+
+function useMobile(breakpoint = 768) {
+  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < breakpoint)
+  useEffect(() => {
+    let t
+    const handler = () => {
+      clearTimeout(t)
+      t = setTimeout(() => setIsMobile(window.innerWidth < breakpoint), 100)
+    }
+    window.addEventListener('resize', handler)
+    return () => { window.removeEventListener('resize', handler); clearTimeout(t) }
+  }, [breakpoint])
+  return isMobile
 }
 
 /* ─── TrainerMiniCard (hero preview) ────────────────────────── */
@@ -1592,7 +1609,9 @@ function Landing() {
 
 /* ─── App ────────────────────────────────────────────────────── */
 export default function App() {
+  const isMobile = useMobile()
   return (
+    <MobileContext.Provider value={isMobile}>
     <Routes>
       <Route path="/" element={<Landing />} />
       <Route path="/login" element={<LoginPage />} />
@@ -1625,5 +1644,6 @@ export default function App() {
         <ProtectedRoute requiredRole="trainer"><TrainerSessionPage /></ProtectedRoute>
       } />
     </Routes>
+    </MobileContext.Provider>
   )
 }
