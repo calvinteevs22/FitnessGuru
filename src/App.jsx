@@ -796,6 +796,7 @@ const GOALS = [
 const REGIONS = ['Central', 'East', 'West', 'North', 'North-East']
 
 function FeaturedTrainers() {
+  const isMobile = useContext(MobileContext)
   const [activeGoal, setActiveGoal] = useState(() => {
     const v = localStorage.getItem('fg_goal')
     if (v) { localStorage.removeItem('fg_goal'); return v }
@@ -825,7 +826,7 @@ function FeaturedTrainers() {
   })()
 
   return (
-    <section id="trainers" ref={ref} style={{ background: '#091210', padding: '104px 24px', position: 'relative', overflow: 'hidden' }}>
+    <section id="trainers" ref={ref} style={{ background: '#091210', padding: isMobile ? '64px 20px' : '104px 24px', position: 'relative', overflow: 'hidden' }}>
       <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'radial-gradient(ellipse 60% 40% at 50% 0%, rgba(45,106,46,0.09) 0%, transparent 55%)' }} />
 
       <div style={{ maxWidth: 1200, margin: '0 auto', position: 'relative' }}>
@@ -947,6 +948,7 @@ function FeaturedTrainers() {
 }
 
 function ClientHowItWorks() {
+  const isMobile = useContext(MobileContext)
   const [ref, visible] = useScrollReveal()
   const steps = [
     { num: '01', title: 'Browse verified trainers', body: 'Filter by goal, location, and price. Every trainer is certified with real client reviews. No guessing.' },
@@ -954,7 +956,7 @@ function ClientHowItWorks() {
     { num: '03', title: 'Train and transform', body: 'Your trainer, your goals, your pace. One session or a full programme — entirely your call.' },
   ]
   return (
-    <section id="how-it-works" ref={ref} style={{ background: '#0d1a0e', padding: '104px 24px' }}>
+    <section id="how-it-works" ref={ref} style={{ background: '#0d1a0e', padding: isMobile ? '64px 20px' : '104px 24px' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         <div style={{ opacity: visible ? 1 : 0, transform: visible ? 'none' : 'translateY(20px)', transition: 'opacity 0.6s, transform 0.6s' }}>
           <p style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 12, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#4ade80', margin: '0 0 18px' }}>How It Works</p>
@@ -990,6 +992,7 @@ function ClientHowItWorks() {
 }
 
 function ClientReassurance() {
+  const isMobile = useContext(MobileContext)
   const [ref, visible] = useScrollReveal()
   const cards = [
     {
@@ -1006,7 +1009,7 @@ function ClientReassurance() {
     },
   ]
   return (
-    <section ref={ref} style={{ background: '#0a140b', padding: '104px 24px', position: 'relative', overflow: 'hidden' }}>
+    <section ref={ref} style={{ background: '#0a140b', padding: isMobile ? '64px 20px' : '104px 24px', position: 'relative', overflow: 'hidden' }}>
       <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'radial-gradient(ellipse 50% 60% at 85% 50%, rgba(45,106,46,0.06) 0%, transparent 65%)' }} />
       <div style={{ maxWidth: 1200, margin: '0 auto', position: 'relative' }}>
         <div style={{ opacity: visible ? 1 : 0, transform: visible ? 'none' : 'translateY(20px)', transition: 'opacity 0.6s, transform 0.6s' }}>
@@ -1041,6 +1044,7 @@ function ClientReassurance() {
 }
 
 function ClientTestimonials() {
+  const isMobile = useContext(MobileContext)
   const [ref, visible] = useScrollReveal()
   const testimonials = [
     { quote: 'I found Marcus in a week after reading his real reviews and seeing his actual training style. Six months later I\'m down 14kg — something three different gym trainers couldn\'t do.', name: 'Natasha L.', detail: 'Client · Tampines', stars: 5, initials: 'NL', bg: 'linear-gradient(135deg,#1a4a2e,#2d6a3e)' },
@@ -1048,7 +1052,7 @@ function ClientTestimonials() {
     { quote: 'ReadyPT showed me certified trainers at every price point, with rates listed upfront. I know what I pay, my trainer knows what I need.', name: 'Wei Ming T.', detail: 'Client · Jurong', stars: 5, initials: 'WT', bg: 'linear-gradient(135deg,#0c4a6e,#0369a1)' },
   ]
   return (
-    <section ref={ref} style={{ background: '#0d1a0e', padding: '104px 24px', position: 'relative', overflow: 'hidden' }}>
+    <section ref={ref} style={{ background: '#0d1a0e', padding: isMobile ? '64px 20px' : '104px 24px', position: 'relative', overflow: 'hidden' }}>
       <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'radial-gradient(ellipse 50% 70% at 15% 50%, rgba(45,106,46,0.07) 0%, transparent 65%)' }} />
       <div style={{ maxWidth: 1200, margin: '0 auto', position: 'relative' }}>
         <div style={{ opacity: visible ? 1 : 0, transform: visible ? 'none' : 'translateY(20px)', transition: 'opacity 0.6s, transform 0.6s' }}>
@@ -1090,9 +1094,10 @@ function ClientTestimonials() {
 }
 
 function ClientCTA() {
+  const isMobile = useContext(MobileContext)
   const [ref, visible] = useScrollReveal()
   return (
-    <section ref={ref} style={{ background: '#071a0b', padding: '104px 24px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+    <section ref={ref} style={{ background: '#071a0b', padding: isMobile ? '64px 20px' : '104px 24px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
       <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'radial-gradient(ellipse 60% 70% at 50% 50%, rgba(45,106,46,0.14) 0%, transparent 65%)' }} />
       <div style={{ maxWidth: 720, margin: '0 auto', position: 'relative', opacity: visible ? 1 : 0, transform: visible ? 'none' : 'translateY(28px)', transition: 'opacity 0.7s, transform 0.7s' }}>
         <p style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 12, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#4ade80', margin: '0 0 20px' }}>Get Started</p>
@@ -1251,6 +1256,7 @@ function TrainerHero({ onApply = () => {} }) {
 }
 
 function TrainerAspiration() {
+  const isMobile = useContext(MobileContext)
   const [ref, visible] = useScrollReveal()
   const cards = [
     {
@@ -1270,7 +1276,7 @@ function TrainerAspiration() {
     },
   ]
   return (
-    <section ref={ref} style={{ background: '#0c0a04', padding: '104px 24px', position: 'relative', overflow: 'hidden' }}>
+    <section ref={ref} style={{ background: '#0c0a04', padding: isMobile ? '64px 20px' : '104px 24px', position: 'relative', overflow: 'hidden' }}>
       <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'radial-gradient(ellipse 50% 60% at 85% 50%, rgba(251,191,36,0.05) 0%, transparent 65%)' }} />
       <div style={{ maxWidth: 1200, margin: '0 auto', position: 'relative' }}>
         <div style={{ opacity: visible ? 1 : 0, transform: visible ? 'none' : 'translateY(20px)', transition: 'opacity 0.6s, transform 0.6s' }}>
@@ -1303,6 +1309,7 @@ function TrainerAspiration() {
 }
 
 function TrainerHowItWorks() {
+  const isMobile = useContext(MobileContext)
   const [ref, visible] = useScrollReveal()
   const steps = [
     { num: '01', title: 'Build your profile', body: 'Showcase your certifications, specialty, training style, and locations. Your profile is your professional home on ReadyPT — and it works for you around the clock.' },
@@ -1310,7 +1317,7 @@ function TrainerHowItWorks() {
     { num: '03', title: 'Get booked, get paid', body: 'Clients discover you, book, and pay through ReadyPT. You keep 80% of every session, paid out automatically.' },
   ]
   return (
-    <section id="how-it-works" ref={ref} style={{ background: '#100e06', padding: '104px 24px' }}>
+    <section id="how-it-works" ref={ref} style={{ background: '#100e06', padding: isMobile ? '64px 20px' : '104px 24px' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         <div style={{ opacity: visible ? 1 : 0, transform: visible ? 'none' : 'translateY(20px)', transition: 'opacity 0.6s, transform 0.6s' }}>
           <p style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 12, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#fbbf24', margin: '0 0 18px' }}>How It Works</p>
@@ -1341,6 +1348,7 @@ function TrainerHowItWorks() {
 }
 
 function TrainerValueProps() {
+  const isMobile = useContext(MobileContext)
   const [ref, visible] = useScrollReveal()
   const items = [
     { title: 'Keep 80% of every session you run.', body: 'Set a rate of $120 per session and take home $96 — every time. Transparent, consistent, and entirely yours.' },
@@ -1348,7 +1356,7 @@ function TrainerValueProps() {
     { title: 'Every client relationship is yours to keep.', body: 'Your profile builds your reputation. Your reviews travel with you. The practice you build on ReadyPT belongs to you.' },
   ]
   return (
-    <section ref={ref} style={{ background: '#0c0a04', padding: '104px 24px' }}>
+    <section ref={ref} style={{ background: '#0c0a04', padding: isMobile ? '64px 20px' : '104px 24px' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto' }}>
         <div style={{ opacity: visible ? 1 : 0, transform: visible ? 'none' : 'translateY(20px)', transition: 'opacity 0.6s, transform 0.6s' }}>
           <p style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 12, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#fbbf24', margin: '0 0 18px' }}>Why ReadyPT</p>
@@ -1381,6 +1389,7 @@ function TrainerValueProps() {
 }
 
 function TrainerTestimonials() {
+  const isMobile = useContext(MobileContext)
   const [ref, visible] = useScrollReveal()
   const testimonials = [
     { quote: 'I listed my profile in under 20 minutes. Within two weeks I had three new clients booking regular sessions. ReadyPT brought me people I never would have reached through referrals alone.', name: 'Marcus T.', detail: 'Strength & Conditioning · Tampines', stars: 5, initials: 'MT', bg: 'linear-gradient(135deg,#14532d,#166534)' },
@@ -1388,7 +1397,7 @@ function TrainerTestimonials() {
     { quote: 'The income consistency has been the biggest change. I set my rate, I show up, I get paid. ReadyPT handles everything in between so I can focus entirely on my clients.', name: 'Daniel W.', detail: 'HIIT & Fat Loss · CBD', stars: 5, initials: 'DW', bg: 'linear-gradient(135deg,#0c4a6e,#0369a1)' },
   ]
   return (
-    <section ref={ref} style={{ background: '#100e06', padding: '104px 24px', position: 'relative', overflow: 'hidden' }}>
+    <section ref={ref} style={{ background: '#100e06', padding: isMobile ? '64px 20px' : '104px 24px', position: 'relative', overflow: 'hidden' }}>
       <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'radial-gradient(ellipse 50% 70% at 15% 50%, rgba(251,191,36,0.05) 0%, transparent 65%)' }} />
       <div style={{ maxWidth: 1200, margin: '0 auto', position: 'relative' }}>
         <div style={{ opacity: visible ? 1 : 0, transform: visible ? 'none' : 'translateY(20px)', transition: 'opacity 0.6s, transform 0.6s' }}>
@@ -1426,9 +1435,10 @@ function TrainerTestimonials() {
 }
 
 function TrainerCTA({ onApply = () => {} }) {
+  const isMobile = useContext(MobileContext)
   const [ref, visible] = useScrollReveal()
   return (
-    <section ref={ref} style={{ background: '#0c0a04', padding: '104px 24px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+    <section ref={ref} style={{ background: '#0c0a04', padding: isMobile ? '64px 20px' : '104px 24px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
       <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'radial-gradient(ellipse 60% 70% at 50% 50%, rgba(251,191,36,0.08) 0%, transparent 65%)' }} />
       <div style={{ maxWidth: 720, margin: '0 auto', position: 'relative', opacity: visible ? 1 : 0, transform: visible ? 'none' : 'translateY(28px)', transition: 'opacity 0.7s, transform 0.7s' }}>
         <p style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 12, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#fbbf24', margin: '0 0 20px' }}>Apply Now</p>
@@ -1465,6 +1475,7 @@ function TrainerPage({ onApply = () => {} }) {
 
 /* ─── Waitlist ───────────────────────────────────────────────── */
 function Waitlist({ defaultRole = 'client' }) {
+  const isMobile = useContext(MobileContext)
   const [email, setEmail] = useState('')
   const [role, setRole] = useState(defaultRole)
   const [submitted, setSubmitted] = useState(false)
@@ -1480,7 +1491,7 @@ function Waitlist({ defaultRole = 'client' }) {
   }
 
   return (
-    <section id="waitlist" style={{ background: bg, padding: '104px 24px', position: 'relative', overflow: 'hidden' }}>
+    <section id="waitlist" style={{ background: bg, padding: isMobile ? '64px 20px' : '104px 24px', position: 'relative', overflow: 'hidden' }}>
       <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: `radial-gradient(ellipse 60% 75% at 50% 50%, ${isTrainer ? 'rgba(251,191,36,0.08)' : 'rgba(45,106,46,0.1)'} 0%, transparent 65%)` }} />
 
       <div style={{ maxWidth: 560, margin: '0 auto', position: 'relative', textAlign: 'center' }}>
