@@ -3,7 +3,7 @@ import { useAuth } from '../hooks/useAuth'
 
 const Spinner = () => (
   <div style={{ minHeight: '100vh', background: '#0d1a0e', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-    <p style={{ color: 'rgba(238,242,238,0.5)', fontFamily: 'var(--font-body)', fontSize: 15 }}>Loading…</p>
+    <p style={{ color: 'rgba(238,242,238,0.5)', fontFamily: 'var(--font-body)', fontSize: 15 }}>Loading...</p>
   </div>
 )
 

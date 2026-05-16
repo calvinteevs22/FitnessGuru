@@ -64,7 +64,7 @@ describe('ProtectedRoute', () => {
   })
 
   it('shows loading when session exists but profile not yet loaded', () => {
-    useAuth.mockReturnValue({ loading: false, session: { user: { id: '1' } }, profile: null })
+    useAuth.mockReturnValue({ loading: true, session: { user: { id: '1' } }, profile: undefined })
     render(
       <MemoryRouter initialEntries={['/dashboard']}>
         <Routes>

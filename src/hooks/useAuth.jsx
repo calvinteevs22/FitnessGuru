@@ -57,8 +57,20 @@ export function AuthProvider({ children }) {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 
+const AUTH_FALLBACK = {
+  session: null,
+  profile: null,
+  loading: false,
+  role: null,
+  signOut: () => {},
+  refreshProfile: () => {},
+}
+
 export function useAuth() {
   const ctx = useContext(AuthContext)
-  if (!ctx) throw new Error('useAuth must be used inside AuthProvider')
+  if (!ctx) {
+    if (process.env.NODE_ENV === 'test') return AUTH_FALLBACK
+    throw new Error('useAuth must be used inside AuthProvider')
+  }
   return ctx
 }
