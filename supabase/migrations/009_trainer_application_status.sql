@@ -5,7 +5,7 @@
 --    If the apply step fails, find the real name with:
 --    SELECT conname FROM pg_constraint WHERE conrelid = 'public.trainer_profiles'::regclass AND contype = 'c';
 alter table public.trainer_profiles
-  drop constraint trainer_profiles_status_check;
+  drop constraint if exists trainer_profiles_status_check;
 
 alter table public.trainer_profiles
   add constraint trainer_profiles_status_check
@@ -14,7 +14,7 @@ alter table public.trainer_profiles
 -- 2. Add new tracking columns
 alter table public.trainer_profiles
   add column if not exists rejection_reason text,
-  add column if not exists application_ref   text,
+  add column if not exists application_ref   text unique,
   add column if not exists docs_submitted_at timestamptz,
   add column if not exists approved_at       timestamptz,
   add column if not exists live_at           timestamptz;
@@ -44,6 +44,7 @@ create or replace function public.submit_trainer_profile(
 returns text
 language plpgsql
 security definer
+set search_path = ''
 as $$
 declare
   v_ref text;
@@ -86,7 +87,7 @@ begin
     documents         = excluded.documents,
     status            = 'pending',
     application_ref   = v_ref,
-    docs_submitted_at = now(),
+    docs_submitted_at = coalesce(public.trainer_profiles.docs_submitted_at, now()),
     reviewed_at       = null,
     admin_notes       = null,
     rejection_reason  = null;
@@ -100,6 +101,7 @@ create or replace function public.set_trainer_live()
 returns void
 language plpgsql
 security definer
+set search_path = ''
 as $$
 begin
   update public.trainer_profiles
@@ -109,3 +111,5 @@ begin
     and status = 'approved';
 end;
 $$;
+
+grant execute on function public.set_trainer_live() to authenticated;
