@@ -3,6 +3,10 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
 import TrainerPlansTab from './TrainerPlansTab'
+import MultiSelect from '../components/MultiSelect'
+
+const SPECIALTIES = ['Strength', 'HIIT', 'Yoga', 'Pilates', 'Rehabilitation', 'Sports Performance', 'Weight Loss', 'Nutrition']
+const LOCATIONS = ['Central', 'CBD', 'Orchard', 'East', 'West', 'North', 'Northeast', 'Buona Vista', 'Novena', 'Online']
 
 /* ─── Styles ─────────────────────────────────────────────────── */
 const PAGE = { minHeight: '100vh', background: '#0d1a0e', padding: '40px 24px' }
@@ -145,12 +149,15 @@ function AppointmentsTab({ trainerId }) {
 
 /* ─── Availability Tab ────────────────────────────────────────── */
 function AvailabilityTab({ trainerId }) {
+  // availability: { [dayIdx]: [{start_time, end_time}, ...] }
   const [availability, setAvailability] = useState({})
-  const [blocks, setBlocks] = useState([])
   const [duration, setDuration] = useState(60)
+  const [dirty, setDirty] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [savedMsg, setSavedMsg] = useState('')
+  const [blocks, setBlocks] = useState([])
+  const [pendingDates, setPendingDates] = useState([]) // dates selected before confirming
   const [newBlockDate, setNewBlockDate] = useState('')
-  const [saving, setSaving] = useState(null)
-  const [msg, setMsg] = useState('')
   const [copied, setCopied] = useState(false)
 
   const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
@@ -159,12 +166,13 @@ function AvailabilityTab({ trainerId }) {
   useEffect(() => {
     async function load() {
       const [{ data: avail }, { data: blks }] = await Promise.all([
-        supabase.from('trainer_availability').select('*').eq('trainer_id', trainerId),
+        supabase.from('trainer_availability').select('*').eq('trainer_id', trainerId).order('range_index'),
         supabase.from('availability_blocks').select('*').eq('trainer_id', trainerId).order('blocked_date'),
       ])
       const map = {}
       for (const row of avail ?? []) {
-        map[row.day_of_week] = { start_time: row.start_time, end_time: row.end_time, duration_mins: row.duration_mins }
+        if (!map[row.day_of_week]) map[row.day_of_week] = []
+        map[row.day_of_week].push({ start_time: row.start_time, end_time: row.end_time })
         if (row.duration_mins) setDuration(row.duration_mins)
       }
       setAvailability(map)
@@ -173,75 +181,92 @@ function AvailabilityTab({ trainerId }) {
     load()
   }, [trainerId])
 
-  async function toggleDay(dayIdx) {
+  function toggleDay(dayIdx) {
     if (availability[dayIdx]) {
-      await supabase.rpc('delete_trainer_availability', { p_day_of_week: dayIdx })
       setAvailability(prev => { const n = { ...prev }; delete n[dayIdx]; return n })
     } else {
-      const defaults = { start_time: '08:00', end_time: '17:00', duration_mins: duration }
-      await supabase.rpc('upsert_trainer_availability', {
-        p_day_of_week: dayIdx,
-        p_start_time: defaults.start_time,
-        p_end_time: defaults.end_time,
-        p_duration_mins: duration,
-      })
-      setAvailability(prev => ({ ...prev, [dayIdx]: defaults }))
+      setAvailability(prev => ({ ...prev, [dayIdx]: [{ start_time: '08:00', end_time: '17:00' }] }))
     }
+    setDirty(true)
   }
 
-  async function saveDayTimes(dayIdx) {
-    setSaving(dayIdx)
-    const av = availability[dayIdx]
-    await supabase.rpc('upsert_trainer_availability', {
-      p_day_of_week: dayIdx,
-      p_start_time: av.start_time,
-      p_end_time: av.end_time,
-      p_duration_mins: duration,
+  function addRange(dayIdx) {
+    setAvailability(prev => ({
+      ...prev,
+      [dayIdx]: [...prev[dayIdx], { start_time: '15:00', end_time: '20:00' }],
+    }))
+    setDirty(true)
+  }
+
+  function removeRange(dayIdx, rangeIdx) {
+    setAvailability(prev => {
+      const ranges = prev[dayIdx].filter((_, i) => i !== rangeIdx)
+      if (ranges.length === 0) { const n = { ...prev }; delete n[dayIdx]; return n }
+      return { ...prev, [dayIdx]: ranges }
     })
-
-    // Transition approved trainer to live on first availability save
-    const { data: trainerProfile } = await supabase
-      .from('trainer_profiles')
-      .select('status')
-      .eq('id', trainerId)
-      .single()
-
-    if (trainerProfile?.status === 'approved') {
-      await supabase.rpc('set_trainer_live')
-    }
-
-    setSaving(null)
-    setMsg('Saved.')
-    setTimeout(() => setMsg(''), 2000)
+    setDirty(true)
   }
 
-  function updateDayField(dayIdx, field, value) {
-    setAvailability(prev => ({ ...prev, [dayIdx]: { ...prev[dayIdx], [field]: value } }))
+  function updateRange(dayIdx, rangeIdx, field, value) {
+    setAvailability(prev => ({
+      ...prev,
+      [dayIdx]: prev[dayIdx].map((r, i) => i === rangeIdx ? { ...r, [field]: value } : r),
+    }))
+    setDirty(true)
   }
 
-  async function updateDuration(val) {
-    setDuration(val)
-    for (const dayIdx of Object.keys(availability)) {
-      await supabase.rpc('upsert_trainer_availability', {
-        p_day_of_week: Number(dayIdx),
-        p_start_time: availability[dayIdx].start_time,
-        p_end_time: availability[dayIdx].end_time,
-        p_duration_mins: val,
-      })
+  async function saveSchedule() {
+    setSaving(true)
+    try {
+      // Save active days
+      for (const dayIdx of Object.keys(availability)) {
+        await supabase.rpc('save_trainer_day_ranges', {
+          p_day_of_week: Number(dayIdx),
+          p_ranges: availability[dayIdx],
+          p_duration_mins: duration,
+        })
+      }
+      // Clear any days that were toggled off
+      for (let d = 0; d <= 6; d++) {
+        if (!availability[d]) {
+          await supabase.from('trainer_availability')
+            .delete()
+            .eq('trainer_id', trainerId)
+            .eq('day_of_week', d)
+        }
+      }
+      // Go-live check for approved trainers
+      const { data: tp } = await supabase.from('trainer_profiles').select('status').eq('id', trainerId).single()
+      if (tp?.status === 'approved') await supabase.rpc('set_trainer_live')
+
+      setDirty(false)
+      setSavedMsg('✓ Schedule saved')
+      setTimeout(() => setSavedMsg(''), 3000)
+    } finally {
+      setSaving(false)
     }
   }
 
-  async function addBlock() {
-    if (!newBlockDate) return
-    const { data, error } = await supabase
-      .from('availability_blocks')
-      .insert({ trainer_id: trainerId, blocked_date: newBlockDate })
-      .select()
-      .single()
-    if (!error) {
-      setBlocks(prev => [...prev, data].sort((a, b) => a.blocked_date.localeCompare(b.blocked_date)))
-      setNewBlockDate('')
+  function addPendingDate() {
+    if (!newBlockDate || pendingDates.includes(newBlockDate)) return
+    setPendingDates(prev => [...prev, newBlockDate].sort())
+    setNewBlockDate('')
+  }
+
+  async function confirmBlockDates() {
+    const toAdd = pendingDates.filter(d => !blocks.some(b => b.blocked_date === d))
+    const inserted = []
+    for (const date of toAdd) {
+      const { data, error } = await supabase
+        .from('availability_blocks')
+        .insert({ trainer_id: trainerId, blocked_date: date })
+        .select().single()
+      if (!error && data) inserted.push(data)
     }
+    if (inserted.length > 0) {
+      setBlocks(prev => [...prev, ...inserted].sort((a, b) => a.blocked_date.localeCompare(b.blocked_date)))
+    }
+    setPendingDates([])
   }
 
   async function removeBlock(id) {
@@ -262,7 +287,7 @@ function AvailabilityTab({ trainerId }) {
         <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: 18, color: '#EEF2EE', fontWeight: 700, margin: '0 0 16px' }}>Session Duration</h3>
         <div style={{ display: 'flex', gap: 10 }}>
           {[60, 90].map(d => (
-            <button key={d} onClick={() => updateDuration(d)} style={{
+            <button key={d} onClick={() => { setDuration(d); setDirty(true) }} style={{
               padding: '10px 24px', borderRadius: 8,
               border: `1px solid ${duration === d ? 'rgba(74,222,128,0.55)' : 'rgba(238,242,238,0.15)'}`,
               background: duration === d ? 'rgba(74,222,128,0.1)' : 'transparent',
@@ -273,65 +298,126 @@ function AvailabilityTab({ trainerId }) {
         </div>
       </div>
 
-      {/* Weekly template */}
+      {/* Weekly schedule */}
       <div style={CARD}>
-        <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: 18, color: '#EEF2EE', fontWeight: 700, margin: '0 0 8px' }}>Weekly Schedule</h3>
-        <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(238,242,238,0.4)', margin: '0 0 20px' }}>Toggle days you're available and set your hours.</p>
-        {msg && <p style={{ color: '#4ade80', fontFamily: 'var(--font-body)', fontSize: 13, margin: '0 0 12px' }}>{msg}</p>}
+        <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: 18, color: '#EEF2EE', fontWeight: 700, margin: '0 0 4px' }}>Weekly Schedule</h3>
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(238,242,238,0.4)', margin: '0 0 20px' }}>
+          Toggle days you're available. Add multiple time ranges per day (e.g. 6–10am and 3–8pm).
+        </p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {DAYS.map((day, idx) => {
             const active = !!availability[idx]
-            const av = availability[idx]
-            const slots = active ? generateSlots(av.start_time, av.end_time, duration) : []
+            const ranges = availability[idx] || []
+            const totalSlots = ranges.reduce((sum, r) => sum + generateSlots(r.start_time, r.end_time, duration).length, 0)
             return (
               <div key={idx} style={{
-                display: 'flex', alignItems: 'flex-start', gap: 14, padding: '14px 16px', borderRadius: 10,
+                padding: '14px 16px', borderRadius: 10,
                 background: active ? 'rgba(74,222,128,0.04)' : 'rgba(255,255,255,0.02)',
                 border: `1px solid ${active ? 'rgba(74,222,128,0.18)' : 'rgba(238,242,238,0.06)'}`,
                 transition: 'all 0.2s',
               }}>
-                <button onClick={() => toggleDay(idx)} style={{
-                  width: 38, height: 22, borderRadius: 11, border: 'none', cursor: 'pointer',
-                  flexShrink: 0, marginTop: 2,
-                  background: active ? '#4ade80' : 'rgba(238,242,238,0.12)',
-                  transition: 'background 0.2s', position: 'relative',
-                }}>
-                  <span style={{ position: 'absolute', top: 3, left: active ? 18 : 3, width: 16, height: 16, borderRadius: '50%', background: '#fff', transition: 'left 0.2s' }} />
-                </button>
-                <div style={{ width: 36, fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 14, color: active ? '#EEF2EE' : 'rgba(238,242,238,0.3)', textTransform: 'uppercase', letterSpacing: 1, paddingTop: 2 }}>{day}</div>
-                {active ? (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1, flexWrap: 'wrap' }}>
-                    <input type="time" value={av.start_time} onChange={e => updateDayField(idx, 'start_time', e.target.value)} style={{ ...INPUT, width: 120 }} />
-                    <span style={{ color: 'rgba(238,242,238,0.35)', fontFamily: 'var(--font-body)' }}>to</span>
-                    <input type="time" value={av.end_time} onChange={e => updateDayField(idx, 'end_time', e.target.value)} style={{ ...INPUT, width: 120 }} />
-                    <button onClick={() => saveDayTimes(idx)} style={{ ...BTN_GREEN, padding: '8px 14px', fontSize: 12 }}>
-                      {saving === idx ? 'Saving…' : 'Save'}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                  <button onClick={() => toggleDay(idx)} style={{
+                    width: 38, height: 22, borderRadius: 11, border: 'none', cursor: 'pointer', flexShrink: 0,
+                    background: active ? '#4ade80' : 'rgba(238,242,238,0.12)',
+                    transition: 'background 0.2s', position: 'relative',
+                  }}>
+                    <span style={{ position: 'absolute', top: 3, left: active ? 18 : 3, width: 16, height: 16, borderRadius: '50%', background: '#fff', transition: 'left 0.2s' }} />
+                  </button>
+                  <span style={{ width: 36, fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 14, color: active ? '#EEF2EE' : 'rgba(238,242,238,0.3)', textTransform: 'uppercase', letterSpacing: 1 }}>{day}</span>
+                  {!active && <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(238,242,238,0.25)' }}>Off</span>}
+                  {active && totalSlots > 0 && (
+                    <span style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(238,242,238,0.35)', marginLeft: 'auto' }}>
+                      {totalSlots} slot{totalSlots !== 1 ? 's' : ''}
+                    </span>
+                  )}
+                </div>
+                {active && (
+                  <div style={{ marginTop: 12, paddingLeft: 52, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    {ranges.map((r, ri) => (
+                      <div key={ri} style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                        <input type="time" value={r.start_time}
+                          onChange={e => updateRange(idx, ri, 'start_time', e.target.value)}
+                          style={{ ...INPUT, width: 120 }} />
+                        <span style={{ color: 'rgba(238,242,238,0.35)', fontFamily: 'var(--font-body)', fontSize: 13 }}>to</span>
+                        <input type="time" value={r.end_time}
+                          onChange={e => updateRange(idx, ri, 'end_time', e.target.value)}
+                          style={{ ...INPUT, width: 120 }} />
+                        {ranges.length > 1 && (
+                          <button onClick={() => removeRange(idx, ri)} style={{
+                            background: 'none', border: 'none', color: 'rgba(248,113,113,0.6)',
+                            cursor: 'pointer', fontSize: 20, lineHeight: 1, padding: '0 4px',
+                          }}>×</button>
+                        )}
+                      </div>
+                    ))}
+                    <button onClick={() => addRange(idx)} style={{
+                      background: 'none', border: '1px dashed rgba(74,222,128,0.3)',
+                      color: 'rgba(74,222,128,0.65)', borderRadius: 6, padding: '5px 12px',
+                      fontSize: 12, fontFamily: 'var(--font-body)', cursor: 'pointer', alignSelf: 'flex-start',
+                    }}>
+                      + Add time range
                     </button>
-                    {slots.length > 0 && (
-                      <span style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(238,242,238,0.35)' }}>
-                        {slots.length} slot{slots.length !== 1 ? 's' : ''}: {formatTime(slots[0])} – {formatTime(slots[slots.length - 1])}
-                      </span>
-                    )}
                   </div>
-                ) : (
-                  <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(238,242,238,0.25)', paddingTop: 2 }}>Off</span>
                 )}
               </div>
             )
           })}
         </div>
+
+        {/* Save schedule — single button for everything */}
+        <div style={{ marginTop: 20, display: 'flex', alignItems: 'center', gap: 14 }}>
+          <button
+            onClick={saveSchedule}
+            disabled={saving}
+            style={{
+              ...BTN_GREEN, padding: '11px 28px', fontSize: 15,
+              opacity: saving ? 0.6 : 1,
+              boxShadow: dirty ? '0 0 14px rgba(74,222,128,0.25)' : 'none',
+              transition: 'box-shadow 0.3s',
+            }}
+          >
+            {saving ? 'Saving…' : 'Save schedule'}
+          </button>
+          {savedMsg && <span style={{ color: '#4ade80', fontFamily: 'var(--font-body)', fontSize: 14, fontWeight: 600 }}>{savedMsg}</span>}
+          {dirty && !savedMsg && <span style={{ color: 'rgba(238,242,238,0.35)', fontFamily: 'var(--font-body)', fontSize: 13 }}>Unsaved changes</span>}
+        </div>
       </div>
 
-      {/* Block dates */}
+      {/* Block dates — multi-select */}
       <div style={CARD}>
-        <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: 18, color: '#EEF2EE', fontWeight: 700, margin: '0 0 8px' }}>Block Dates</h3>
-        <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(238,242,238,0.4)', margin: '0 0 16px' }}>Mark specific dates as unavailable — holidays, personal days, etc.</p>
-        <div style={{ display: 'flex', gap: 10, marginBottom: 16 }}>
-          <input type="date" value={newBlockDate} onChange={e => setNewBlockDate(e.target.value)}
+        <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: 18, color: '#EEF2EE', fontWeight: 700, margin: '0 0 4px' }}>Block Dates</h3>
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(238,242,238,0.4)', margin: '0 0 16px' }}>
+          Select multiple dates, then confirm all at once.
+        </p>
+        <div style={{ display: 'flex', gap: 10, marginBottom: 12 }}>
+          <input type="date" value={newBlockDate}
+            onChange={e => setNewBlockDate(e.target.value)}
             min={new Date().toISOString().split('T')[0]}
             style={{ ...INPUT, width: 180 }} />
-          <button style={BTN_GREEN} onClick={addBlock}>Block date</button>
+          <button style={BTN_GHOST} onClick={addPendingDate}>Add</button>
         </div>
+
+        {/* Pending chips (selected, not yet saved) */}
+        {pendingDates.length > 0 && (
+          <div style={{ marginBottom: 16 }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 10 }}>
+              {pendingDates.map(d => (
+                <div key={d} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(74,222,128,0.08)', border: '1px solid rgba(74,222,128,0.25)', borderRadius: 8, padding: '5px 10px' }}>
+                  <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#4ade80' }}>
+                    {new Date(d + 'T00:00:00').toLocaleDateString('en-SG', { day: 'numeric', month: 'short', year: 'numeric' })}
+                  </span>
+                  <button onClick={() => setPendingDates(prev => prev.filter(x => x !== d))} style={{ background: 'none', border: 'none', color: 'rgba(74,222,128,0.6)', cursor: 'pointer', fontSize: 14, lineHeight: 1, padding: 0 }}>×</button>
+                </div>
+              ))}
+            </div>
+            <button onClick={confirmBlockDates} style={BTN_GREEN}>
+              Block {pendingDates.length} date{pendingDates.length !== 1 ? 's' : ''}
+            </button>
+          </div>
+        )}
+
+        {/* Saved blocked dates */}
         {blocks.length === 0
           ? <p style={{ color: 'rgba(238,242,238,0.25)', fontFamily: 'var(--font-body)', fontSize: 13 }}>No blocked dates.</p>
           : (
@@ -345,7 +431,8 @@ function AvailabilityTab({ trainerId }) {
                 </div>
               ))}
             </div>
-          )}
+          )
+        }
       </div>
 
       {/* iCal export */}
@@ -367,13 +454,67 @@ function AvailabilityTab({ trainerId }) {
 }
 
 /* ─── Profile Tab ─────────────────────────────────────────────── */
-function ProfileTab({ trainerProfile, profile, session, navigate }) {
+function ProfileTab({ trainerProfile: initialProfile, profile: initialProfile2, session, navigate }) {
+  const [tp, setTp] = useState(initialProfile)          // trainer_profiles row
+  const [bio, setBio] = useState(initialProfile2?.bio || '')
+  const [editing, setEditing] = useState(null)          // null | 'expertise' | 'offering'
+  const [saving, setSaving] = useState(false)
+  const [saveMsg, setSaveMsg] = useState('')
+
+  // Expertise edit state
+  const [editSpecialties, setEditSpecialties] = useState([])
+  const [editYearsExp, setEditYearsExp] = useState('')
+
+  // Offering edit state
+  const [editRate, setEditRate] = useState('')
+  const [editLocations, setEditLocations] = useState([])
+  const [editBio, setEditBio] = useState('')
+
   const [changingPassword, setChangingPassword] = useState(false)
   const [newPassword, setNewPassword] = useState('')
   const [pwMsg, setPwMsg] = useState('')
 
-  const status = trainerProfile.status
+  const status = tp.status
   const sc = STATUS_COLORS[status] ?? STATUS_COLORS.pending
+
+  function startEdit(section) {
+    setEditing(section)
+    setSaveMsg('')
+    if (section === 'expertise') {
+      setEditSpecialties(tp.specialties || [])
+      setEditYearsExp(tp.years_experience?.toString() || '')
+    }
+    if (section === 'offering') {
+      setEditRate(tp.hourly_rate?.toString() || '')
+      setEditLocations(tp.locations_served || [])
+      setEditBio(bio)
+    }
+  }
+
+  async function saveSection() {
+    setSaving(true)
+    try {
+      if (editing === 'expertise') {
+        const { data } = await supabase.from('trainer_profiles')
+          .update({ specialties: editSpecialties, years_experience: parseInt(editYearsExp) || 0 })
+          .eq('id', session.user.id).select().single()
+        if (data) setTp(prev => ({ ...prev, specialties: data.specialties, years_experience: data.years_experience }))
+      }
+      if (editing === 'offering') {
+        const { data } = await supabase.from('trainer_profiles')
+          .update({ hourly_rate: Number(editRate), locations_served: editLocations })
+          .eq('id', session.user.id).select().single()
+        if (data) setTp(prev => ({ ...prev, hourly_rate: data.hourly_rate, locations_served: data.locations_served }))
+        await supabase.from('profiles').update({ bio: editBio.trim() }).eq('id', session.user.id)
+        setBio(editBio.trim())
+      }
+      setEditing(null)
+      setSaveMsg('✓ Saved')
+      setTimeout(() => setSaveMsg(''), 2500)
+    } finally {
+      setSaving(false)
+    }
+  }
 
   async function handleChangePassword(e) {
     e.preventDefault()
@@ -383,34 +524,109 @@ function ProfileTab({ trainerProfile, profile, session, navigate }) {
     else { setPwMsg('Password updated.'); setNewPassword(''); setChangingPassword(false) }
   }
 
+  const INPUT_NARROW = { ...INPUT, width: 100 }
+
   return (
     <div>
+      {/* Status banner */}
       <div style={{ background: sc.bg, border: `1px solid ${sc.border}`, borderRadius: 10, padding: '18px 24px', marginBottom: 20 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
           <span style={{ background: sc.text, borderRadius: 20, padding: '2px 10px', fontSize: 12, fontFamily: 'var(--font-body)', fontWeight: 700, color: '#0d1a0e', textTransform: 'uppercase', letterSpacing: 1 }}>{status}</span>
         </div>
         <p style={{ color: sc.text, fontFamily: 'var(--font-body)', fontSize: 15, margin: 0, lineHeight: 1.6 }}>{STATUS_MESSAGES[status]}</p>
-        {status === 'rejected' && trainerProfile.admin_notes && (
-          <p style={{ color: 'rgba(238,242,238,0.6)', fontFamily: 'var(--font-body)', fontSize: 14, marginTop: 8, fontStyle: 'italic' }}>Note: {trainerProfile.admin_notes}</p>
+        {status === 'rejected' && tp.admin_notes && (
+          <p style={{ color: 'rgba(238,242,238,0.6)', fontFamily: 'var(--font-body)', fontSize: 14, marginTop: 8, fontStyle: 'italic' }}>Note: {tp.admin_notes}</p>
         )}
       </div>
 
+      {saveMsg && (
+        <p style={{ color: '#4ade80', fontFamily: 'var(--font-body)', fontSize: 14, fontWeight: 600, marginBottom: 12 }}>{saveMsg}</p>
+      )}
+
+      {/* Expertise — inline editable */}
       <div style={CARD}>
-        <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: 20, color: '#EEF2EE', margin: '0 0 20px', fontWeight: 700 }}>Profile</h3>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 24px' }}>
-          <div><span style={LABEL}>Specialties</span><p style={VALUE}>{trainerProfile.specialties?.join(', ') || '—'}</p></div>
-          <div><span style={LABEL}>Experience</span><p style={VALUE}>{trainerProfile.years_experience ? `${trainerProfile.years_experience} years` : '—'}</p></div>
-          <div><span style={LABEL}>Hourly rate</span><p style={VALUE}>{trainerProfile.hourly_rate ? `$${trainerProfile.hourly_rate} SGD` : '—'}</p></div>
-          <div><span style={LABEL}>Session types</span><p style={VALUE}>{trainerProfile.session_types?.join(', ') || '—'}</p></div>
-          <div style={{ gridColumn: '1 / -1' }}><span style={LABEL}>Locations</span><p style={VALUE}>{trainerProfile.locations_served?.join(', ') || '—'}</p></div>
-          {profile?.bio && <div style={{ gridColumn: '1 / -1' }}><span style={LABEL}>Bio</span><p style={{ ...VALUE, lineHeight: 1.6 }}>{profile.bio}</p></div>}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+          <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: 18, color: '#EEF2EE', margin: 0, fontWeight: 700 }}>Expertise</h3>
+          {editing !== 'expertise'
+            ? <button onClick={() => startEdit('expertise')} style={{ ...BTN_GHOST, padding: '6px 14px', fontSize: 12 }}>Edit</button>
+            : <div style={{ display: 'flex', gap: 8 }}>
+                <button onClick={saveSection} disabled={saving} style={{ ...BTN_GREEN, padding: '6px 14px', fontSize: 12 }}>{saving ? 'Saving…' : 'Save'}</button>
+                <button onClick={() => setEditing(null)} style={{ ...BTN_GHOST, padding: '6px 14px', fontSize: 12 }}>Cancel</button>
+              </div>
+          }
         </div>
-        <button onClick={() => navigate('/profile/setup')} style={{ ...BTN_GHOST, marginTop: 8 }}>Edit profile</button>
+        {editing === 'expertise' ? (
+          <div>
+            <div style={{ marginBottom: 16 }}>
+              <span style={LABEL}>Specialties</span>
+              <MultiSelect options={SPECIALTIES} selected={editSpecialties} onChange={setEditSpecialties} />
+            </div>
+            <div>
+              <span style={LABEL}>Years of experience</span>
+              <input type="number" min="0" max="50" value={editYearsExp}
+                onChange={e => setEditYearsExp(e.target.value)}
+                style={{ ...INPUT, width: 100 }} />
+            </div>
+          </div>
+        ) : (
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 24px' }}>
+            <div><span style={LABEL}>Specialties</span><p style={VALUE}>{tp.specialties?.join(', ') || '—'}</p></div>
+            <div><span style={LABEL}>Experience</span><p style={VALUE}>{tp.years_experience ? `${tp.years_experience} yrs` : '—'}</p></div>
+          </div>
+        )}
       </div>
 
+      {/* Offering — inline editable */}
+      <div style={CARD}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+          <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: 18, color: '#EEF2EE', margin: 0, fontWeight: 700 }}>Offering</h3>
+          {editing !== 'offering'
+            ? <button onClick={() => startEdit('offering')} style={{ ...BTN_GHOST, padding: '6px 14px', fontSize: 12 }}>Edit</button>
+            : <div style={{ display: 'flex', gap: 8 }}>
+                <button onClick={saveSection} disabled={saving} style={{ ...BTN_GREEN, padding: '6px 14px', fontSize: 12 }}>{saving ? 'Saving…' : 'Save'}</button>
+                <button onClick={() => setEditing(null)} style={{ ...BTN_GHOST, padding: '6px 14px', fontSize: 12 }}>Cancel</button>
+              </div>
+          }
+        </div>
+        {editing === 'offering' ? (
+          <div>
+            <div style={{ marginBottom: 16 }}>
+              <span style={LABEL}>Hourly rate (SGD)</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ color: 'rgba(238,242,238,0.5)', fontFamily: 'var(--font-body)' }}>$</span>
+                <input type="number" min="1" value={editRate}
+                  onChange={e => setEditRate(e.target.value)}
+                  style={{ ...INPUT, width: 100 }} />
+              </div>
+            </div>
+            <div style={{ marginBottom: 16 }}>
+              <span style={LABEL}>Locations served</span>
+              <MultiSelect options={LOCATIONS} selected={editLocations} onChange={setEditLocations} />
+            </div>
+            <div>
+              <span style={LABEL}>Bio <span style={{ color: 'rgba(238,242,238,0.3)', fontWeight: 400 }}>({editBio.length}/300)</span></span>
+              <textarea value={editBio}
+                onChange={e => setEditBio(e.target.value.slice(0, 300))}
+                rows={4}
+                style={{ ...INPUT, resize: 'vertical', lineHeight: 1.6 }} />
+            </div>
+          </div>
+        ) : (
+          <div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 24px' }}>
+              <div><span style={LABEL}>Hourly rate</span><p style={VALUE}>{tp.hourly_rate ? `$${tp.hourly_rate} SGD` : '—'}</p></div>
+              <div><span style={LABEL}>Session types</span><p style={VALUE}>{tp.session_types?.join(', ') || '—'}</p></div>
+              <div style={{ gridColumn: '1 / -1' }}><span style={LABEL}>Locations</span><p style={VALUE}>{tp.locations_served?.join(', ') || '—'}</p></div>
+            </div>
+            {bio && <div><span style={LABEL}>Bio</span><p style={{ ...VALUE, lineHeight: 1.6 }}>{bio}</p></div>}
+          </div>
+        )}
+      </div>
+
+      {/* Documents */}
       <div style={CARD}>
         <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: 20, color: '#EEF2EE', margin: '0 0 16px', fontWeight: 700 }}>Documents</h3>
-        {Object.entries(trainerProfile.documents ?? {}).map(([type, urls]) =>
+        {Object.entries(tp.documents ?? {}).map(([type, urls]) =>
           urls?.length > 0 && (
             <div key={type} style={{ marginBottom: 12 }}>
               <span style={LABEL}>{type.replace(/_/g, ' ')}</span>
@@ -425,6 +641,7 @@ function ProfileTab({ trainerProfile, profile, session, navigate }) {
         )}
       </div>
 
+      {/* Account */}
       <div style={CARD}>
         <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: 20, color: '#EEF2EE', margin: '0 0 16px', fontWeight: 700 }}>Account</h3>
         <span style={LABEL}>Email</span>
