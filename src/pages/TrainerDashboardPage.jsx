@@ -198,6 +198,18 @@ function AvailabilityTab({ trainerId }) {
       p_end_time: av.end_time,
       p_duration_mins: duration,
     })
+
+    // Transition approved trainer to live on first availability save
+    const { data: trainerProfile } = await supabase
+      .from('trainer_profiles')
+      .select('status')
+      .eq('id', trainerId)
+      .single()
+
+    if (trainerProfile?.status === 'approved') {
+      await supabase.rpc('set_trainer_live')
+    }
+
     setSaving(null)
     setMsg('Saved.')
     setTimeout(() => setMsg(''), 2000)

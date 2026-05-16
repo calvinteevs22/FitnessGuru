@@ -16,6 +16,7 @@ import TrainerProfilePage from './pages/TrainerProfilePage.jsx'
 import BookingConfirmedPage from './pages/BookingConfirmedPage.jsx'
 import ClientDashboardPage from './pages/ClientDashboardPage.jsx'
 import TrainerSessionPage from './pages/TrainerSessionPage'
+import ApplicationStatusPage from './pages/ApplicationStatusPage.jsx'
 
 /* ─── Mock trainer roster ────────────────────────────────────── */
 const TRAINERS = [
@@ -1656,6 +1657,9 @@ export default function App() {
       } />
       <Route path="/trainer/session/:bookingId" element={
         <ProtectedRoute requiredRole="trainer"><TrainerSessionPage /></ProtectedRoute>
+      } />
+      <Route path="/trainer/application-status" element={
+        <ProtectedRoute requiredRole="trainer"><ApplicationStatusPage /></ProtectedRoute>
       } />
     </Routes>
     </MobileContext.Provider>
