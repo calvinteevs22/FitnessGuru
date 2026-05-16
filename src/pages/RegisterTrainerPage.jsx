@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { useAuth } from '../hooks/useAuth'
 import { validateEmail, validatePassword } from '../utils/validation'
 
 const PAGE_STYLE = {
@@ -34,6 +35,15 @@ const ERR_STYLE = { color: '#f87171', fontFamily: 'var(--font-body)', fontSize: 
 
 export default function RegisterTrainerPage() {
   const navigate = useNavigate()
+  const { session, profile } = useAuth()
+
+  useEffect(() => {
+    if (!session) return
+    if (profile?.role === 'admin') navigate('/admin', { replace: true })
+    else if (profile?.role === 'trainer') navigate('/dashboard/trainer', { replace: true })
+    else if (profile?.role === 'client') navigate('/dashboard/client', { replace: true })
+  }, [session, profile, navigate])
+
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')

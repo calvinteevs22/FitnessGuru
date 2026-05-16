@@ -72,6 +72,18 @@ export default function ClientProfileSetupPage() {
     setSubmitting(true)
     setServerError('')
 
+    // Guard: prevent overwriting an existing non-client account (e.g. trainer, admin)
+    const { data: existing } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', session.user.id)
+      .maybeSingle()
+    if (existing && existing.role !== 'client') {
+      setServerError(`An account with role "${existing.role}" already exists for this email.`)
+      setSubmitting(false)
+      return
+    }
+
     const { error: profileError } = await supabase.from('profiles').upsert({
       id: session.user.id,
       role: 'client',
