@@ -23,6 +23,12 @@ function toIcsDate(date: Date): string {
   return date.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z')
 }
 
+function toBase64(str: string): string {
+  const bytes = new TextEncoder().encode(str)
+  const binary = Array.from(bytes).map(b => String.fromCharCode(b)).join('')
+  return btoa(binary)
+}
+
 function buildIcs({
   uid, dtstart, durationMins, summary, description, location,
 }: {
@@ -119,7 +125,7 @@ serve(async (req) => {
         description: `Your ${durationMins}-min personal training session with ${trainerName ?? 'your trainer'}${venueName ? ` at ${venueName}` : ''}.`,
         location: venueName ?? '',
       })
-      attachments = [{ filename: 'session.ics', content: btoa(ics) }]
+      attachments = [{ filename: 'session.ics', content: toBase64(ics) }]
     }
   } else if (status === 'booking_cancelled') {
     subject = 'Booking cancelled — ReadyPT'
