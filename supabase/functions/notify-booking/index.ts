@@ -19,6 +19,34 @@ function formatSGT(iso: string): string {
   })
 }
 
+function toIcsDate(date: Date): string {
+  return date.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z')
+}
+
+function buildIcs({
+  uid, dtstart, durationMins, summary, description, location,
+}: {
+  uid: string; dtstart: string; durationMins: number
+  summary: string; description: string; location: string
+}): string {
+  const start = new Date(dtstart)
+  const end = new Date(start.getTime() + durationMins * 60_000)
+  return [
+    'BEGIN:VCALENDAR', 'VERSION:2.0',
+    'PRODID:-//ReadyPT//ReadyPT//EN', 'METHOD:PUBLISH',
+    'BEGIN:VEVENT',
+    `UID:${uid}@readyptsg.com`,
+    `DTSTAMP:${toIcsDate(new Date())}`,
+    `DTSTART:${toIcsDate(start)}`,
+    `DTEND:${toIcsDate(end)}`,
+    `SUMMARY:${summary}`,
+    `DESCRIPTION:${description}`,
+    `LOCATION:${location || 'TBD'}`,
+    'STATUS:CONFIRMED',
+    'END:VEVENT', 'END:VCALENDAR',
+  ].join('\r\n')
+}
+
 const jsonHeaders = { 'Content-Type': 'application/json' }
 
 serve(async (req) => {
@@ -41,11 +69,12 @@ serve(async (req) => {
     durationMins?: number
     amountSgd?: number
     venueName?: string
+    bookingId?: string
   }
   try { body = await req.json() }
   catch { return new Response(JSON.stringify({ error: 'Invalid JSON' }), { status: 400, headers: jsonHeaders }) }
 
-  const { status, clientEmail, clientName, trainerName, scheduledAt, durationMins, amountSgd, venueName } = body
+  const { status, clientEmail, clientName, trainerName, scheduledAt, durationMins, amountSgd, venueName, bookingId } = body
   if (!status || !clientEmail) {
     return new Response(JSON.stringify({ error: 'status and clientEmail required' }), { status: 400, headers: jsonHeaders })
   }
@@ -59,6 +88,7 @@ serve(async (req) => {
 
   let subject: string
   let html: string
+  let attachments: { filename: string; content: string }[] = []
 
   if (status === 'booking_confirmed') {
     subject = 'Booking confirmed — ReadyPT'
@@ -78,6 +108,19 @@ serve(async (req) => {
           View My Bookings
         </a>
       </div>`
+
+    if (scheduledAt && durationMins) {
+      const uid = bookingId ?? String(Date.now())
+      const ics = buildIcs({
+        uid,
+        dtstart: scheduledAt,
+        durationMins,
+        summary: `PT Session with ${trainerName ?? 'Trainer'}`,
+        description: `Your ${durationMins}-min personal training session with ${trainerName ?? 'your trainer'}${venueName ? ` at ${venueName}` : ''}.`,
+        location: venueName ?? '',
+      })
+      attachments = [{ filename: 'session.ics', content: btoa(ics) }]
+    }
   } else if (status === 'booking_cancelled') {
     subject = 'Booking cancelled — ReadyPT'
     html = `
@@ -94,15 +137,18 @@ serve(async (req) => {
     return new Response(JSON.stringify({ error: `Unknown status: ${status}` }), { status: 400, headers: jsonHeaders })
   }
 
+  const resendPayload: Record<string, unknown> = { from: FROM_EMAIL, to: clientEmail, subject, html }
+  if (attachments.length > 0) resendPayload.attachments = attachments
+
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${RESEND_API_KEY}` },
-    body: JSON.stringify({ from: FROM_EMAIL, to: clientEmail, subject, html }),
+    body: JSON.stringify(resendPayload),
   })
 
   if (!res.ok) {
-    const body = await res.text()
-    return new Response(JSON.stringify({ error: body }), { status: 500, headers: jsonHeaders })
+    const errBody = await res.text()
+    return new Response(JSON.stringify({ error: errBody }), { status: 500, headers: jsonHeaders })
   }
 
   return new Response(JSON.stringify({ success: true }), { status: 200, headers: jsonHeaders })
