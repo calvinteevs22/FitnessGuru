@@ -157,7 +157,8 @@ function AvailabilityTab({ trainerId }) {
   const [savedMsg, setSavedMsg] = useState('')
   const [blocks, setBlocks] = useState([])
   const [pendingDates, setPendingDates] = useState([]) // dates selected before confirming
-  const [newBlockDate, setNewBlockDate] = useState('')
+  const [blockFrom, setBlockFrom] = useState('')
+  const [blockTo, setBlockTo] = useState('')
   const [copied, setCopied] = useState(false)
 
   const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
@@ -247,10 +248,20 @@ function AvailabilityTab({ trainerId }) {
     }
   }
 
-  function addPendingDate() {
-    if (!newBlockDate || pendingDates.includes(newBlockDate)) return
-    setPendingDates(prev => [...prev, newBlockDate].sort())
-    setNewBlockDate('')
+  function addPendingDates() {
+    if (!blockFrom) return
+    const end = blockTo && blockTo >= blockFrom ? blockTo : blockFrom
+    const dates = []
+    const cur = new Date(blockFrom + 'T00:00:00')
+    const endDate = new Date(end + 'T00:00:00')
+    while (cur <= endDate) {
+      const d = cur.toISOString().split('T')[0]
+      if (!pendingDates.includes(d)) dates.push(d)
+      cur.setDate(cur.getDate() + 1)
+    }
+    setPendingDates(prev => [...prev, ...dates].sort())
+    setBlockFrom('')
+    setBlockTo('')
   }
 
   async function confirmBlockDates() {
@@ -384,18 +395,23 @@ function AvailabilityTab({ trainerId }) {
         </div>
       </div>
 
-      {/* Block dates — multi-select */}
+      {/* Block dates — range or single */}
       <div style={CARD}>
         <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: 18, color: '#EEF2EE', fontWeight: 700, margin: '0 0 4px' }}>Block Dates</h3>
         <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(238,242,238,0.4)', margin: '0 0 16px' }}>
-          Select multiple dates, then confirm all at once.
+          Pick a single date or a from→to range. Add multiple batches, then confirm all at once.
         </p>
-        <div style={{ display: 'flex', gap: 10, marginBottom: 12 }}>
-          <input type="date" value={newBlockDate}
-            onChange={e => setNewBlockDate(e.target.value)}
+        <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap', marginBottom: 12 }}>
+          <input type="date" value={blockFrom}
+            onChange={e => setBlockFrom(e.target.value)}
             min={new Date().toISOString().split('T')[0]}
-            style={{ ...INPUT, width: 180 }} />
-          <button style={BTN_GHOST} onClick={addPendingDate}>Add</button>
+            style={{ ...INPUT, width: 160 }} />
+          <span style={{ color: 'rgba(238,242,238,0.35)', fontFamily: 'var(--font-body)', fontSize: 13 }}>to</span>
+          <input type="date" value={blockTo}
+            onChange={e => setBlockTo(e.target.value)}
+            min={blockFrom || new Date().toISOString().split('T')[0]}
+            style={{ ...INPUT, width: 160 }} />
+          <button style={BTN_GHOST} onClick={addPendingDates}>Add</button>
         </div>
 
         {/* Pending chips (selected, not yet saved) */}
@@ -460,6 +476,7 @@ function ProfileTab({ trainerProfile: initialProfile, profile: initialProfile2, 
   const [editing, setEditing] = useState(null)          // null | 'expertise' | 'offering'
   const [saving, setSaving] = useState(false)
   const [saveMsg, setSaveMsg] = useState('')
+  const [saveErr, setSaveErr] = useState('')
 
   // Expertise edit state
   const [editSpecialties, setEditSpecialties] = useState([])
@@ -480,6 +497,7 @@ function ProfileTab({ trainerProfile: initialProfile, profile: initialProfile2, 
   function startEdit(section) {
     setEditing(section)
     setSaveMsg('')
+    setSaveErr('')
     if (section === 'expertise') {
       setEditSpecialties(tp.specialties || [])
       setEditYearsExp(tp.years_experience?.toString() || '')
@@ -493,21 +511,32 @@ function ProfileTab({ trainerProfile: initialProfile, profile: initialProfile2, 
 
   async function saveSection() {
     setSaving(true)
+    setSaveErr('')
     try {
-      if (editing === 'expertise') {
-        const { data } = await supabase.from('trainer_profiles')
-          .update({ specialties: editSpecialties, years_experience: parseInt(editYearsExp) || 0 })
-          .eq('id', session.user.id).select().single()
-        if (data) setTp(prev => ({ ...prev, specialties: data.specialties, years_experience: data.years_experience }))
-      }
+      // Always call the RPC with combined current + edited values
+      const { error: rpcErr } = await supabase.rpc('update_trainer_profile_fields', {
+        p_specialties:      editing === 'expertise' ? editSpecialties : (tp.specialties || []),
+        p_years_experience: editing === 'expertise' ? (parseInt(editYearsExp) || 0) : (tp.years_experience || 0),
+        p_hourly_rate:      editing === 'offering'  ? Number(editRate)    : (tp.hourly_rate || 0),
+        p_locations_served: editing === 'offering'  ? editLocations       : (tp.locations_served || []),
+      })
+      if (rpcErr) { setSaveErr(rpcErr.message); return }
+
+      // Update bio in profiles table (not covered by the RPC)
       if (editing === 'offering') {
-        const { data } = await supabase.from('trainer_profiles')
-          .update({ hourly_rate: Number(editRate), locations_served: editLocations })
-          .eq('id', session.user.id).select().single()
-        if (data) setTp(prev => ({ ...prev, hourly_rate: data.hourly_rate, locations_served: data.locations_served }))
-        await supabase.from('profiles').update({ bio: editBio.trim() }).eq('id', session.user.id)
+        const { error: bioErr } = await supabase.from('profiles').update({ bio: editBio.trim() }).eq('id', session.user.id)
+        if (bioErr) { setSaveErr(bioErr.message); return }
         setBio(editBio.trim())
       }
+
+      // Optimistically update local state
+      if (editing === 'expertise') {
+        setTp(prev => ({ ...prev, specialties: editSpecialties, years_experience: parseInt(editYearsExp) || 0 }))
+      }
+      if (editing === 'offering') {
+        setTp(prev => ({ ...prev, hourly_rate: Number(editRate), locations_served: editLocations }))
+      }
+
       setEditing(null)
       setSaveMsg('✓ Saved')
       setTimeout(() => setSaveMsg(''), 2500)
@@ -541,6 +570,9 @@ function ProfileTab({ trainerProfile: initialProfile, profile: initialProfile2, 
 
       {saveMsg && (
         <p style={{ color: '#4ade80', fontFamily: 'var(--font-body)', fontSize: 14, fontWeight: 600, marginBottom: 12 }}>{saveMsg}</p>
+      )}
+      {saveErr && (
+        <p style={{ color: '#f87171', fontFamily: 'var(--font-body)', fontSize: 14, marginBottom: 12, padding: '10px 14px', background: 'rgba(248,113,113,0.08)', border: '1px solid rgba(248,113,113,0.25)', borderRadius: 8 }}>{saveErr}</p>
       )}
 
       {/* Expertise — inline editable */}
