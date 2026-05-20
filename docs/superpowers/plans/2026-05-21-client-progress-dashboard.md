@@ -30,7 +30,7 @@ WITH CHECK (client_id = auth.uid());
 - [ ] **Step 2: Apply migration to remote**
 
 ```bash
-SUPABASE_ACCESS_TOKEN=REDACTED_SUPABASE_PAT \
+SUPABASE_ACCESS_TOKEN=<your-supabase-pat> \
   npx supabase db push --project-ref wnwmlaqhyztwxyvzuqpe
 ```
 
@@ -39,7 +39,7 @@ Expected: migration applied without errors.
 - [ ] **Step 3: Verify policy exists**
 
 ```bash
-SUPABASE_ACCESS_TOKEN=REDACTED_SUPABASE_PAT \
+SUPABASE_ACCESS_TOKEN=<your-supabase-pat> \
   npx supabase db query --linked \
   "SELECT policyname, cmd FROM pg_policies WHERE tablename = 'client_body_metrics';"
 ```
