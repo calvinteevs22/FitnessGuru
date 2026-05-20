@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase.js'
 import { useAuth } from '../hooks/useAuth.jsx'
 import { formatSlotSGT } from '../utils/slotGenerator.js'
 import ClientPlanTab from './ClientPlanTab'
+import ClientProgressTab from './ClientProgressTab'
 
 const STATUS_COLOR = {
   confirmed: '#4ade80',
@@ -30,6 +31,7 @@ export default function ClientDashboardPage() {
   const CLIENT_TABS = [
     { key: 'bookings', label: 'My Bookings' },
     { key: 'plan', label: 'My Plan' },
+    { key: 'progress', label: 'My Progress' },
   ]
 
   const fetchBookings = useCallback(async () => {
@@ -136,6 +138,7 @@ export default function ClientDashboardPage() {
         )}
 
         {activeTab === 'plan' && <ClientPlanTab clientId={session.user.id} />}
+        {activeTab === 'progress' && <ClientProgressTab clientId={session.user.id} />}
       </div>
     </div>
   )
