@@ -67,15 +67,19 @@ serve(async (req) => {
         stripe_payment_intent_id: paymentIntent,
       }).eq('id', bookingId).eq('status', 'pending')
 
-      // Fire-and-forget: send booking confirmation email to client
+      // Fetch booking details for notification emails
       const { data: booking } = await adminClient
         .from('bookings')
-        .select('client_name, client_email, scheduled_at, duration_mins, amount_sgd, venue_name, trainer_profiles!inner(profiles!inner(full_name))')
+        .select('client_name, client_email, scheduled_at, duration_mins, amount_sgd, venue_name, trainer_profiles!inner(profiles!inner(full_name, email))')
         .eq('id', bookingId)
         .single()
 
       if (booking) {
-        const trainerName = (booking.trainer_profiles as { profiles: { full_name: string } })?.profiles?.full_name ?? 'your trainer'
+        const trainerProfile = booking.trainer_profiles as { profiles: { full_name: string; email: string } }
+        const trainerName = trainerProfile?.profiles?.full_name ?? 'your trainer'
+        const trainerEmail = trainerProfile?.profiles?.email ?? null
+
+        // Client confirmation email + .ics
         adminClient.functions.invoke('notify-booking', {
           body: {
             status: 'booking_confirmed',
@@ -86,8 +90,26 @@ serve(async (req) => {
             durationMins: booking.duration_mins,
             amountSgd: booking.amount_sgd,
             venueName: booking.venue_name ?? undefined,
+            bookingId,
           },
         }).catch(() => {})
+
+        // Trainer new-booking email + .ics
+        if (trainerEmail) {
+          adminClient.functions.invoke('notify-trainer', {
+            body: {
+              status: 'booking_new',
+              trainerName,
+              trainerEmail,
+              clientName: booking.client_name,
+              scheduledAt: booking.scheduled_at,
+              durationMins: booking.duration_mins,
+              venueName: booking.venue_name ?? undefined,
+              amountSgd: booking.amount_sgd,
+              bookingId,
+            },
+          }).catch(() => {})
+        }
       }
     }
   }
