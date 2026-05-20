@@ -9,7 +9,8 @@ const APP_URL = Deno.env.get('APP_URL') ?? 'https://readyptsg.com'
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
 }
 const jsonHeaders = { ...cors, 'Content-Type': 'application/json' }
 
@@ -53,7 +54,7 @@ serve(async (req) => {
     .from('trainer_profiles')
     .select('hourly_rate, status, profiles!inner(full_name)')
     .eq('id', trainer_id)
-    .eq('status', 'approved')
+    .in('status', ['approved', 'live'])
     .single()
   if (tpErr || !tp) return err('Trainer not found', 404)
 
