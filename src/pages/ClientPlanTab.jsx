@@ -1,12 +1,9 @@
 // src/pages/ClientPlanTab.jsx
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
-import ProgressCharts from '../components/ProgressCharts'
 
 const CARD = { background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(238,242,238,0.1)', borderRadius: 12, padding: '24px 28px', marginBottom: 16 }
 const LABEL = { color: 'rgba(238,242,238,0.5)', fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1 }
-const PILL_ACTIVE = { background: 'rgba(74,222,128,0.12)', color: '#4ade80', border: '1px solid rgba(74,222,128,0.3)', borderRadius: 20, padding: '6px 18px', fontSize: 13, fontFamily: 'var(--font-body)', fontWeight: 700, cursor: 'pointer' }
-const PILL_INACTIVE = { background: 'transparent', color: 'rgba(238,242,238,0.4)', border: '1px solid rgba(238,242,238,0.1)', borderRadius: 20, padding: '6px 18px', fontSize: 13, fontFamily: 'var(--font-body)', fontWeight: 700, cursor: 'pointer' }
 
 function computeStreak(sessions) {
   if (!sessions || sessions.length === 0) return 0
@@ -37,7 +34,6 @@ export default function ClientPlanTab({ clientId }) {
   const [sessions, setSessions] = useState([])
   const [loading, setLoading] = useState(true)
   const [expandedDay, setExpandedDay] = useState(null)
-  const [view, setView] = useState('plan')
 
   useEffect(() => {
     async function load() {
@@ -82,13 +78,6 @@ export default function ClientPlanTab({ clientId }) {
 
   return (
     <div>
-      <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
-        <button onClick={() => setView('plan')} style={view === 'plan' ? PILL_ACTIVE : PILL_INACTIVE}>Plan</button>
-        <button onClick={() => setView('progress')} style={view === 'progress' ? PILL_ACTIVE : PILL_INACTIVE}>Progress</button>
-      </div>
-      {view === 'progress' && <ProgressCharts clientId={clientId} />}
-      {view === 'plan' && (
-        <>
           <div style={CARD}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12 }}>
               <div>
@@ -160,8 +149,6 @@ export default function ClientPlanTab({ clientId }) {
               </div>
             ))}
           </div>
-        </>
-      )}
     </div>
   )
 }
