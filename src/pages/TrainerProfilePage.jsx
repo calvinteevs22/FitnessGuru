@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase.js'
 import { useAuth } from '../hooks/useAuth.jsx'
-import { generateSlots, formatSlotSGT, formatDateHeader } from '../utils/slotGenerator.js'
+import { generateSlots, formatSlotSGT } from '../utils/slotGenerator.js'
 import VenuePicker from '../components/VenuePicker.jsx'
 import PageNav from '../components/PageNav.jsx'
+import BookingCalendar from '../components/BookingCalendar.jsx'
 
 export default function TrainerProfilePage() {
   const { id } = useParams()
@@ -170,40 +171,22 @@ export default function TrainerProfilePage() {
           </div>
         )}
 
-        {slotDays.length === 0 && (
+        {slotDays.length === 0 ? (
           <p style={{ fontFamily: 'var(--font-body)', color: 'rgba(238,242,238,0.4)', fontSize: 15 }}>
             No available slots in the next 30 days.
           </p>
+        ) : (
+          <BookingCalendar
+            slotDays={slotDays}
+            selectedSlot={selectedSlot}
+            onSelect={(slot, duration) => {
+              setSelectedSlot(slot)
+              if (duration) setSelectedDuration(duration)
+              setVenue({ type: null, name: '' })
+              setVenueError(false)
+            }}
+          />
         )}
-
-        {slotDays.map(day => (
-          <div key={day.date} style={{ marginBottom: 24 }}>
-            <h3 style={{ fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 600, color: 'rgba(238,242,238,0.5)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 10 }}>
-              {formatDateHeader(day.date)}
-            </h3>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-              {day.slots.map(slot => {
-                const isSelected = selectedSlot === slot
-                return (
-                  <button
-                    key={slot}
-                    onClick={() => { setSelectedSlot(slot); setSelectedDuration(day.duration_mins); setVenue({ type: null, name: '' }); setVenueError(false) }}
-                    style={{
-                      fontFamily: 'var(--font-body)', fontSize: 14,
-                      padding: '8px 16px', borderRadius: 8, cursor: 'pointer',
-                      border: isSelected ? '1px solid #4ade80' : '1px solid rgba(238,242,238,0.15)',
-                      background: isSelected ? 'rgba(74,222,128,0.15)' : 'rgba(255,255,255,0.03)',
-                      color: isSelected ? '#4ade80' : 'rgba(238,242,238,0.8)',
-                      transition: 'all 0.15s',
-                    }}
-                  >
-                    {formatSlotSGT(slot)}
-                  </button>
-                )
-              })}
-            </div>
-          </div>
-        ))}
 
         {selectedSlot && (
           <div style={{ marginTop: 32, paddingTop: 24, borderTop: '1px solid rgba(238,242,238,0.08)' }}>

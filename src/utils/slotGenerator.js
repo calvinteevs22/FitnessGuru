@@ -23,37 +23,40 @@ export function generateSlots(availability, blocks, confirmedBookings, daysAhead
     const dateStr = sgtBase.toISOString().split('T')[0]   // YYYY-MM-DD in SGT
     const dayOfWeek = sgtBase.getUTCDay()                  // 0=Sun...6=Sat in SGT
 
-    const avail = availability.find(a => a.day_of_week === dayOfWeek)
-    if (!avail) continue
+    const availRanges = availability.filter(a => a.day_of_week === dayOfWeek)
+    if (availRanges.length === 0) continue
     if (blockDates.has(dateStr)) continue
 
-    const [startH, startM] = avail.start_time.split(':').map(Number)
-    const [endH, endM] = avail.end_time.split(':').map(Number)
-    const startMins = startH * 60 + startM  // minutes since midnight SGT
-    const endMins = endH * 60 + endM
-
     const daySlots = []
-    for (let mins = startMins; mins + avail.duration_mins <= endMins; mins += avail.duration_mins) {
-      // Convert SGT minutes to UTC: subtract 8 hours (480 minutes)
-      const utcMins = mins - 480
-      // Build UTC slot datetime using the SGT date's year/month/day
-      // Date.UTC handles negative hours correctly by rolling back the date
-      const slot = new Date(Date.UTC(
-        sgtBase.getUTCFullYear(),
-        sgtBase.getUTCMonth(),
-        sgtBase.getUTCDate(),
-        Math.floor(utcMins / 60),
-        utcMins % 60,
-        0, 0
-      ))
-      const slotISO = slot.toISOString()
-      if (!bookedISOs.has(slotISO)) {
-        daySlots.push(slotISO)
+    for (const avail of availRanges) {
+      const [startH, startM] = avail.start_time.split(':').map(Number)
+      const [endH, endM] = avail.end_time.split(':').map(Number)
+      const startMins = startH * 60 + startM  // minutes since midnight SGT
+      const endMins = endH * 60 + endM
+
+      for (let mins = startMins; mins + avail.duration_mins <= endMins; mins += avail.duration_mins) {
+        // Convert SGT minutes to UTC: subtract 8 hours (480 minutes)
+        const utcMins = mins - 480
+        // Build UTC slot datetime using the SGT date's year/month/day
+        // Date.UTC handles negative hours correctly by rolling back the date
+        const slot = new Date(Date.UTC(
+          sgtBase.getUTCFullYear(),
+          sgtBase.getUTCMonth(),
+          sgtBase.getUTCDate(),
+          Math.floor(utcMins / 60),
+          utcMins % 60,
+          0, 0
+        ))
+        const slotISO = slot.toISOString()
+        if (!bookedISOs.has(slotISO)) {
+          daySlots.push(slotISO)
+        }
       }
     }
 
+    // Use duration_mins from the first range for display purposes
     if (daySlots.length > 0) {
-      result.push({ date: dateStr, duration_mins: avail.duration_mins, slots: daySlots })
+      result.push({ date: dateStr, duration_mins: availRanges[0].duration_mins, slots: daySlots })
     }
   }
 
