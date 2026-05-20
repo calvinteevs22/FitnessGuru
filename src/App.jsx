@@ -426,7 +426,7 @@ function Nav({ role, onSwitch }) {
             <>
           {isLoggedIn ? (
             <>
-              <a href={authRole === 'admin' ? '/admin' : authRole === 'trainer' ? '/dashboard/trainer' : '/signup/client/profile'} style={{
+              <a href={authRole === 'admin' ? '/admin' : authRole === 'trainer' ? '/dashboard/trainer' : '/dashboard/client'} style={{
                 fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: 14,
                 color: 'rgba(238,242,238,0.6)', textDecoration: 'none', transition: 'color 0.2s',
               }}
@@ -499,7 +499,7 @@ function Nav({ role, onSwitch }) {
             <>
           {isLoggedIn ? (
             <>
-              <a href={authRole === 'admin' ? '/admin' : authRole === 'trainer' ? '/dashboard/trainer' : '/signup/client/profile'} onClick={() => setOpen(false)}
+              <a href={authRole === 'admin' ? '/admin' : authRole === 'trainer' ? '/dashboard/trainer' : '/dashboard/client'} onClick={() => setOpen(false)}
                 style={{ display: 'block', fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: 16, color: 'rgba(238,242,238,0.75)', textDecoration: 'none', padding: '12px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                 Dashboard
               </a>
