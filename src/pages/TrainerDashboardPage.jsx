@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
 import TrainerPlansTab from './TrainerPlansTab'
 import MultiSelect from '../components/MultiSelect'
+import TrainerBlockCalendar from '../components/TrainerBlockCalendar.jsx'
 
 const SPECIALTIES = ['Strength', 'HIIT', 'Yoga', 'Pilates', 'Rehabilitation', 'Sports Performance', 'Weight Loss', 'Nutrition']
 const LOCATIONS = ['Central', 'CBD', 'Orchard', 'East', 'West', 'North', 'Northeast', 'Buona Vista', 'Novena', 'Online']
@@ -156,9 +157,6 @@ function AvailabilityTab({ trainerId }) {
   const [saving, setSaving] = useState(false)
   const [savedMsg, setSavedMsg] = useState('')
   const [blocks, setBlocks] = useState([])
-  const [pendingDates, setPendingDates] = useState([]) // dates selected before confirming
-  const [blockFrom, setBlockFrom] = useState('')
-  const [blockTo, setBlockTo] = useState('')
   const [copied, setCopied] = useState(false)
 
   const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
@@ -246,43 +244,6 @@ function AvailabilityTab({ trainerId }) {
     } finally {
       setSaving(false)
     }
-  }
-
-  function addPendingDates() {
-    if (!blockFrom) return
-    const end = blockTo && blockTo >= blockFrom ? blockTo : blockFrom
-    const dates = []
-    const cur = new Date(blockFrom + 'T00:00:00')
-    const endDate = new Date(end + 'T00:00:00')
-    while (cur <= endDate) {
-      const d = cur.toISOString().split('T')[0]
-      if (!pendingDates.includes(d)) dates.push(d)
-      cur.setDate(cur.getDate() + 1)
-    }
-    setPendingDates(prev => [...prev, ...dates].sort())
-    setBlockFrom('')
-    setBlockTo('')
-  }
-
-  async function confirmBlockDates() {
-    const toAdd = pendingDates.filter(d => !blocks.some(b => b.blocked_date === d))
-    const inserted = []
-    for (const date of toAdd) {
-      const { data, error } = await supabase
-        .from('availability_blocks')
-        .insert({ trainer_id: trainerId, blocked_date: date })
-        .select().single()
-      if (!error && data) inserted.push(data)
-    }
-    if (inserted.length > 0) {
-      setBlocks(prev => [...prev, ...inserted].sort((a, b) => a.blocked_date.localeCompare(b.blocked_date)))
-    }
-    setPendingDates([])
-  }
-
-  async function removeBlock(id) {
-    await supabase.from('availability_blocks').delete().eq('id', id)
-    setBlocks(prev => prev.filter(b => b.id !== id))
   }
 
   function copyIcal() {
@@ -395,60 +356,18 @@ function AvailabilityTab({ trainerId }) {
         </div>
       </div>
 
-      {/* Block dates — range or single */}
+      {/* Block dates — calendar */}
       <div style={CARD}>
         <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: 18, color: '#EEF2EE', fontWeight: 700, margin: '0 0 4px' }}>Block Dates</h3>
-        <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(238,242,238,0.4)', margin: '0 0 16px' }}>
-          Pick a single date or a from→to range. Add multiple batches, then confirm all at once.
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(238,242,238,0.4)', margin: '0 0 20px' }}>
+          Click any available day to block it. Click a blocked day to unblock. Changes save instantly.
         </p>
-        <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap', marginBottom: 12 }}>
-          <input type="date" value={blockFrom}
-            onChange={e => setBlockFrom(e.target.value)}
-            min={new Date().toISOString().split('T')[0]}
-            style={{ ...INPUT, width: 160 }} />
-          <span style={{ color: 'rgba(238,242,238,0.35)', fontFamily: 'var(--font-body)', fontSize: 13 }}>to</span>
-          <input type="date" value={blockTo}
-            onChange={e => setBlockTo(e.target.value)}
-            min={blockFrom || new Date().toISOString().split('T')[0]}
-            style={{ ...INPUT, width: 160 }} />
-          <button style={BTN_GHOST} onClick={addPendingDates}>Add</button>
-        </div>
-
-        {/* Pending chips (selected, not yet saved) */}
-        {pendingDates.length > 0 && (
-          <div style={{ marginBottom: 16 }}>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 10 }}>
-              {pendingDates.map(d => (
-                <div key={d} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'rgba(74,222,128,0.08)', border: '1px solid rgba(74,222,128,0.25)', borderRadius: 8, padding: '5px 10px' }}>
-                  <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#4ade80' }}>
-                    {new Date(d + 'T00:00:00').toLocaleDateString('en-SG', { day: 'numeric', month: 'short', year: 'numeric' })}
-                  </span>
-                  <button onClick={() => setPendingDates(prev => prev.filter(x => x !== d))} style={{ background: 'none', border: 'none', color: 'rgba(74,222,128,0.6)', cursor: 'pointer', fontSize: 14, lineHeight: 1, padding: 0 }}>×</button>
-                </div>
-              ))}
-            </div>
-            <button onClick={confirmBlockDates} style={BTN_GREEN}>
-              Block {pendingDates.length} date{pendingDates.length !== 1 ? 's' : ''}
-            </button>
-          </div>
-        )}
-
-        {/* Saved blocked dates */}
-        {blocks.length === 0
-          ? <p style={{ color: 'rgba(238,242,238,0.25)', fontFamily: 'var(--font-body)', fontSize: 13 }}>No blocked dates.</p>
-          : (
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-              {blocks.map(b => (
-                <div key={b.id} style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'rgba(248,113,113,0.08)', border: '1px solid rgba(248,113,113,0.25)', borderRadius: 8, padding: '6px 12px' }}>
-                  <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#f87171' }}>
-                    {new Date(b.blocked_date + 'T00:00:00').toLocaleDateString('en-SG', { day: 'numeric', month: 'short', year: 'numeric' })}
-                  </span>
-                  <button onClick={() => removeBlock(b.id)} style={{ background: 'none', border: 'none', color: 'rgba(248,113,113,0.6)', cursor: 'pointer', fontSize: 14, lineHeight: 1, padding: 0 }}>×</button>
-                </div>
-              ))}
-            </div>
-          )
-        }
+        <TrainerBlockCalendar
+          trainerId={trainerId}
+          availabilityDays={new Set(Object.keys(availability).map(Number))}
+          blocks={blocks}
+          onBlocksChange={setBlocks}
+        />
       </div>
 
       {/* iCal export */}
