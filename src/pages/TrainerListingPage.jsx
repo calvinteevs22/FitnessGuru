@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase.js'
+import PageNav from '../components/PageNav.jsx'
 
 const CARD_STYLE = {
   background: 'rgba(255,255,255,0.03)',
@@ -37,7 +38,8 @@ export default function TrainerListingPage() {
   }, [])
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0d1a0e', padding: '80px 24px' }}>
+    <div style={{ minHeight: '100vh', background: '#0d1a0e', padding: '100px 24px 80px' }}>
+      <PageNav />
       <div style={{ maxWidth: 900, margin: '0 auto' }}>
         <h1 style={{
           fontFamily: 'var(--font-heading)',

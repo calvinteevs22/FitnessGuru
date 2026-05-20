@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase.js'
 import { useAuth } from '../hooks/useAuth.jsx'
 import { generateSlots, formatSlotSGT, formatDateHeader } from '../utils/slotGenerator.js'
 import VenuePicker from '../components/VenuePicker.jsx'
+import PageNav from '../components/PageNav.jsx'
 
 export default function TrainerProfilePage() {
   const { id } = useParams()
@@ -106,7 +107,8 @@ export default function TrainerProfilePage() {
   const initials = name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
 
   return (
-    <div style={{ minHeight: '100vh', background: '#0d1a0e', padding: '80px 24px' }}>
+    <div style={{ minHeight: '100vh', background: '#0d1a0e', padding: '100px 24px 80px' }}>
+      <PageNav />
       <div style={{ maxWidth: 720, margin: '0 auto' }}>
 
         {/* Back */}
