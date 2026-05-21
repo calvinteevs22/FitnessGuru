@@ -2,9 +2,10 @@
 import { useState, useEffect, useCallback } from 'react'
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
-  BarChart, Bar, Cell,
+  BarChart, Bar, Cell, ReferenceLine,
 } from 'recharts'
 import { supabase } from '../lib/supabase'
+import GoalDetailCard from '../components/GoalDetailCard'
 
 const CARD = { background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(238,242,238,0.1)', borderRadius: 12, padding: '24px 28px', marginBottom: 20 }
 const LABEL = { color: 'rgba(238,242,238,0.5)', fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 1 }
@@ -82,6 +83,7 @@ function StatCard({ label, value, unit, delta, deltaLabel }) {
 export default function ClientProgressTab({ clientId }) {
   const [metrics, setMetrics] = useState([])
   const [metricsLoading, setMetricsLoading] = useState(true)
+  const [goal, setGoal] = useState(null)
   const [bodyRange, setBodyRange] = useState('3M')
 
   // Log form
@@ -102,12 +104,20 @@ export default function ClientProgressTab({ clientId }) {
 
   const fetchMetrics = useCallback(async () => {
     setMetricsLoading(true)
-    const { data } = await supabase
-      .from('client_body_metrics')
-      .select('id, measured_at, weight_kg, body_fat_pct')
-      .eq('client_id', clientId)
-      .order('measured_at', { ascending: true })
-    setMetrics(data ?? [])
+    const [metricsRes, goalRes] = await Promise.all([
+      supabase
+        .from('client_body_metrics')
+        .select('id, measured_at, weight_kg, body_fat_pct')
+        .eq('client_id', clientId)
+        .order('measured_at', { ascending: true }),
+      supabase
+        .from('client_goals')
+        .select('*')
+        .eq('client_id', clientId)
+        .maybeSingle(),
+    ])
+    setMetrics(metricsRes.data ?? [])
+    setGoal(goalRes.data ?? null)
     setMetricsLoading(false)
   }, [clientId])
 
@@ -234,6 +244,9 @@ export default function ClientProgressTab({ clientId }) {
 
   return (
     <div>
+      {/* ── Goal Detail Card ── */}
+      <GoalDetailCard clientId={clientId} />
+
       {/* ── Section 1: Stats Row ── */}
       {metrics.length === 0 ? (
         <div style={{ ...CARD, textAlign: 'center' }}>
@@ -284,6 +297,12 @@ export default function ClientProgressTab({ clientId }) {
               <Line yAxisId="left" type="monotone" dataKey="weight" name="Weight (kg)" stroke="#4ade80" strokeWidth={2} dot={false} activeDot={{ r: 4 }} />
               {hasFat && (
                 <Line yAxisId="right" type="monotone" dataKey="fat" name="Body Fat %" stroke="#fbbf24" strokeWidth={2} dot={false} activeDot={{ r: 4 }} connectNulls />
+              )}
+              {goal?.goal_weight_kg && (
+                <ReferenceLine yAxisId="left" y={goal.goal_weight_kg} stroke="rgba(74,222,128,0.4)" strokeDasharray="6 3" label={{ value: 'Goal', fill: 'rgba(74,222,128,0.5)', fontSize: 11, fontFamily: 'var(--font-body)' }} />
+              )}
+              {goal?.goal_body_fat_pct && hasFat && (
+                <ReferenceLine yAxisId="right" y={goal.goal_body_fat_pct} stroke="rgba(251,191,36,0.4)" strokeDasharray="6 3" label={{ value: 'Goal', fill: 'rgba(251,191,36,0.5)', fontSize: 11, fontFamily: 'var(--font-body)' }} />
               )}
             </LineChart>
           </ResponsiveContainer>
