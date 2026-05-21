@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, createContext, useContext } from 'react'
-import { Routes, Route, useNavigate, Navigate } from 'react-router-dom'
+import { Routes, Route, useNavigate, Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from './hooks/useAuth.jsx'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
 import LoginPage from './pages/LoginPage.jsx'
@@ -372,6 +372,65 @@ function ReadyPTLogo() {
         Ready<span style={{ color: '#4ade80' }}>PT</span>
       </span>
     </div>
+  )
+}
+
+/* ─── AppNav (non-landing pages) ────────────────────────────── */
+function AppNav() {
+  const [scrolled, setScrolled] = useState(false)
+  const { session, profile, signOut } = useAuth()
+  const authRole = profile?.role ?? null
+  const dashHref = authRole === 'admin' ? '/admin' : authRole === 'trainer' ? '/dashboard/trainer' : '/dashboard/client'
+
+  useEffect(() => {
+    const fn = () => setScrolled(window.scrollY > 40)
+    window.addEventListener('scroll', fn, { passive: true })
+    return () => window.removeEventListener('scroll', fn)
+  }, [])
+
+  return (
+    <header style={{
+      position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
+      background: scrolled ? 'rgba(13,26,14,0.96)' : 'rgba(13,26,14,0.85)',
+      backdropFilter: 'blur(16px)',
+      boxShadow: scrolled ? '0 1px 0 rgba(255,255,255,0.05)' : 'none',
+      transition: 'background 0.3s, box-shadow 0.3s',
+    }}>
+      <nav style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px', height: 68, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <a href="/" aria-label="ReadyPT home" style={{ textDecoration: 'none' }}>
+          <ReadyPTLogo />
+        </a>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+          {session && (
+            <>
+              <a href={dashHref} style={{ fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: 14, color: 'rgba(238,242,238,0.6)', textDecoration: 'none', transition: 'color 0.2s' }}
+                onMouseEnter={e => e.currentTarget.style.color = '#EEF2EE'}
+                onMouseLeave={e => e.currentTarget.style.color = 'rgba(238,242,238,0.6)'}>
+                Dashboard
+              </a>
+              <button onClick={() => signOut()} style={{
+                fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 13,
+                color: 'rgba(238,242,238,0.7)', background: 'none',
+                border: '1px solid rgba(238,242,238,0.2)', borderRadius: 8,
+                padding: '9px 20px', cursor: 'pointer', letterSpacing: '0.05em',
+                textTransform: 'uppercase', transition: 'border-color 0.2s, color 0.2s',
+              }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(238,242,238,0.5)'; e.currentTarget.style.color = '#EEF2EE' }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(238,242,238,0.2)'; e.currentTarget.style.color = 'rgba(238,242,238,0.7)' }}>
+                Sign out
+              </button>
+            </>
+          )}
+          {!session && (
+            <a href="/login" style={{ fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: 14, color: 'rgba(238,242,238,0.6)', textDecoration: 'none', transition: 'color 0.2s' }}
+              onMouseEnter={e => e.currentTarget.style.color = '#EEF2EE'}
+              onMouseLeave={e => e.currentTarget.style.color = 'rgba(238,242,238,0.6)'}>
+              Log in
+            </a>
+          )}
+        </div>
+      </nav>
+    </header>
   )
 }
 
@@ -1625,8 +1684,11 @@ function Landing() {
 /* ─── App ────────────────────────────────────────────────────── */
 export default function App() {
   const isMobile = useMobile()
+  const location = useLocation()
+  const isLanding = location.pathname === '/'
   return (
     <MobileContext.Provider value={isMobile}>
+    {!isLanding && <AppNav />}
     <Routes>
       <Route path="/" element={<Landing />} />
       <Route path="/login" element={<LoginPage />} />
