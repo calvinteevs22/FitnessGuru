@@ -85,6 +85,7 @@ export default function ClientProgressTab({ clientId }) {
   const [metricsLoading, setMetricsLoading] = useState(true)
   const [goal, setGoal] = useState(null)
   const [bodyRange, setBodyRange] = useState('3M')
+  const [historyOpen, setHistoryOpen] = useState(false)
 
   // Log form
   const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Singapore' })
@@ -377,30 +378,38 @@ export default function ClientProgressTab({ clientId }) {
         {/* History log */}
         {metrics.length > 0 && (
           <div style={{ marginTop: 24, borderTop: '1px solid rgba(238,242,238,0.08)', paddingTop: 20 }}>
-            <p style={{ ...LABEL, marginBottom: 12, marginTop: 0 }}>Log history</p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-              {[...metrics].reverse().map((m, i) => (
-                <div key={m.id} style={{
-                  display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                  padding: '10px 0',
-                  borderBottom: i < metrics.length - 1 ? '1px solid rgba(238,242,238,0.06)' : 'none',
-                }}>
-                  <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(238,242,238,0.45)' }}>
-                    {new Date(m.measured_at).toLocaleDateString('en-SG', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Singapore' })}
-                  </span>
-                  <div style={{ display: 'flex', gap: 20 }}>
-                    <span style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: 13, color: '#EEF2EE' }}>
-                      {m.weight_kg} <span style={{ color: 'rgba(238,242,238,0.4)', fontWeight: 400 }}>kg</span>
+            <button
+              onClick={() => setHistoryOpen(o => !o)}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', gap: 6 }}
+            >
+              <span style={{ ...LABEL, marginBottom: 0 }}>Log history ({metrics.length})</span>
+              <span style={{ color: 'rgba(238,242,238,0.4)', fontSize: 12, lineHeight: 1 }}>{historyOpen ? '▲' : '▼'}</span>
+            </button>
+            {historyOpen && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 0, marginTop: 12 }}>
+                {[...metrics].reverse().map((m, i) => (
+                  <div key={m.id} style={{
+                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                    padding: '10px 0',
+                    borderBottom: i < metrics.length - 1 ? '1px solid rgba(238,242,238,0.06)' : 'none',
+                  }}>
+                    <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(238,242,238,0.45)' }}>
+                      {new Date(m.measured_at).toLocaleDateString('en-SG', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Singapore' })}
                     </span>
-                    {m.body_fat_pct != null && (
+                    <div style={{ display: 'flex', gap: 20 }}>
                       <span style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: 13, color: '#EEF2EE' }}>
-                        {m.body_fat_pct} <span style={{ color: 'rgba(238,242,238,0.4)', fontWeight: 400 }}>%</span>
+                        {m.weight_kg} <span style={{ color: 'rgba(238,242,238,0.4)', fontWeight: 400 }}>kg</span>
                       </span>
-                    )}
+                      {m.body_fat_pct != null && (
+                        <span style={{ fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: 13, color: '#EEF2EE' }}>
+                          {m.body_fat_pct} <span style={{ color: 'rgba(238,242,238,0.4)', fontWeight: 400 }}>%</span>
+                        </span>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>
