@@ -49,10 +49,11 @@ If no body metrics logged yet, show a single prompt card: *"Log your first weigh
 
 **Log weigh-in form** (client self-service, always visible):
 ```
-[Weight kg  ____]  [Body Fat %  ____]  [Log]
+[Date  ____]  [Weight kg  ____]  [Body Fat %  ____]  [Log]
 ```
+- Date defaults to today. Client can select any past date (no future dates allowed).
 - Weight is required. Body fat % is optional.
-- On submit: `INSERT INTO client_body_metrics (client_id, measured_at, weight_kg, body_fat_pct)` with `measured_at = now()`.
+- On submit: `INSERT INTO client_body_metrics (client_id, measured_at, weight_kg, body_fat_pct)` with `measured_at` = selected date at midnight SGT (Asia/Singapore).
 - On success: refetch metrics, clear form inputs.
 - Validation: weight must be a positive number between 20–300. Body fat % between 1–70.
 - Error shown inline below the form.
