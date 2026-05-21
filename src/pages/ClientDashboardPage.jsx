@@ -5,6 +5,8 @@ import { useAuth } from '../hooks/useAuth.jsx'
 import { formatSlotSGT } from '../utils/slotGenerator.js'
 import ClientPlanTab from './ClientPlanTab'
 import ClientProgressTab from './ClientProgressTab'
+import ClientProfileTab from './ClientProfileTab'
+import ClientHealthLogTab from './ClientHealthLogTab'
 import GoalHeroCard from '../components/GoalHeroCard'
 
 const STATUS_COLOR = {
@@ -33,6 +35,8 @@ export default function ClientDashboardPage() {
     { key: 'bookings', label: 'My Bookings' },
     { key: 'plan', label: 'My Plan' },
     { key: 'progress', label: 'My Progress' },
+    { key: 'health', label: 'Daily Log' },
+    { key: 'profile', label: 'My Profile' },
   ]
 
   const fetchBookings = useCallback(async () => {
@@ -146,6 +150,8 @@ export default function ClientDashboardPage() {
 
         {activeTab === 'plan' && <ClientPlanTab clientId={session.user.id} />}
         {activeTab === 'progress' && <ClientProgressTab clientId={session.user.id} />}
+        {activeTab === 'health' && <ClientHealthLogTab clientId={session.user.id} />}
+        {activeTab === 'profile' && <ClientProfileTab clientId={session.user.id} fullName={profile?.full_name} email={session.user.email} />}
       </div>
     </div>
   )
