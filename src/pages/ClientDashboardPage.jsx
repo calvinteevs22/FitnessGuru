@@ -5,6 +5,7 @@ import { useAuth } from '../hooks/useAuth.jsx'
 import { formatSlotSGT } from '../utils/slotGenerator.js'
 import ClientPlanTab from './ClientPlanTab'
 import ClientProgressTab from './ClientProgressTab'
+import GoalHeroCard from '../components/GoalHeroCard'
 
 const STATUS_COLOR = {
   confirmed: '#4ade80',
@@ -91,6 +92,12 @@ export default function ClientDashboardPage() {
         <p style={{ fontFamily: 'var(--font-body)', color: 'rgba(238,242,238,0.45)', fontSize: 15, marginBottom: 28 }}>
           {session?.user?.email}
         </p>
+
+        <GoalHeroCard
+          clientId={session.user.id}
+          onLogWeight={() => setActiveTab('progress')}
+          onViewProgress={() => setActiveTab('progress')}
+        />
 
         <div style={{ display: 'flex', gap: 4, marginBottom: 28, background: 'rgba(255,255,255,0.04)', borderRadius: 10, padding: 4 }}>
           {CLIENT_TABS.map(t => (
