@@ -43,6 +43,14 @@ export default function TrainerSessionPage() {
   const [savingGoal, setSavingGoal] = useState(false)
   const [goalError, setGoalError] = useState(null)
 
+  const [clientMacroTarget, setClientMacroTarget] = useState(null)
+  const [showMacroForm, setShowMacroForm] = useState(false)
+  const [macroProtein, setMacroProtein] = useState('')
+  const [macroCarbs, setMacroCarbs] = useState('')
+  const [macroFats, setMacroFats] = useState('')
+  const [savingMacro, setSavingMacro] = useState(false)
+  const [macroError, setMacroError] = useState(null)
+
   useEffect(() => {
     async function load() {
       const { data: bk } = await supabase.from('bookings').select('*').eq('id', bookingId).single()
@@ -58,13 +66,15 @@ export default function TrainerSessionPage() {
       setPlan(planData ?? null)
 
       if (bk?.client_id) {
-        const [goalRes, metricRes] = await Promise.all([
+        const [goalRes, metricRes, macroRes] = await Promise.all([
           supabase.from('client_goals').select('*').eq('client_id', bk.client_id).maybeSingle(),
           supabase.from('client_body_metrics').select('measured_at, weight_kg, body_fat_pct')
             .eq('client_id', bk.client_id).order('measured_at', { ascending: false }).limit(1),
+          supabase.from('client_macro_targets').select('*').eq('client_id', bk.client_id).maybeSingle(),
         ])
         setClientGoal(goalRes.data ?? null)
         setLatestClientMetric(metricRes.data?.[0] ?? null)
+        setClientMacroTarget(macroRes.data ?? null)
       }
 
       setLoading(false)
@@ -139,6 +149,25 @@ export default function TrainerSessionPage() {
     if (error) return setGoalError(error.message)
     setClientGoal(data)
     setShowGoalForm(false)
+  }
+
+  async function handleSaveMacroTarget(e) {
+    e.preventDefault()
+    setMacroError(null)
+    const p = parseFloat(macroProtein), c = parseFloat(macroCarbs), f = parseFloat(macroFats)
+    if (isNaN(p) || p < 0) return setMacroError('Invalid protein target.')
+    if (isNaN(c) || c < 0) return setMacroError('Invalid carbs target.')
+    if (isNaN(f) || f < 0) return setMacroError('Invalid fats target.')
+    setSavingMacro(true)
+    const { data, error } = await supabase.from('client_macro_targets').upsert({
+      client_id: booking.client_id,
+      protein_g: p, carbs_g: c, fats_g: f,
+      set_by: 'trainer',
+    }, { onConflict: 'client_id' }).select().single()
+    setSavingMacro(false)
+    if (error) return setMacroError(error.message)
+    setClientMacroTarget(data)
+    setShowMacroForm(false)
   }
 
   function handleSelectDay(day) {
@@ -285,6 +314,70 @@ export default function TrainerSessionPage() {
                     {savingGoal ? 'Saving…' : 'Save Goal'}
                   </button>
                   <button type="button" onClick={() => setShowGoalForm(false)} style={BTN_GHOST}>Cancel</button>
+                </div>
+              </form>
+            )}
+          </div>
+        )}
+
+        {(phase === 'day-select' || phase === 'logging') && (
+          <div style={CARD}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: clientMacroTarget && !showMacroForm ? 12 : 0 }}>
+              <h2 style={{ color: '#EEF2EE', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 16, margin: 0 }}>Client Macro Target</h2>
+              <button
+                onClick={() => {
+                  if (clientMacroTarget) {
+                    setMacroProtein(String(clientMacroTarget.protein_g))
+                    setMacroCarbs(String(clientMacroTarget.carbs_g))
+                    setMacroFats(String(clientMacroTarget.fats_g))
+                  } else {
+                    setMacroProtein('')
+                    setMacroCarbs('')
+                    setMacroFats('')
+                  }
+                  setMacroError(null)
+                  setShowMacroForm(v => !v)
+                }}
+                style={{ ...BTN_GHOST, fontSize: 12, padding: '6px 14px' }}
+              >
+                {clientMacroTarget ? 'Edit' : 'Set'}
+              </button>
+            </div>
+            {clientMacroTarget && !showMacroForm && (
+              <div style={{ color: 'rgba(238,242,238,0.6)', fontFamily: 'var(--font-body)', fontSize: 13 }}>
+                <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+                  <span><span style={{ color: '#4ade80', fontWeight: 700 }}>{clientMacroTarget.protein_g}g</span> protein</span>
+                  <span><span style={{ color: '#60a5fa', fontWeight: 700 }}>{clientMacroTarget.carbs_g}g</span> carbs</span>
+                  <span><span style={{ color: '#fbbf24', fontWeight: 700 }}>{clientMacroTarget.fats_g}g</span> fats</span>
+                  <span style={{ color: 'rgba(238,242,238,0.35)' }}>{clientMacroTarget.calories} kcal/day</span>
+                </div>
+              </div>
+            )}
+            {showMacroForm && (
+              <form onSubmit={handleSaveMacroTarget} style={{ marginTop: 16 }}>
+                <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 12 }}>
+                  {[
+                    { label: 'Protein (g)', val: macroProtein, set: setMacroProtein },
+                    { label: 'Carbs (g)', val: macroCarbs, set: setMacroCarbs },
+                    { label: 'Fats (g)', val: macroFats, set: setMacroFats },
+                  ].map(({ label, val, set }) => (
+                    <div key={label} style={{ flex: '1 1 100px' }}>
+                      <span style={LABEL}>{label}</span>
+                      <input type="number" step="0.1" min="0" value={val} onChange={e => set(e.target.value)} style={INPUT} required />
+                    </div>
+                  ))}
+                </div>
+                {macroProtein && macroCarbs && macroFats && (
+                  <p style={{ color: 'rgba(238,242,238,0.4)', fontFamily: 'var(--font-body)', fontSize: 12, margin: '0 0 10px' }}>
+                    ≈ {Math.round((parseFloat(macroProtein)||0)*4 + (parseFloat(macroCarbs)||0)*4 + (parseFloat(macroFats)||0)*9)} kcal/day
+                  </p>
+                )}
+                {macroError && <p style={{ color: '#f87171', fontFamily: 'var(--font-body)', fontSize: 13, margin: '0 0 10px' }}>{macroError}</p>}
+                <div style={{ display: 'flex', gap: 10 }}>
+                  <button type="submit" disabled={savingMacro} style={{ ...BTN_GREEN, opacity: savingMacro ? 0.6 : 1, fontSize: 13 }}>
+                    {savingMacro ? 'Saving…' : 'Save Target'}
+                  </button>
+                  <button type="button" onClick={() => setShowMacroForm(false)} style={BTN_GHOST}>Cancel</button>
                 </div>
               </form>
             )}
