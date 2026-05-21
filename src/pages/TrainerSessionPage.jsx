@@ -34,6 +34,15 @@ export default function TrainerSessionPage() {
   const [notes, setNotes] = useState('')
   const [ending, setEnding] = useState(false)
 
+  const [clientGoal, setClientGoal] = useState(null)
+  const [latestClientMetric, setLatestClientMetric] = useState(null)
+  const [showGoalForm, setShowGoalForm] = useState(false)
+  const [trainerGoalWeight, setTrainerGoalWeight] = useState('')
+  const [trainerGoalFat, setTrainerGoalFat] = useState('')
+  const [trainerTargetDate, setTrainerTargetDate] = useState('')
+  const [savingGoal, setSavingGoal] = useState(false)
+  const [goalError, setGoalError] = useState(null)
+
   useEffect(() => {
     async function load() {
       const { data: bk } = await supabase.from('bookings').select('*').eq('id', bookingId).single()
@@ -47,6 +56,17 @@ export default function TrainerSessionPage() {
         .single()
 
       setPlan(planData ?? null)
+
+      if (bk?.client_id) {
+        const [goalRes, metricRes] = await Promise.all([
+          supabase.from('client_goals').select('*').eq('client_id', bk.client_id).maybeSingle(),
+          supabase.from('client_body_metrics').select('measured_at, weight_kg, body_fat_pct')
+            .eq('client_id', bk.client_id).order('measured_at', { ascending: false }).limit(1),
+        ])
+        setClientGoal(goalRes.data ?? null)
+        setLatestClientMetric(metricRes.data?.[0] ?? null)
+      }
+
       setLoading(false)
     }
     load()
@@ -91,6 +111,34 @@ export default function TrainerSessionPage() {
       .select().single()
     setSessionId(sessionData.id)
     setPhase('day-select')
+  }
+
+  async function handleSaveGoal(e) {
+    e.preventDefault()
+    setGoalError(null)
+    const todaySGT = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Singapore' })
+    const w = parseFloat(trainerGoalWeight)
+    const f = parseFloat(trainerGoalFat)
+    if (isNaN(w) || w < 20 || w > 300) return setGoalError('Goal weight must be between 20–300 kg.')
+    if (isNaN(f) || f < 1 || f > 60) return setGoalError('Goal body fat % must be between 1–60.')
+    if (trainerTargetDate && trainerTargetDate <= todaySGT) return setGoalError('Target date must be in the future.')
+    if (!latestClientMetric) return setGoalError('No body metrics on file for this client yet.')
+    setSavingGoal(true)
+    const isNew = !clientGoal
+    const payload = {
+      client_id: booking.client_id,
+      goal_weight_kg: w,
+      goal_body_fat_pct: f,
+      target_date: trainerTargetDate || null,
+      set_by: 'trainer',
+      start_weight_kg: isNew ? latestClientMetric.weight_kg : clientGoal.start_weight_kg,
+      start_body_fat_pct: isNew ? (latestClientMetric.body_fat_pct ?? f) : clientGoal.start_body_fat_pct,
+    }
+    const { data, error } = await supabase.from('client_goals').upsert(payload, { onConflict: 'client_id' }).select().single()
+    setSavingGoal(false)
+    if (error) return setGoalError(error.message)
+    setClientGoal(data)
+    setShowGoalForm(false)
   }
 
   function handleSelectDay(day) {
@@ -179,6 +227,67 @@ export default function TrainerSessionPage() {
               </button>
               <button onClick={handleSkipMetrics} style={BTN_GHOST}>Skip for now</button>
             </div>
+          </div>
+        )}
+
+        {(phase === 'day-select' || phase === 'logging') && (
+          <div style={CARD}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: clientGoal && !showGoalForm ? 16 : 0 }}>
+              <h2 style={{ color: '#EEF2EE', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 16, margin: 0 }}>Client Goal</h2>
+              <button
+                onClick={() => {
+                  if (clientGoal) {
+                    setTrainerGoalWeight(String(clientGoal.goal_weight_kg))
+                    setTrainerGoalFat(String(clientGoal.goal_body_fat_pct))
+                    setTrainerTargetDate(clientGoal.target_date ?? '')
+                  } else {
+                    setTrainerGoalWeight('')
+                    setTrainerGoalFat('')
+                    setTrainerTargetDate('')
+                  }
+                  setGoalError(null)
+                  setShowGoalForm(v => !v)
+                }}
+                style={{ ...BTN_GHOST, fontSize: 12, padding: '6px 14px' }}
+              >
+                {clientGoal ? 'Edit Goal' : 'Set Goal'}
+              </button>
+            </div>
+            {clientGoal && !showGoalForm && (
+              <div style={{ color: 'rgba(238,242,238,0.6)', fontFamily: 'var(--font-body)', fontSize: 13 }}>
+                <p style={{ margin: '0 0 4px' }}>
+                  Target: <span style={{ color: '#EEF2EE', fontWeight: 700 }}>{clientGoal.goal_weight_kg}kg · {clientGoal.goal_body_fat_pct}% body fat</span>
+                </p>
+                {clientGoal.target_date && (
+                  <p style={{ margin: 0 }}>By {new Date(clientGoal.target_date).toLocaleDateString('en-SG', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+                )}
+              </div>
+            )}
+            {showGoalForm && (
+              <form onSubmit={handleSaveGoal} style={{ marginTop: 16 }}>
+                <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 12 }}>
+                  <div style={{ flex: '1 1 130px' }}>
+                    <span style={LABEL}>Target Weight (kg) *</span>
+                    <input type="number" step="0.1" placeholder="e.g. 70.0" value={trainerGoalWeight} onChange={e => setTrainerGoalWeight(e.target.value)} style={INPUT} required />
+                  </div>
+                  <div style={{ flex: '1 1 130px' }}>
+                    <span style={LABEL}>Target Body Fat % *</span>
+                    <input type="number" step="0.1" placeholder="e.g. 15.0" value={trainerGoalFat} onChange={e => setTrainerGoalFat(e.target.value)} style={INPUT} required />
+                  </div>
+                  <div style={{ flex: '1 1 150px' }}>
+                    <span style={LABEL}>Target Date (optional)</span>
+                    <input type="date" value={trainerTargetDate} onChange={e => setTrainerTargetDate(e.target.value)} style={INPUT} />
+                  </div>
+                </div>
+                {goalError && <p style={{ color: '#f87171', fontFamily: 'var(--font-body)', fontSize: 13, margin: '0 0 12px' }}>{goalError}</p>}
+                <div style={{ display: 'flex', gap: 10 }}>
+                  <button type="submit" disabled={savingGoal} style={{ ...BTN_GREEN, opacity: savingGoal ? 0.6 : 1, fontSize: 13 }}>
+                    {savingGoal ? 'Saving…' : 'Save Goal'}
+                  </button>
+                  <button type="button" onClick={() => setShowGoalForm(false)} style={BTN_GHOST}>Cancel</button>
+                </div>
+              </form>
+            )}
           </div>
         )}
 
