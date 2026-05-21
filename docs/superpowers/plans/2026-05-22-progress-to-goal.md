@@ -114,7 +114,7 @@ CREATE TRIGGER client_goals_updated_at
 - [ ] **Step 2: Apply migration**
 
 ```bash
-SUPABASE_ACCESS_TOKEN=REDACTED_PAT \
+SUPABASE_ACCESS_TOKEN=<your-supabase-pat> \
   npx supabase db push --linked --project-ref wnwmlaqhyztwxyvzuqpe
 ```
 
@@ -123,7 +123,7 @@ Expected: `Finished supabase db push` with no errors.
 - [ ] **Step 3: Verify table exists**
 
 ```bash
-SUPABASE_ACCESS_TOKEN=REDACTED_PAT \
+SUPABASE_ACCESS_TOKEN=<your-supabase-pat> \
   npx supabase db query --linked --project-ref wnwmlaqhyztwxyvzuqpe \
   "SELECT column_name, data_type FROM information_schema.columns WHERE table_name = 'client_goals' ORDER BY ordinal_position;"
 ```
